@@ -1,7 +1,8 @@
 import './App.css';
+import Dashboard from './layouts/dashboard/dashboard';
 
 function App() {
-  return <></>;
+  return <Dashboard></Dashboard>;
 }
 
 export default App;
