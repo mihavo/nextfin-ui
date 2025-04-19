@@ -15,7 +15,7 @@ export default function Layout({ children }: LayoutProps) {
         <SidebarTrigger className='text-8xl'/>
           <TopNav />
         </header>
-        <div className="flex flex-1 p-6 bg-primary-gray h-full">
+        <div className="flex flex-1 p-6 bg-primary-gray dark:bg-background h-full">
           {children}
         </div>
       </main>

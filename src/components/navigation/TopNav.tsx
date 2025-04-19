@@ -2,13 +2,14 @@
 
 import { BellIcon, Search, User, Wallet } from 'lucide-react';
 import { Link } from 'react-router';
+import { ModeToggle } from '../theme/mode-toggle';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
 export default function TopNav() {
   return (
     <nav className="px-3 sm:px-6 w-full font-medium flex items-center justify-between">
-      <div className="left-items flex items-center gap-6 bg-white dark:bg-[#0F0F12] h-full">
+      <div className="left-items flex items-center gap-6  h-full">
         <Link to="#" className="flex gap-2 text-xl font-semibold">
           <Wallet className="h-6 w-6" />
           <span>Nextfin</span>
@@ -44,6 +45,9 @@ export default function TopNav() {
           <BellIcon className="h-4 w-4" />
           <span className="sr-only">Toggle notifications</span>
         </Button>
+        <div className="rounded-full">
+          <ModeToggle />
+        </div>
         <Button variant="outline" size="icon" className="rounded-full">
           <User className="h-4 w-4" />
           <span className="sr-only">Toggle user menu</span>
