@@ -1,13 +1,53 @@
 'use client';
 
+import { BellIcon, Search, User, Wallet } from 'lucide-react';
+import { Link } from 'react-router';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+
 export default function TopNav() {
   return (
-    <nav className="px-3 sm:px-6 flex items-center justify-between bg-white dark:bg-[#0F0F12] border-b border-gray-200 dark:border-[#1F1F23] h-full">
-      <div className="font-medium text-sm hidden sm:flex items-center space-x-1 truncate max-w-[300px]">
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nisi dolor
-        praesentium voluptas, recusandae atque dicta cum corporis nostrum qui,
-        unde sapiente ut fuga hic exercitationem beatae impedit, temporibus
-        quibusdam. Laudantium?
+    <nav className="px-3 sm:px-6 w-full font-medium flex items-center justify-between">
+      <div className="left-items flex items-center gap-6 bg-white dark:bg-[#0F0F12] h-full">
+        <Link to="#" className="flex gap-2 text-xl font-semibold">
+          <Wallet className="h-6 w-6" />
+          <span>Nextfin</span>
+        </Link>
+        <Link to={{ pathname: '/' }} className="text-primary  ">
+          Dashboard
+        </Link>
+        <Link to={{ pathname: '/accounts' }} className="text-muted-foreground">
+          Accounts
+        </Link>
+        <Link
+          to={{ pathname: '/transactions' }}
+          className="text-muted-foreground"
+        >
+          Transactions
+        </Link>
+        <Link to={{ pathname: '/cards' }} className="text-muted-foreground">
+          Cards
+        </Link>
+      </div>
+      <div className="right-items flex gap-4 md:ml-auto md:gap-2 lg:gap-4">
+        <form className="ml-auto flex-1 md:flex-initial">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search..."
+              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[300px]"
+            />
+          </div>
+        </form>
+        <Button variant="outline" size="icon" className="rounded-full">
+          <BellIcon className="h-4 w-4" />
+          <span className="sr-only">Toggle notifications</span>
+        </Button>
+        <Button variant="outline" size="icon" className="rounded-full">
+          <User className="h-4 w-4" />
+          <span className="sr-only">Toggle user menu</span>
+        </Button>
       </div>
     </nav>
   );

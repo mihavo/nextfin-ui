@@ -1,5 +1,10 @@
-import Layout from '../../components/navigation/layout';
+import Layout from '@/components/navigation/Layout';
+import Content from './Content';
 
 export default function Dashboard() {
-  return <Layout>Dashboard</Layout>;
+  return (
+    <Layout>
+      <Content />
+    </Layout>
+  );
 }

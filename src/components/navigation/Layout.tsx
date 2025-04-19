@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import Sidebar from './sidebar';
+import AppSidebar from '../ui/app-sidebar';
+import { SidebarProvider, SidebarTrigger } from '../ui/sidebar';
 import TopNav from './TopNav';
 
 interface LayoutProps {
@@ -7,16 +8,17 @@ interface LayoutProps {
 }
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="w-full flex flex-1 flex-col">
-        <header className="h-16 border-b border-gray-200 dark:border-[#1F1F23]">
+      <SidebarProvider className='p-2 '>
+        <AppSidebar />
+      <main className="w-full">
+        <header className="h-16 w-full flex border-b border-gray-200 dark:border-[#1F1F23] items-center">
+        <SidebarTrigger className='text-8xl'/>
           <TopNav />
         </header>
-        <main className="flex-1 overflow-auto p-6 bg-white dark:bg-[#0F0F12]">
+        <div className="flex flex-1 p-6 bg-primary-gray h-full">
           {children}
-        </main>
-      </div>
-    </div>
+        </div>
+      </main>
+      </SidebarProvider>
   );
 }
