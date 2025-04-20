@@ -7,10 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Account } from '@/types/Account';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { Download, Plus, Send } from 'lucide-react';
 
-export default function Accounts() {
+export default function Accounts({ items }: { items: Account[] }) {
   return (
     <Card className="lg:col-span-2">
       <CardHeader className="flex flex-row items-center">
@@ -31,53 +32,49 @@ export default function Accounts() {
             <TabsTrigger value="credit">Credit Cards</TabsTrigger>
           </TabsList>
           <TabsContent value="checking" className="pt-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <div className="font-semibold">Primary Checking</div>
-                  <div className="ml-auto text-sm">**** 4832</div>
-                </div>
-                <div className="text-2xl font-bold">$24,987.45</div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div>Available Balance</div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <span className="text-green-500">+$1,200.00</span>
-                    <span>today</span>
+            {items
+              .filter((item) => item.accountType === 'CHECKING')
+              .map((item) => (
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <div className="flex items-center">
+                      <div className="font-semibold">{item.accountType}</div>
+                      <div className="ml-auto text-sm">{item.id}</div>
+                    </div>
+                    <div className="text-2xl font-bold">{item.balance}</div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <div>Available Balance</div>
+                      <div className="ml-auto flex items-center gap-1">
+                        <span className="text-green-500">+$1,200.00</span>
+                        <span>today</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <div className="font-semibold">Joint Checking</div>
-                  <div className="ml-auto text-sm">**** 7645</div>
-                </div>
-                <div className="text-2xl font-bold">$8,294.32</div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div>Available Balance</div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <span className="text-red-500">-$340.58</span>
-                    <span>today</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              ))}
           </TabsContent>
           <TabsContent value="savings" className="pt-4">
             <div className="grid gap-4">
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <div className="font-semibold">High-Yield Savings</div>
-                  <div className="ml-auto text-sm">**** 9321</div>
-                </div>
-                <div className="text-2xl font-bold">$12,234.00</div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div>Available Balance</div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <span className="text-green-500">+$234.00</span>
-                    <span>this month</span>
+              {items
+                .filter((item) => item.accountType === 'SAVINGS')
+                .map((item) => (
+                  <div className="grid gap-2">
+                    <div className="flex items-center">
+                      <div className="font-semibold">{item.accountType}</div>
+                      <div className="ml-auto text-sm">{item.id}</div>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      ${item.currency}${item.balance}
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <div>Available Balance</div>
+                      <div className="ml-auto flex items-center gap-1">
+                        <span className="text-green-500">+$234.00</span>
+                        <span>this month</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                ))}
             </div>
           </TabsContent>
           <TabsContent value="credit" className="pt-4">

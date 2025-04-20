@@ -5,20 +5,7 @@ import Accounts from './Accounts';
 import Transactions from './Transactions';
 
 export default function Content() {
-  const transactions: Transaction[] = [
-    {
-      id: '1',
-      amount: '100.00',
-      currency: 'USD',
-      sourceAccountId: 123,
-      targetAccountId: 456,
-      transactionStatus: 'COMPLETED',
-      transactionType: 'INSTANT',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      fee: '0.00',
-    },
-  ];
+  const transactions: Transaction[] = [];
   return (
     <main className="flex flex-1 flex-col gap-4 p-2 md:gap-8 md:p-8">
       <div className="grid gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-4 h-36">
