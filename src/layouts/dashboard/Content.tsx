@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
 import { DollarSign } from 'lucide-react';
 import Accounts from './Accounts';
+import QuickActions from './QuickActions';
 import Transactions from './Transactions';
 
 export default function Content() {
   const transactions: Transaction[] = [];
+  const accounts: Account[] = [];
   return (
     <main className="flex flex-1 flex-col gap-4 p-2 md:gap-8 md:p-8">
       <div className="grid gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-4 h-36">
@@ -59,8 +62,9 @@ export default function Content() {
         </Card>
       </div>
       <div className="main-cards grid gap-4 md:gap-8 lg:grid-cols-3">
-        <Accounts></Accounts>
+        <Accounts items={accounts}></Accounts>
         <Transactions items={transactions}></Transactions>
+        <QuickActions></QuickActions>
       </div>
     </main>
   );
