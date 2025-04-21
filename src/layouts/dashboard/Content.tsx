@@ -2,9 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
 import { DollarSign } from 'lucide-react';
-import Accounts from './Accounts';
+import Accounts from '../../features/account/Accounts';
+import Transactions from '../../features/transactions/Transactions';
 import QuickActions from './QuickActions';
-import Transactions from './Transactions';
 
 export default function Content() {
   const transactions: Transaction[] = [];

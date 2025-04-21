@@ -1,7 +1,7 @@
-export type AccountStatus = 'ACTIVE' | 'INACTIVE' | 'CLOSED';
-export type AccountType = 'SAVINGS' | 'CHECKING' | 'TRUST';
+import { AccountStatus, AccountType } from '@/types/Account';
+import { createSlice } from '@reduxjs/toolkit';
 
-export interface Account {
+interface AccountState {
   id: number;
   balance: string;
   currency: string;
@@ -17,3 +17,13 @@ export interface Account {
   dateOpened: string;
   lastUpdated: string;
 }
+
+const initialState: AccountState = {} as AccountState;
+
+export const accountSlice = createSlice({
+  name: 'account',
+  initialState,
+  reducers: {},
+});
+
+export default accountSlice.reducer;
