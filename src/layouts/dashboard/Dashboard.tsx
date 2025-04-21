@@ -1,10 +1,10 @@
 import Layout from '@/components/navigation/Layout';
-import Content from './Content';
+import DashboardContent from './DashboardContent';
 
 export default function Dashboard() {
   return (
     <Layout>
-      <Content />
+      <DashboardContent />
     </Layout>
   );
 }

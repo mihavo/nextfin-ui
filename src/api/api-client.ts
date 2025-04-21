@@ -1,9 +1,10 @@
 import axios, { Method } from 'axios';
 const apiClient = axios.create({
-  baseURL: process.env.NEXTFIND_API_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_NEXTFIN_API_URL || 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
 
 export const nextfinRequest = async <T>(

@@ -6,7 +6,7 @@ import {
   CreateAccountResponse,
   fetchUserAccounts,
   UserAccountsResponse,
-} from './account-api';
+} from './accountApi';
 
 interface AccountState {
   entities: Account[];
@@ -15,14 +15,14 @@ interface AccountState {
 
 const initialState: AccountState = { entities: [], isLoading: 'idle' };
 
-const fetchUserAccountsThunk = createAsyncThunk(
+export const fetchUserAccountsAction = createAsyncThunk(
   'accounts/fetchUserAccounts',
   async (): Promise<UserAccountsResponse> => {
     return await fetchUserAccounts();
   }
 );
 
-const createAccountThunk = createAsyncThunk(
+export const createAccountAction = createAsyncThunk(
   'accounts/createAccount',
   async (account: CreateAccountRequest): Promise<CreateAccountResponse> => {
     return await createAccount(account);
@@ -35,25 +35,25 @@ export const accountSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     //Fetch User Acounts
-    builder.addCase(fetchUserAccountsThunk.fulfilled, (state, action) => {
+    builder.addCase(fetchUserAccountsAction.fulfilled, (state, action) => {
       state.entities.push(...action.payload.accounts);
       state.isLoading = 'succeeded';
     });
-    builder.addCase(fetchUserAccountsThunk.pending, (state) => {
+    builder.addCase(fetchUserAccountsAction.pending, (state) => {
       state.isLoading = 'pending';
     });
-    builder.addCase(fetchUserAccountsThunk.rejected, (state) => {
+    builder.addCase(fetchUserAccountsAction.rejected, (state) => {
       state.isLoading = 'failed';
     });
 
     //Create Account
-    builder.addCase(createAccountThunk.fulfilled, (state) => {
+    builder.addCase(createAccountAction.fulfilled, (state) => {
       state.isLoading = 'succeeded';
     });
-    builder.addCase(createAccountThunk.pending, (state) => {
+    builder.addCase(createAccountAction.pending, (state) => {
       state.isLoading = 'pending';
     });
-    builder.addCase(createAccountThunk.rejected, (state) => {
+    builder.addCase(createAccountAction.rejected, (state) => {
       state.isLoading = 'failed';
     });
   },

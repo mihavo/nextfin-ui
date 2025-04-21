@@ -1,14 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { fetchUserAccountsAction } from '@/features/account/accountSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
 import { DollarSign } from 'lucide-react';
+import { useEffect } from 'react';
 import Accounts from '../../features/account/Accounts';
 import Transactions from '../../features/transactions/Transactions';
 import QuickActions from './QuickActions';
 
-export default function Content() {
+export default function DashboardContent() {
   const transactions: Transaction[] = [];
-  const accounts: Account[] = [];
+  const accounts: Account[] = useAppSelector(
+    (state) => state.accounts.entities
+  );
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUserAccountsAction());
+    // dispatch(fetchTransactions()); //TODO: dispatch transactions
+  }, [dispatch]);
+
+  useEffect(() => {});
   return (
     <main className="flex flex-1 flex-col gap-4 p-2 md:gap-8 md:p-8">
       <div className="grid gap-4 md:grid-cols-4 md:gap-8 lg:grid-cols-4 h-36">
