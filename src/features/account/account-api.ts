@@ -1,17 +1,17 @@
 import { nextfinRequest } from '@/api/api-client';
 import { Account, AccountType } from '@/types/Account';
 
-interface UserAccountsResponse {
+export interface UserAccountsResponse {
   accounts: Account[];
   message: string;
 }
 
-interface CreateAccountRequest {
+export interface CreateAccountRequest {
   managerId: string;
   accountType: AccountType;
 }
 
-interface CreateAccountResponse {
+export interface CreateAccountResponse {
   id: string;
   balance: number;
   accountType: AccountType;
