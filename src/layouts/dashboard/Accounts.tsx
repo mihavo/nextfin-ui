@@ -19,7 +19,7 @@ export default function Accounts({ items }: { items: Account[] }) {
           <CardTitle>Accounts</CardTitle>
           <CardDescription>Manage your accounts and cards</CardDescription>
         </div>
-        <Button size="sm" className="ml-auto gap-1">
+        <Button size="sm" className="ml-auto gap-1 dark:text-white">
           <Plus className="h-3.5 w-3.5" />
           Add Account
         </Button>

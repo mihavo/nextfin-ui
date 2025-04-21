@@ -1,6 +1,6 @@
 'use client';
 
-import { BellIcon, Search, User, Wallet } from 'lucide-react';
+import { BellIcon, Search, User } from 'lucide-react';
 import { Link } from 'react-router';
 import { ModeToggle } from '../theme/mode-toggle';
 import { Button } from '../ui/button';
@@ -10,10 +10,15 @@ export default function TopNav() {
   return (
     <nav className="px-3 sm:px-6 w-full font-medium flex items-center justify-between">
       <div className="left-items flex items-center gap-6  h-full">
-        <Link to="#" className="flex gap-2 text-xl font-semibold">
-          <Wallet className="h-6 w-6" />
-          <span>Nextfin</span>
+        <Link to="#" className="flex items-center gap-3 text-xl font-semibold">
+          <img
+            src="assets/logo.png"
+            alt="nextfin-logo"
+            className="h-14 w-14 object-contain"
+          />
+          <span className="tracking-tight">Nextfin</span>
         </Link>
+
         <Link to={{ pathname: '/' }} className="text-primary  ">
           Dashboard
         </Link>
