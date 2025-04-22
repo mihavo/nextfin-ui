@@ -48,10 +48,12 @@ export default function AuthPage() {
   const signupForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      name: '',
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
+      phoneNumber: '',
+      socialSecurityNumber: '',
     },
   });
 
@@ -176,12 +178,12 @@ export default function AuthPage() {
                 >
                   <FormField
                     control={signupForm.control}
-                    name="name"
+                    name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} />
+                          <Input placeholder="JohnDoe" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -199,6 +201,36 @@ export default function AuthPage() {
                             type="email"
                             {...field}
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="(123) 456-7890"
+                            type="tel"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={signupForm.control}
+                    name="socialSecurityNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Social Security Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="123-45-6789" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
