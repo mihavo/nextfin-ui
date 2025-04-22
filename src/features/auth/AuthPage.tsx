@@ -40,7 +40,7 @@ export default function AuthPage() {
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -100,14 +100,14 @@ export default function AuthPage() {
                 >
                   <FormField
                     control={loginForm.control}
-                    name="email"
+                    name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Username</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="name@example.com"
-                            type="email"
+                            placeholder="nextfin-user"
+                            type="username"
                             {...field}
                           />
                         </FormControl>

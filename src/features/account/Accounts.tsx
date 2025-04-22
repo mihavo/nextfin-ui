@@ -7,9 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { Download, Plus, Send } from 'lucide-react';
 
 export default function Accounts({ items }: { items: Account[] }) {

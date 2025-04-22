@@ -1,10 +1,11 @@
 'use client';
 
-import { BellIcon, Search, User } from 'lucide-react';
+import { BellIcon, Search } from 'lucide-react';
 import { Link } from 'react-router';
 import { ModeToggle } from '../theme/mode-toggle';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import UserNav from './UserNav';
 
 export default function TopNav() {
   return (
@@ -53,10 +54,7 @@ export default function TopNav() {
         <div className="rounded-full">
           <ModeToggle />
         </div>
-        <Button variant="outline" size="icon" className="rounded-full">
-          <User className="h-4 w-4" />
-          <span className="sr-only">Toggle user menu</span>
-        </Button>
+        <UserNav />
       </div>
     </nav>
   );
