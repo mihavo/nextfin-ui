@@ -58,13 +58,11 @@ export default function AuthPage() {
   });
 
   async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
-    console.log('Login values:', values);
     dispatch(loginAction(values));
   }
 
   async function onSignupSubmit(values: z.infer<typeof signupSchema>) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Signup values:', values);
   }
 
   return (

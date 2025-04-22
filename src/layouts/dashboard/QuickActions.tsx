@@ -6,9 +6,20 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { logoutAction } from '@/features/auth/authSlice';
+import { useAppDispatch } from '@/store/hooks';
 import { CreditCard, LogOut, Plus, Send, Settings } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 export default function QuickActions() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    console.log('Signing out...');
+    dispatch(logoutAction());
+    navigate('/logout');
+  };
   return (
     <Card>
       <CardHeader>
@@ -35,6 +46,7 @@ export default function QuickActions() {
       <CardFooter className="border-t px-6 py-4">
         <Button
           variant="outline"
+          onClick={handleSignOut}
           className="w-full gap-1 text-red-500 hover:text-red-500"
         >
           <LogOut className="h-3.5 w-3.5" />

@@ -8,6 +8,7 @@ const store = configureStore({
     accounts: accountsReducer,
     // transactions: transactionReducer, // TODO: Add transactions reducer
   },
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export type RootState = ReturnType<typeof store.getState>;

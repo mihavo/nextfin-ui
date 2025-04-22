@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import './App.css';
 import { ThemeProvider } from './components/theme/theme-provider';
 import AuthPage from './features/auth/AuthPage';
+import LogoutPage from './features/auth/LogoutPage';
 import Dashboard from './layouts/dashboard/Dashboard';
 import { useAppSelector } from './store/hooks';
 
@@ -15,6 +16,7 @@ function App() {
             path="/"
             element={isAuthenticated ? <Dashboard /> : <AuthPage />}
           />
+          <Route path="/logout" element={<LogoutPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

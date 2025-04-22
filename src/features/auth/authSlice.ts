@@ -1,5 +1,11 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { login, UserLoginRequest, UserLoginResponse } from './authApi';
+import { createAsyncThunk, createSlice, isPending } from '@reduxjs/toolkit';
+import {
+  login,
+  logout,
+  UserLoginRequest,
+  UserLoginResponse,
+  UserLogoutResponse,
+} from './authApi';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -27,6 +33,13 @@ export const loginAction = createAsyncThunk(
   }
 );
 
+export const logoutAction = createAsyncThunk(
+  'auth/logout',
+  async (): Promise<UserLogoutResponse> => {
+    return await logout();
+  }
+);
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -42,9 +55,15 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
       state.status = 'failed';
     });
-    builder.addCase(loginAction.pending, (state) => {
-      state.status = 'loading';
+    builder.addCase(logoutAction.fulfilled, (state) => {
+      Object.assign(state, initialState);
     });
+    builder.addMatcher(
+      (action) => isPending(loginAction, logoutAction)(action),
+      (state) => {
+        state.status = 'loading';
+      }
+    );
   },
 });
 

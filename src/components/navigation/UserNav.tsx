@@ -1,3 +1,5 @@
+import { logoutAction } from '@/features/auth/authSlice';
+import { useAppDispatch } from '@/store/hooks';
 import { LogOut, Settings, User } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { Button } from '../ui/button';
@@ -13,10 +15,12 @@ import {
 
 export default function UserNav() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleSignOut = () => {
     console.log('Signing out...');
-    navigate('/');
+    dispatch(logoutAction());
+    navigate('/logout');
   };
 
   return (
