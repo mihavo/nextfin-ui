@@ -1,11 +1,22 @@
+import { BrowserRouter, Route, Routes } from 'react-router';
 import './App.css';
 import { ThemeProvider } from './components/theme/theme-provider';
+import AuthPage from './features/auth/AuthPage';
 import Dashboard from './layouts/dashboard/Dashboard';
+import { useAppSelector } from './store/hooks';
 
 function App() {
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Dashboard></Dashboard>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={isAuthenticated ? <Dashboard /> : <AuthPage />}
+          />
+        </Routes>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
