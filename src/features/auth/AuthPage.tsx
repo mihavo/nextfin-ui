@@ -26,10 +26,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginAction } from './authSlice';
 import { loginSchema, signupSchema } from './schemas/authSchemas';
 
 export default function AuthPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const authStatus = useAppSelector((state) => state.auth.status);
+  const isLoading = authStatus === 'loading';
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
 
@@ -52,19 +56,13 @@ export default function AuthPage() {
   });
 
   async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log('Login values:', values);
-    setIsLoading(false);
+    dispatch(loginAction(values));
   }
 
   async function onSignupSubmit(values: z.infer<typeof signupSchema>) {
-    setIsLoading(true);
-
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
     console.log('Signup values:', values);
-    setIsLoading(false);
   }
 
   return (

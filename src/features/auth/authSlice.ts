@@ -3,6 +3,7 @@ import { login, UserLoginRequest, UserLoginResponse } from './authApi';
 
 interface AuthState {
   isAuthenticated: boolean;
+  status: AuthStatus;
   user: {
     id: string;
     firstName: string;
@@ -11,9 +12,12 @@ interface AuthState {
   } | null;
 }
 
+type AuthStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
+
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
+  status: 'idle',
 };
 
 export const loginAction = createAsyncThunk(
@@ -31,10 +35,15 @@ export const authSlice = createSlice({
     //Login
     builder.addCase(loginAction.fulfilled, (state) => {
       state.isAuthenticated = true;
+      state.status = 'succeeded';
       //TODO: Save user data to local storage
     });
     builder.addCase(loginAction.rejected, (state) => {
       state.isAuthenticated = false;
+      state.status = 'failed';
+    });
+    builder.addCase(loginAction.pending, (state) => {
+      state.status = 'loading';
     });
   },
 });
