@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { ModeToggle } from '@/components/theme/mode-toggle';
+import { useTheme } from '@/components/theme/theme-provider';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -25,6 +26,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Toaster } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginAction } from './authSlice';
@@ -36,6 +38,7 @@ export default function AuthPage() {
   const isLoading = authStatus === 'loading';
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
+  const { theme } = useTheme();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -332,6 +335,7 @@ export default function AuthPage() {
           </div>
         </CardFooter>
       </Card>
+      <Toaster richColors closeButton theme={theme} />
     </div>
   );
 }

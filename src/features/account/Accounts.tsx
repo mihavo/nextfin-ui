@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
@@ -36,9 +37,7 @@ export default function Accounts({ items }: { items: Account[] }) {
           </TabsList>
           <TabsContent value="checking" className="pt-4">
             {isLoading === 'pending' ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
+              <Skeleton className="h-6 w-2/3 rounded" />
             ) : (
               items
                 .filter((item) => item.accountType === 'CHECKING')
@@ -65,9 +64,7 @@ export default function Accounts({ items }: { items: Account[] }) {
           <TabsContent value="savings" className="pt-4">
             <div className="grid gap-4">
               {isLoading === 'pending' ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                </div>
+                <Skeleton className="h-6 w-2/3 rounded" />
               ) : (
                 items
                   .filter((item) => item.accountType === 'SAVINGS')

@@ -1,4 +1,5 @@
 import axios, { Method } from 'axios';
+import { toast } from 'sonner';
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_NEXTFIN_API_URL || 'http://localhost:3000',
   headers: {
@@ -12,10 +13,22 @@ export const nextfinRequest = async <T>(
   method: Method,
   data?: unknown
 ): Promise<T> => {
-  const response = await apiClient({
-    method,
-    url,
-    data,
-  });
-  return response.data;
+  try {
+    const response = await apiClient({
+      method,
+      url,
+      data,
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const message = error.response?.data?.message || error.message;
+      toast.error(message);
+      throw new Error(message);
+    } else {
+      const message = `Unexpected error: ${error}`;
+      toast.error(message);
+      throw new Error(message);
+    }
+  }
 };

@@ -4,16 +4,33 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
 import { DollarSign } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Accounts from '../../features/account/Accounts';
 import Transactions from '../../features/transactions/Transactions';
 import QuickActions from './QuickActions';
 
 export default function DashboardContent() {
   const transactions: Transaction[] = [];
+  const [totalBalance, setTotalBalance] = useState(0);
   const accounts: Account[] = useAppSelector(
     (state) => state.accounts.entities
   );
+  const hasLoaded =
+    useAppSelector((state) => state.accounts.isLoading) === 'succeeded';
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: accounts[0]?.currency ?? 'USD',
+  });
+
+  useEffect(() => {
+    if (hasLoaded) {
+      const total = accounts
+        .map((acc) => Number(acc.balance))
+        .reduce((sum, balance) => sum + balance, 0);
+      setTotalBalance(total);
+    }
+  }, [hasLoaded, accounts]);
 
   const dispatch = useAppDispatch();
 
@@ -32,7 +49,9 @@ export default function DashboardContent() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
+            <div className="text-2xl font-bold">
+              {formatter.format(totalBalance)}
+            </div>
             <p className="text-xs text-muted-foreground">
               +20.1% from last month
             </p>
