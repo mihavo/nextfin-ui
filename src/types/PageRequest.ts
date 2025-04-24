@@ -1,6 +1,5 @@
 export interface PageRequest {
-  size: number;
-  number: number;
-  totalElements: number;
-  totalPages: number;
+  pageSize?: number;
+  pageNumber?: number;
+  sort?: 'ascending' | 'descending';
 }

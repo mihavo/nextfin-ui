@@ -13,7 +13,12 @@ export type GetAccountTransactionsResponse = GetTransactionsResponse;
 export const fetchUserTransactions = async (
   page?: PageRequest
 ): Promise<GetTransactionsResponse> => {
-  const query = qs.stringify(page, { skipNulls: true });
+  if (page == null) {
+    page = {
+      pageSize: 4,
+    };
+  }
+  const query = '?' + qs.stringify(page, { skipNulls: true });
   console.log(query);
-  return await nextfinRequest('/transactions' + query, 'GET');
+  return await nextfinRequest('/transactions/' + query, 'GET');
 };

@@ -6,35 +6,59 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { currencyFormatter } from '@/components/utils/currency-formatter';
+import { useAppSelector } from '@/store/hooks';
 import { Transaction } from '@/types/Transaction';
+import dayjs from 'dayjs';
 import { CreditCard } from 'lucide-react';
 
 export default function Transactions({ items }: { items: Transaction[] }) {
+  const { isLoading } = useAppSelector((state) => state.transactions);
+  const currentUserId = useAppSelector((state) => state.auth.user?.id);
+
+  const calculateSign = (item: Transaction): '+' | '-' => {
+    return item.sourceUserId === currentUserId ? '-' : '+';
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Recent Transactions</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {items.map((item) => (
-          <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-              <CreditCard className="h-5 w-5" />
-            </div>
-            <div className="grid gap-1">
-              <div className="font-semibold">{item.targetAccountId}</div>
-              <div className="text-xs text-muted-foreground">
-                Online Shopping
+        {isLoading === 'pending' ? (
+          <Skeleton className="p-2 h-5 w-1/2" />
+        ) : (
+          items.map((item) => (
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                <CreditCard className="h-5 w-5" />
+              </div>
+              <div className="grid gap-1">
+                <div className="font-semibold">{item.targetName}</div>
+                <div className="text-xs text-muted-foreground">
+                  Online Shopping
+                </div>
+              </div>
+              <div className="ml-auto text-right">
+                <div
+                  className={
+                    calculateSign(item) === '-'
+                      ? 'text-red-500'
+                      : 'text-green-500'
+                  }
+                >
+                  {calculateSign(item)}
+                  {currencyFormatter(item.currency, item.amount)}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {dayjs(item.createdAt).format('MMM D, HH:mm')}
+                </div>
               </div>
             </div>
-            <div className="ml-auto text-right">
-              <div className="text-red-500">-{item.amount}</div>
-              <div className="text-xs text-muted-foreground">
-                {item.updatedAt}
-              </div>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </CardContent>
       <CardFooter className="border-t px-6 py-4">
         <Button variant="outline" className="w-full gap-1">

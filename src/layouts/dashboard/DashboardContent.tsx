@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { fetchUserAccountsAction } from '@/features/account/accountSlice';
+import { fetchUserAction } from '@/features/auth/authSlice';
 import { fetchUserTransactionsAction } from '@/features/transactions/transactionSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
@@ -22,11 +24,6 @@ export default function DashboardContent() {
   const hasLoaded =
     useAppSelector((state) => state.accounts.isLoading) === 'succeeded';
 
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: accounts[0]?.currency ?? 'USD',
-  });
-
   useEffect(() => {
     if (hasLoaded) {
       const total = accounts
@@ -39,6 +36,7 @@ export default function DashboardContent() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(fetchUserAction());
     dispatch(fetchUserAccountsAction());
     dispatch(fetchUserTransactionsAction());
   }, [dispatch]);
@@ -58,7 +56,7 @@ export default function DashboardContent() {
             ) : (
               <>
                 <div className="text-2xl font-bold">
-                  {formatter.format(totalBalance)}
+                  {currencyFormatter(accounts[0].currency, totalBalance)}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   +20.1% from last month
@@ -112,3 +110,4 @@ export default function DashboardContent() {
     </main>
   );
 }
+

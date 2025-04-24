@@ -1,5 +1,8 @@
+import { User } from '@/types/User';
 import { createAsyncThunk, createSlice, isPending } from '@reduxjs/toolkit';
 import {
+  fetchCurrentUser,
+  GetUserResponse,
   login,
   logout,
   UserLoginRequest,
@@ -10,19 +13,14 @@ import {
 interface AuthState {
   isAuthenticated: boolean;
   status: AuthStatus;
-  user: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  } | null;
+  user?: User;
 }
 
 type AuthStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
 
 const initialState: AuthState = {
   isAuthenticated: false,
-  user: null,
+  user: undefined,
   status: 'idle',
 };
 
@@ -37,6 +35,13 @@ export const logoutAction = createAsyncThunk(
   'auth/logout',
   async (): Promise<UserLogoutResponse> => {
     return await logout();
+  }
+);
+
+export const fetchUserAction = createAsyncThunk(
+  'auth/me',
+  async (): Promise<GetUserResponse> => {
+    return await fetchCurrentUser();
   }
 );
 
@@ -57,6 +62,9 @@ export const authSlice = createSlice({
     });
     builder.addCase(logoutAction.fulfilled, (state) => {
       Object.assign(state, initialState);
+    });
+    builder.addCase(fetchUserAction.fulfilled, (state, action) => {
+      state.user = action.payload;
     });
     builder.addMatcher(
       (action) => isPending(loginAction, logoutAction)(action),
