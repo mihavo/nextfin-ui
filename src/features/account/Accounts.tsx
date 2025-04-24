@@ -35,7 +35,10 @@ export default function Accounts({ items }: { items: Account[] }) {
             <TabsTrigger value="savings">Savings</TabsTrigger>
             <TabsTrigger value="credit">Credit Cards</TabsTrigger>
           </TabsList>
-          <TabsContent value="checking" className="pt-4">
+          <TabsContent
+            value="checking"
+            className="pt-4 max-h-72 overflow-y-auto"
+          >
             {isLoading === 'pending' ? (
               <Skeleton className="h-6 w-2/3 rounded" />
             ) : (

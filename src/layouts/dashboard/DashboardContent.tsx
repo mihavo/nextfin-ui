@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { fetchUserAccountsAction } from '@/features/account/accountSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
@@ -49,12 +50,18 @@ export default function DashboardContent() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {formatter.format(totalBalance)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
+            {!hasLoaded ? (
+              <Skeleton className="p-2 h-5 w-1/2" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {formatter.format(totalBalance)}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +20.1% from last month
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
