@@ -11,7 +11,7 @@ export interface GetTransactionsResponse {
 export type GetAccountTransactionsResponse = GetTransactionsResponse;
 
 export const fetchUserTransactions = async (
-  page: PageRequest
+  page?: PageRequest
 ): Promise<GetTransactionsResponse> => {
   const query = qs.stringify(page, { skipNulls: true });
   console.log(query);

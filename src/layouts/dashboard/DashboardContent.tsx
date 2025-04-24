@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { fetchUserAccountsAction } from '@/features/account/accountSlice';
+import { fetchUserTransactionsAction } from '@/features/transactions/transactionSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
@@ -11,10 +12,12 @@ import Transactions from '../../features/transactions/Transactions';
 import QuickActions from './QuickActions';
 
 export default function DashboardContent() {
-  const transactions: Transaction[] = [];
   const [totalBalance, setTotalBalance] = useState(0);
   const accounts: Account[] = useAppSelector(
     (state) => state.accounts.entities
+  );
+  const transactions: Transaction[] = useAppSelector(
+    (state) => state.transactions.entities
   );
   const hasLoaded =
     useAppSelector((state) => state.accounts.isLoading) === 'succeeded';
@@ -37,7 +40,7 @@ export default function DashboardContent() {
 
   useEffect(() => {
     dispatch(fetchUserAccountsAction());
-    // dispatch(fetchTransactions()); //TODO: dispatch transactions
+    dispatch(fetchUserTransactionsAction());
   }, [dispatch]);
 
   useEffect(() => {});

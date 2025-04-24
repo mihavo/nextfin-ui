@@ -7,18 +7,18 @@ import {
 } from './transactionApi';
 
 interface TransactionsState {
-  transactions: Transaction[];
+  entities: Transaction[];
   isLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
 }
 
 const initialState: TransactionsState = {
-  transactions: [],
+  entities: [],
   isLoading: 'idle',
 };
 
 export const fetchUserTransactionsAction = createAsyncThunk(
   '/transactions',
-  async (page: PageRequest): Promise<GetTransactionsResponse> => {
+  async (page?: PageRequest): Promise<GetTransactionsResponse> => {
     return await fetchUserTransactions(page);
   }
 );
@@ -28,7 +28,8 @@ export const transactionSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchUserTransactionsAction.fulfilled, (state) => {
+    builder.addCase(fetchUserTransactionsAction.fulfilled, (state, action) => {
+      Object.assign(state.entities, action.payload.content);
       state.isLoading = 'succeeded';
     });
     builder.addCase(fetchUserTransactionsAction.pending, (state) => {
