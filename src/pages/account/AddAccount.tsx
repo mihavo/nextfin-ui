@@ -2,9 +2,10 @@
 
 import type React from 'react';
 
-import { ArrowLeft, Check, CreditCard, Wallet } from 'lucide-react';
+import { Check, CreditCard, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
+import Breadcrumb from '@/components/navigation/Breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,7 +36,7 @@ import {
   SelectValue,
 } from '@radix-ui/react-select';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import * as z from 'zod';
 
 // Currency options
@@ -72,15 +73,7 @@ export default function AddAccount() {
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/40">
-      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-        <Button variant="ghost" size="icon" asChild className="mr-2">
-          <Link to="/">
-            <ArrowLeft className="h-5 w-5" />
-            <span className="sr-only">Back to dashboard</span>
-          </Link>
-        </Button>
-        <h1 className="text-lg font-semibold">Add New Account</h1>
-      </header>
+      <Breadcrumb />
 
       <main className="flex flex-1 h-1/2 flex-col justify-center">
         <Card className="mx-auto w-full max-w-2xl">
