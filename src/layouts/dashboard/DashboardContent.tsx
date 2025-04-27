@@ -9,8 +9,8 @@ import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
 import { DollarSign } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Accounts from '../../features/account/Accounts';
-import Transactions from '../../features/transactions/Transactions';
+import Accounts from '../../components/account/Accounts';
+import Transactions from '../../components/transactions/Transactions';
 import QuickActions from './QuickActions';
 
 export default function DashboardContent() {

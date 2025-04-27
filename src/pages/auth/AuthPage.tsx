@@ -29,8 +29,8 @@ import { Input } from '@/components/ui/input';
 import { Toaster } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginAction } from './authSlice';
-import { loginSchema, signupSchema } from './schemas/authSchemas';
+import { loginAction } from '../../features/auth/authSlice';
+import { loginSchema, signupSchema } from '../../features/auth/schemas/authSchemas';
 
 export default function AuthPage() {
   const dispatch = useAppDispatch();

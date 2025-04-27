@@ -1,9 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import './App.css';
 import { ThemeProvider } from './components/theme/theme-provider';
-import AuthPage from './features/auth/AuthPage';
-import LogoutPage from './features/auth/LogoutPage';
 import Dashboard from './layouts/dashboard/Dashboard';
+import AccountPage from './pages/account/AccountPage';
+import AddAccount from './pages/account/AddAccount';
+import AuthPage from './pages/auth/AuthPage';
+import LogoutPage from './pages/auth/LogoutPage';
 import { useAppSelector } from './store/hooks';
 
 function App() {
@@ -17,6 +19,10 @@ function App() {
             element={isAuthenticated ? <Dashboard /> : <AuthPage />}
           />
           <Route path="/logout" element={<LogoutPage />} />
+
+          <Route path="accounts" element={<AccountPage />}>
+            <Route path="new" element={<AddAccount />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

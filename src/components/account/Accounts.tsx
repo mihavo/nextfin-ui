@@ -13,6 +13,7 @@ import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Download, Plus, Send } from 'lucide-react';
+import { Link } from 'react-router';
 
 export default function Accounts({ items }: { items: Account[] }) {
   const isLoading = useAppSelector((state) => state.accounts.isLoading);
@@ -28,8 +29,10 @@ export default function Accounts({ items }: { items: Account[] }) {
           size="sm"
           className="ml-auto gap-1 dark:text-white hover:bg-blue-500"
         >
-          <Plus className="h-3.5 w-3.5" />
-          Add Account
+          <Link to="/accounts/new">
+            <Plus className="h-3.5 w-3.5" />
+            Add Account
+          </Link>
         </Button>
       </CardHeader>
       <CardContent>
