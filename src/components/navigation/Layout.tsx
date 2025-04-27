@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Outlet } from 'react-router';
 import { useTheme } from '../theme/theme-provider';
 import AppSidebar from '../ui/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '../ui/sidebar';
@@ -19,9 +20,7 @@ export default function Layout({ children }: LayoutProps) {
           <SidebarTrigger className="text-8xl" />
           <TopNav />
         </header>
-        <div className="flex flex-1 p-6 bg-primary-gray dark:bg-background h-full">
-          {children}
-        </div>
+        <Outlet />
         <Toaster richColors closeButton theme={theme} />
       </main>
     </SidebarProvider>
