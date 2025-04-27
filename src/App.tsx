@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import './App.css';
 import Layout from './components/navigation/Layout';
 import { ThemeProvider } from './components/theme/theme-provider';
-import DashboardContent from './layouts/dashboard/DashboardContent';
+import Dashboard from './layouts/dashboard/Dashboard';
 import AccountPage from './pages/account/AccountPage';
 import AddAccount from './pages/account/AddAccount';
 import AuthPage from './pages/auth/AuthPage';
@@ -19,7 +19,7 @@ function App() {
           <Route path="/logout" element={<LogoutPage />} />
           {isAuthenticated ? (
             <Route element={<Layout />}>
-              <Route path="/" element={<DashboardContent />} />
+              <Route path="/" element={<Dashboard />} />
               <Route path="accounts">
                 <Route index element={<AccountPage />} />
                 <Route path="new" element={<AddAccount />} />
