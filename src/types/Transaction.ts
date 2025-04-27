@@ -1,5 +1,35 @@
 export type TransactionStatus = 'CREATED' | 'PENDING' | 'COMPLETED' | 'FAILED';
 export type TransactionType = 'INSTANT' | 'SCHEDULED';
+export type TransactionCategory =
+  | 'TRANSFERS'
+  | 'GENERAL'
+  | 'TRANSPORT'
+  | 'RESTAURANTS'
+  | 'SHOPPING'
+  | 'BILLS'
+  | 'GROCERIES'
+  | 'ENTERTAINMENT'
+  | 'HEALTH'
+  | 'TRAVEL'
+  | 'EDUCATION'
+  | 'CHARITY'
+  | 'OTHER';
+
+export const TransactionCategoryLabels: Record<TransactionCategory, string> = {
+  TRANSFERS: 'Account Transfer',
+  GENERAL: 'General',
+  TRANSPORT: 'Transport',
+  RESTAURANTS: 'Restaurants',
+  SHOPPING: 'Shopping',
+  BILLS: 'Bills',
+  GROCERIES: 'Groceries',
+  ENTERTAINMENT: 'Entertainment',
+  HEALTH: 'Health & Wellness',
+  TRAVEL: 'Travel & Trips',
+  EDUCATION: 'Education',
+  CHARITY: 'Charity Donations',
+  OTHER: 'Other',
+};
 
 export interface Transaction {
   id: string;
@@ -11,8 +41,9 @@ export interface Transaction {
   sourceUserId: string;
   targetUserId: string;
   targetName: string;
-  transactionStatus: TransactionStatus;
-  transactionType: TransactionType;
+  status: TransactionStatus;
+  type: TransactionType;
+  category: TransactionCategory;
   scheduledAt?: string;
   fee: string;
   createdAt: string;

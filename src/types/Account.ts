@@ -3,10 +3,11 @@ export type AccountType = 'SAVINGS' | 'CHECKING' | 'TRUST';
 
 export interface Account {
   id: number;
-  balance: string;
+  balance: number;
   currency: string;
   status?: AccountStatus;
   accountType: AccountType;
+  friendlyName: string;
   holderId?: number;
   managerId?: number;
   transactionLimit: number;

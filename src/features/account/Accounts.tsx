@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Download, Plus, Send } from 'lucide-react';
@@ -49,12 +50,17 @@ export default function Accounts({ items }: { items: Account[] }) {
                 .filter((item) => item.accountType === 'CHECKING')
                 .map((item) => (
                   <div className="grid gap-4">
-                    <div className="grid gap-2">
+                    <div className="grid gap-2 px-3 py-2 hover:bg-muted hover:rounded-2xl transition-all">
                       <div className="flex items-center">
                         <div className="font-semibold">{item.accountType}</div>
-                        <div className="ml-auto text-sm">{item.id}</div>
+                        <div className="ml-auto text-sm">
+                          {item.friendlyName.toUpperCase() ??
+                            `Account No#${item.id}`}
+                        </div>
                       </div>
-                      <div className="text-2xl font-bold">{item.balance}</div>
+                      <div className="text-2xl font-bold">
+                        {currencyFormatter(item.currency, item.balance)}
+                      </div>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <div>Available Balance</div>
                         <div className="ml-auto flex items-center gap-1">
@@ -75,13 +81,16 @@ export default function Accounts({ items }: { items: Account[] }) {
                 items
                   .filter((item) => item.accountType === 'SAVINGS')
                   .map((item) => (
-                    <div className="grid gap-2">
+                    <div className="grid gap-2 px-3 py-2 hover:bg-muted hover:rounded-2xl transition-all">
                       <div className="flex items-center">
                         <div className="font-semibold">{item.accountType}</div>
-                        <div className="ml-auto text-sm">{item.id}</div>
+                        <div className="ml-auto text-sm">
+                          {item.friendlyName?.toUpperCase() ??
+                            `Account No#${item.id}`}
+                        </div>
                       </div>
                       <div className="text-2xl font-bold">
-                        ${item.currency}${item.balance}
+                        {currencyFormatter(item.currency, item.balance)}
                       </div>
                       <div className="flex items-center text-sm text-muted-foreground">
                         <div>Available Balance</div>

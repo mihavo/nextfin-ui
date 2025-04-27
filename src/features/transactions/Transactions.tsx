@@ -9,7 +9,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { useAppSelector } from '@/store/hooks';
-import { Transaction } from '@/types/Transaction';
+import { Transaction, TransactionCategoryLabels } from '@/types/Transaction';
 import dayjs from 'dayjs';
 import { CreditCard } from 'lucide-react';
 
@@ -38,7 +38,7 @@ export default function Transactions({ items }: { items: Transaction[] }) {
               <div className="grid gap-1">
                 <div className="font-semibold">{item.targetName}</div>
                 <div className="text-xs text-muted-foreground">
-                  Online Shopping
+                  {TransactionCategoryLabels[item.category]}
                 </div>
               </div>
               <div className="ml-auto text-right">
