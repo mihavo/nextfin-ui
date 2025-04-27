@@ -25,15 +25,15 @@ export default function Accounts({ items }: { items: Account[] }) {
           <CardTitle>Accounts</CardTitle>
           <CardDescription>Manage your accounts and cards</CardDescription>
         </div>
-        <Button
-          size="sm"
-          className="ml-auto gap-1 dark:text-white hover:bg-blue-500"
-        >
-          <Link to="/accounts/new">
+        <Link to="/accounts/new" className="ml-auto">
+          <Button
+            size="sm"
+            className=" gap-1 dark:text-white hover:bg-blue-500"
+          >
             <Plus className="h-3.5 w-3.5" />
             Add Account
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="checking">

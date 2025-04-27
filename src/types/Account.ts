@@ -1,5 +1,10 @@
 export type AccountStatus = 'ACTIVE' | 'INACTIVE' | 'CLOSED';
-export type AccountType = 'SAVINGS' | 'CHECKING' | 'TRUST';
+export enum AccountType {
+  SAVINGS = 'SAVINGS',
+  CHECKING = 'CHECKING',
+  TRUST = 'TRUST',
+}
+
 
 export interface Account {
   id: number;

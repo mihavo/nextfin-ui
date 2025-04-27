@@ -14,10 +14,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup } from '@radix-ui/react-dropdown-menu';
-import { RadioGroupItem } from '@radix-ui/react-radio-group';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { newAccountSchema } from '@/features/account/schemas/accountSchemas';
+import { AccountType } from '@/types/Account';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Select,
   SelectContent,
@@ -25,7 +34,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@radix-ui/react-select';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router';
+import * as z from 'zod';
 
 // Currency options
 const currencies = [
@@ -39,17 +50,25 @@ const currencies = [
 export default function AddAccount() {
   const navigate = useNavigate();
   const [accountType, setAccountType] = useState('checking');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const [friendlyName, setFriendlyName] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  const handleSubmit = async (e: React.FormEvent) => {};
 
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
-  };
+  const form = useForm<z.infer<typeof newAccountSchema>>({
+    resolver: zodResolver(newAccountSchema),
+    defaultValues: {
+      managerId: '',
+      friendlyName: '',
+      accountType: AccountType.CHECKING,
+      currencyCode: 'USD',
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {};
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/40">
@@ -63,8 +82,8 @@ export default function AddAccount() {
         <h1 className="text-lg font-semibold">Add New Account</h1>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center p-4 md:p-8">
-        <Card className="mx-auto w-full max-w-md">
+      <main className="flex flex-1 h-1/2 flex-col justify-center">
+        <Card className="mx-auto w-full max-w-2xl">
           <CardHeader>
             <CardTitle>Add a New Account</CardTitle>
             <CardDescription>
@@ -73,7 +92,7 @@ export default function AddAccount() {
           </CardHeader>
 
           {isSuccess ? (
-            <CardContent className="flex flex-col items-center justify-center py-10 text-center">
+            <CardContent className="flex flex-col items-center justify-center  text-center">
               <div className="mb-4 rounded-full bg-green-100 p-3">
                 <Check className="h-8 w-8 text-green-600" />
               </div>
@@ -85,190 +104,123 @@ export default function AddAccount() {
               </p>
             </CardContent>
           ) : (
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <Label>Account Type</Label>
-                  <RadioGroup
-                    defaultValue="checking"
-                    className="grid grid-cols-3 gap-4"
-                    value={accountType}
-                    onValueChange={setAccountType}
-                  >
-                    <div>
-                      <RadioGroupItem
-                        value="checking"
-                        id="checking"
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor="checking"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <Wallet className="mb-3 h-6 w-6" />
-                        <span className="text-sm font-medium">Checking</span>
-                      </Label>
-                    </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <CardContent className="flex flex-col justify-center  text-center space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="accountType"
+                    render={({ field }) => (
+                      <FormItem className="space-y-4">
+                        <FormLabel>Account Type</FormLabel>
+                        <FormControl>
+                          <RadioGroup
+                            defaultValue={AccountType.CHECKING}
+                            className="grid grid-cols-3 gap-8"
+                          >
+                            <RadioGroupItem
+                              id="checking"
+                              className="peer sr-only"
+                              {...field}
+                            />
+                            <Label
+                              htmlFor="checking"
+                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                            >
+                              <Wallet className="mb-3 h-6 w-6" />
+                              <span className="text-sm font-medium">
+                                Checking
+                              </span>
+                            </Label>
 
-                    <div>
-                      <RadioGroupItem
-                        value="savings"
-                        id="savings"
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor="savings"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <Wallet className="mb-3 h-6 w-6" />
-                        <span className="text-sm font-medium">Savings</span>
-                      </Label>
-                    </div>
+                            <RadioGroupItem
+                              value="savings"
+                              id="savings"
+                              className="peer sr-only"
+                            />
+                            <Label
+                              htmlFor="savings"
+                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                            >
+                              <Wallet className="mb-3 h-6 w-6" />
+                              <span className="text-sm font-medium">
+                                Savings
+                              </span>
+                            </Label>
 
-                    <div>
-                      <RadioGroupItem
-                        value="credit"
-                        id="credit"
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor="credit"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <CreditCard className="mb-3 h-6 w-6" />
-                        <span className="text-sm font-medium">Credit</span>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="friendly-name">Friendly Name</Label>
-                  <Input
-                    id="friendly-name"
-                    placeholder="e.g. Vacation Fund, Emergency Savings"
-                    value={friendlyName}
-                    onChange={(e) => setFriendlyName(e.target.value)}
-                    required
+                            <RadioGroupItem
+                              value="credit"
+                              id="credit"
+                              className="peer sr-only"
+                            />
+                            <Label
+                              htmlFor="credit"
+                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                            >
+                              <CreditCard className="mb-3 h-6 w-6" />
+                              <span className="text-sm font-medium">
+                                Credit
+                              </span>
+                            </Label>
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    )}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    A name to help you identify this account
-                  </p>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="default-currency">Default Currency</Label>
-                  <Select
-                    defaultValue={selectedCurrency}
-                    onValueChange={setSelectedCurrency}
+                  <div className="space-y-2">
+                    <Label htmlFor="friendly-name">Friendly Name</Label>
+                    <Input
+                      id="friendly-name"
+                      placeholder="e.g. Vacation Fund, Emergency Savings"
+                      value={friendlyName}
+                      onChange={(e) => setFriendlyName(e.target.value)}
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      A name to help you identify this account
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="default-currency">Default Currency</Label>
+                    <Select
+                      defaultValue={selectedCurrency}
+                      onValueChange={setSelectedCurrency}
+                    >
+                      <SelectTrigger id="default-currency">
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {currencies.map((currency) => (
+                          <SelectItem key={currency.code} value={currency.code}>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                {currency.symbol}
+                              </span>
+                              <span>{currency.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+
+                <CardFooter className="flex justify-between">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => navigate('/')}
                   >
-                    <SelectTrigger id="default-currency">
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {currencies.map((currency) => (
-                        <SelectItem key={currency.code} value={currency.code}>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">
-                              {currency.symbol}
-                            </span>
-                            <span>{currency.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {accountType !== 'credit' ? (
-                  <div className="space-y-2">
-                    <Label htmlFor="initial-deposit">
-                      Initial Deposit (
-                      {currencies.find((c) => c.code === selectedCurrency)
-                        ?.symbol || '$'}
-                      )
-                    </Label>
-                    <Input
-                      id="initial-deposit"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                      required
-                    />
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Label htmlFor="credit-limit">
-                      Credit Limit (
-                      {currencies.find((c) => c.code === selectedCurrency)
-                        ?.symbol || '$'}
-                      )
-                    </Label>
-                    <Input
-                      id="credit-limit"
-                      type="number"
-                      min="500"
-                      step="100"
-                      placeholder="5000"
-                      required
-                    />
-                  </div>
-                )}
-
-                {accountType === 'savings' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="interest-rate">Interest Rate Type</Label>
-                    <Select defaultValue="standard">
-                      <SelectTrigger id="interest-rate">
-                        <SelectValue placeholder="Select interest rate type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="standard">
-                          Standard (0.5% APY)
-                        </SelectItem>
-                        <SelectItem value="high-yield">
-                          High-Yield (2.0% APY)
-                        </SelectItem>
-                        <SelectItem value="premium">
-                          Premium (2.5% APY)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {accountType === 'credit' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="card-type">Card Type</Label>
-                    <Select defaultValue="rewards">
-                      <SelectTrigger id="card-type">
-                        <SelectValue placeholder="Select card type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="rewards">Rewards Card</SelectItem>
-                        <SelectItem value="cashback">Cash Back Card</SelectItem>
-                        <SelectItem value="travel">Travel Card</SelectItem>
-                        <SelectItem value="secured">Secured Card</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              </CardContent>
-
-              <CardFooter className="flex justify-between">
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => router.push('/')}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Creating Account...' : 'Create Account'}
-                </Button>
-              </CardFooter>
-            </form>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Form>
           )}
         </Card>
       </main>

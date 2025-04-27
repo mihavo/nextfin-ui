@@ -20,7 +20,8 @@ function App() {
           />
           <Route path="/logout" element={<LogoutPage />} />
 
-          <Route path="accounts" element={<AccountPage />}>
+          <Route path="accounts">
+            <Route index element={<AccountPage />} />
             <Route path="new" element={<AddAccount />} />
           </Route>
         </Routes>
