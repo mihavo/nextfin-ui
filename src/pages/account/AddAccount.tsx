@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { Check, CreditCard, Wallet } from 'lucide-react';
+import { Check, PiggyBank, Shield, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 import Breadcrumb from '@/components/navigation/Breadcrumb';
@@ -75,8 +75,8 @@ export default function AddAccount() {
     <div className="flex min-h-screen flex-col bg-muted/40">
       <Breadcrumb />
 
-      <main className="flex flex-1 h-1/2 flex-col justify-center">
-        <Card className="mx-auto w-full max-w-2xl">
+      <main className="flex flex-1 flex-col justify-center">
+        <Card className="mx-auto w-full max-w-4xl min-h-[800px]">
           <CardHeader>
             <CardTitle>Add a New Account</CardTitle>
             <CardDescription>
@@ -113,14 +113,14 @@ export default function AddAccount() {
                           >
                             <RadioGroupItem
                               id="checking"
-                              className="peer sr-only"
+                              className="peer sr-only text-3xl"
                               {...field}
                             />
                             <Label
                               htmlFor="checking"
                               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                             >
-                              <Wallet className="mb-3 h-6 w-6" />
+                              <Wallet className="mb-3 h-10 w-10" />
                               <span className="text-sm font-medium">
                                 Checking
                               </span>
@@ -135,25 +135,23 @@ export default function AddAccount() {
                               htmlFor="savings"
                               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                             >
-                              <Wallet className="mb-3 h-6 w-6" />
+                              <PiggyBank className="mb-3 h-10 w-10" />
                               <span className="text-sm font-medium">
                                 Savings
                               </span>
                             </Label>
 
                             <RadioGroupItem
-                              value="credit"
-                              id="credit"
+                              value="trust"
+                              id="trust"
                               className="peer sr-only"
                             />
                             <Label
-                              htmlFor="credit"
+                              htmlFor="trust"
                               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                             >
-                              <CreditCard className="mb-3 h-6 w-6" />
-                              <span className="text-sm font-medium">
-                                Credit
-                              </span>
+                              <Shield className="mb-3 h-10 w-10" />
+                              <span className="text-sm font-medium">Trust</span>
                             </Label>
                           </RadioGroup>
                         </FormControl>
