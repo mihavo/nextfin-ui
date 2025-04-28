@@ -11,7 +11,6 @@ import { useAppSelector } from './store/hooks';
 
 function App() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <BrowserRouter>
