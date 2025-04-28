@@ -13,7 +13,7 @@ export default function TopNav() {
       <div className="left-items flex items-center gap-6  h-full">
         <Link to="#" className="flex items-center gap-3 text-xl font-semibold">
           <img
-            src="assets/logo.png"
+            src="/assets/logo.png"
             alt="nextfin-logo"
             className="h-14 w-14 object-contain"
           />
