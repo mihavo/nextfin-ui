@@ -1,7 +1,7 @@
 import { nextfinRequest } from '@/api/api-client';
 import { PageRequest } from '@/types/PageRequest';
 import { Transaction } from '@/types/Transaction';
-import qs from 'qs';
+import * as qs from 'qs';
 
 export interface GetTransactionsResponse {
   content: Transaction[];
