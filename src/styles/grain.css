@@ -1,0 +1,54 @@
+  .grained {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .grained::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-size: 150px 150px;
+    opacity: 0.25;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .grained>* {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Enhance the selected state */
+  .grained.peer-data-[state=checked]:border-primary::before,
+  .grained[data-state="checked"]::before {
+    opacity: 0.25;
+    background-size: 120px 120px;
+  }
+
+/* Main background grain effect */
+.main-grain {
+position: relative;
+isolation: isolate;
+}
+
+.main-grain::before {
+content: "";
+position: absolute;
+inset: 0;
+background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='14' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+background-size: 400px 400px;
+opacity: 0.2;
+z-index: -2;
+}
+
+.main-grain::after {
+content: "";
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, rgba(9, 14, 22, 0.543), rgba(4, 7, 7, 0.3), rgba(0, 0, 0, 0.416));
+z-index: -1;
+}

@@ -50,14 +50,23 @@ const currencies = [
 
 export default function AddAccount() {
   const navigate = useNavigate();
-  const [accountType, setAccountType] = useState('checking');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [clickedType, setClickedType] = useState<string | null>(null);
 
   const [friendlyName, setFriendlyName] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
 
   const handleSubmit = async (e: React.FormEvent) => {};
+
+  const handleAccountTypeChange = (value: string) => {
+    setClickedType(value);
+    console.log(value);
+    // Reset the animation after it completes
+    setTimeout(() => {
+      setClickedType(null);
+    }, 600);
+  };
 
   const form = useForm<z.infer<typeof newAccountSchema>>({
     resolver: zodResolver(newAccountSchema),
@@ -75,8 +84,8 @@ export default function AddAccount() {
     <div className="flex min-h-screen flex-col bg-muted/40">
       <Breadcrumb />
 
-      <main className="flex flex-1 flex-col justify-center">
-        <Card className="mx-auto w-full max-w-4xl min-h-[800px]">
+      <main className="flex flex-1 flex-col main-grain">
+        <Card className="mx-auto w-full mt-12 max-w-5xl min-h-[1000px]">
           <CardHeader>
             <CardTitle>Add a New Account</CardTitle>
             <CardDescription>
@@ -110,49 +119,53 @@ export default function AddAccount() {
                           <RadioGroup
                             defaultValue={AccountType.CHECKING}
                             className="grid grid-cols-3 gap-8"
+                            onValueChange={handleAccountTypeChange}
                           >
-                            <RadioGroupItem
-                              id="checking"
-                              className="peer sr-only text-3xl"
-                              {...field}
-                            />
-                            <Label
-                              htmlFor="checking"
-                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                            >
-                              <Wallet className="mb-3 h-10 w-10" />
-                              <span className="text-sm font-medium">
-                                Checking
-                              </span>
-                            </Label>
+                            <div>
+                              <RadioGroupItem
+                                value={AccountType.CHECKING}
+                                id="checking"
+                                className="peer sr-only"
+                              />
+                              <Label
+                                htmlFor="checking"
+                                className="flex flex-col items-center justify-between p-8 rounded-md transition-all duration-300 border-2 border-muted hover:bg-slate-900 hover:text-accent-foreground 
+                                peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-slate-900 grained"
+                              >
+                                <Wallet className="mb-3 h-10 w-10" />
+                                <span className="font-semibold">Checking</span>
+                              </Label>
+                            </div>
 
-                            <RadioGroupItem
-                              value="savings"
-                              id="savings"
-                              className="peer sr-only"
-                            />
-                            <Label
-                              htmlFor="savings"
-                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                            >
-                              <PiggyBank className="mb-3 h-10 w-10" />
-                              <span className="text-sm font-medium">
-                                Savings
-                              </span>
-                            </Label>
+                            <div>
+                              <RadioGroupItem
+                                id="savings"
+                                value={AccountType.SAVINGS}
+                                className="peer sr-only"
+                              />
+                              <Label
+                                htmlFor="savings"
+                                className="flex flex-col items-center justify-between p-8 rounded-md relative grain transition-all duration-300 border-2 border-muted hover:bg-slate-900 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-slate-900 grained"
+                              >
+                                <PiggyBank className="mb-3 h-10 w-10" />
+                                <span className="font-semibold">Savings</span>
+                              </Label>
+                            </div>
 
-                            <RadioGroupItem
-                              value="trust"
-                              id="trust"
-                              className="peer sr-only"
-                            />
-                            <Label
-                              htmlFor="trust"
-                              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                            >
-                              <Shield className="mb-3 h-10 w-10" />
-                              <span className="text-sm font-medium">Trust</span>
-                            </Label>
+                            <div>
+                              <RadioGroupItem
+                                id="trust"
+                                value={AccountType.TRUST}
+                                className="peer sr-only"
+                              />
+                              <Label
+                                htmlFor="trust"
+                                className="flex flex-col items-center justify-between p-8 rounded-md transition-all duration-300 border-2 border-muted hover:bg-slate-900 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-slate-900 grained"
+                              >
+                                <Shield className="mb-3 h-10 w-10" />
+                                <span className="font-semibold">Trust</span>
+                              </Label>
+                            </div>
                           </RadioGroup>
                         </FormControl>
                       </FormItem>

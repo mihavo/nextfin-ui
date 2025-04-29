@@ -12,7 +12,7 @@ export default function AppBreadcrumb() {
   const pathnames = location.pathname.split('/');
 
   return (
-    <Breadcrumb className="mb-4 px-12 h-10 p-2  font-medium  w-full flex items-center border-b  dark:border-[#1F1F23]">
+    <Breadcrumb className=" px-12 h-10 p-2  font-medium  w-full flex items-center border-b  dark:border-[#1F1F23] dark:bg-[#0e0e11]">
       <BreadcrumbList className="text-md">
         <BreadcrumbItem key={'home'}>
           <BreadcrumbLink asChild href="/">
