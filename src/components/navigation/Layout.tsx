@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode } from 'react main-grain';
 import { Outlet } from 'react-router';
 import { useTheme } from '../theme/theme-provider';
 import AppSidebar from '../ui/app-sidebar';
@@ -15,12 +15,14 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider className="p-2 " defaultOpen={false}>
       <AppSidebar />
-      <main className="w-full">
-        <header className="h-16 w-full flex border-b border-gray-200 dark:border-[#1F1F23] items-center">
+      <main className="w-full main-grain-dark">
+        <header className="h-16 w-full flex border-b border-gray-200 dark:border-[#1F1F23] items-center bg-[#09090B]">
           <SidebarTrigger className="text-8xl" />
           <TopNav />
         </header>
-        <Outlet />
+        <div>
+          <Outlet />
+        </div>
         <Toaster richColors closeButton theme={theme} />
       </main>
     </SidebarProvider>

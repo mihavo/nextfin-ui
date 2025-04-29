@@ -6,6 +6,7 @@ import { Check, PiggyBank, Shield, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 import Breadcrumb from '@/components/navigation/Breadcrumb';
+import { useTheme } from '@/components/theme/theme-provider';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -77,6 +78,7 @@ const accountManagers = [
 ];
 
 export default function AddAccount() {
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -108,11 +110,22 @@ export default function AddAccount() {
 
   const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {};
 
+  const labelClasses = `flex flex-col items-center justify-between p-8 rounded-md transition-all duration-300 border-2 border-muted 
+                                peer-data-[state=checked]:border-primary   ${
+                                  theme === 'dark'
+                                    ? 'main-grain-dark peer-data-[state=checked]:bg-slate-900 hover:bg-slate-900 hover:text-accent-foreground'
+                                    : 'main-grain hover:text-accent-foreground hover:bg-slate-400 peer-data-[state=checked]:bg-slate-400'
+                                }`;
+
   return (
     <div className="flex min-h-screen flex-col bg-muted/40">
       <Breadcrumb />
 
-      <main className="flex flex-1 flex-col main-grain">
+      <main
+        className={`flex flex-1 flex-col ${
+          theme === 'dark' ? 'main-grain-dark' : 'main-grain'
+        }`}
+      >
         <Card className="mx-auto w-full mt-12 max-w-5xl min-h-[1000px] px-18 py-12 border-b-accent">
           <CardHeader>
             <CardTitle>Add a New Account</CardTitle>
@@ -157,8 +170,7 @@ export default function AddAccount() {
                               />
                               <Label
                                 htmlFor="checking"
-                                className="flex flex-col items-center justify-between p-8 rounded-md transition-all duration-300 border-2 border-muted hover:bg-slate-900 hover:text-accent-foreground 
-                                peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-slate-900 grained"
+                                className={labelClasses}
                               >
                                 <Wallet className="mb-3 h-10 w-10" />
                                 <span className="font-semibold">Checking</span>
@@ -171,10 +183,7 @@ export default function AddAccount() {
                                 value={AccountType.SAVINGS}
                                 className="peer sr-only"
                               />
-                              <Label
-                                htmlFor="savings"
-                                className="flex flex-col items-center justify-between p-8 rounded-md relative grain transition-all duration-300 border-2 border-muted hover:bg-slate-900 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-slate-900 grained"
-                              >
+                              <Label htmlFor="savings" className={labelClasses}>
                                 <PiggyBank className="mb-3 h-10 w-10" />
                                 <span className="font-semibold">Savings</span>
                               </Label>
@@ -186,10 +195,7 @@ export default function AddAccount() {
                                 value={AccountType.TRUST}
                                 className="peer sr-only"
                               />
-                              <Label
-                                htmlFor="trust"
-                                className="flex flex-col items-center justify-between p-8 rounded-md transition-all duration-300 border-2 border-muted hover:bg-slate-900 hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-slate-900 grained"
-                              >
+                              <Label htmlFor="trust" className={labelClasses}>
                                 <Shield className="mb-3 h-10 w-10" />
                                 <span className="font-semibold">Trust</span>
                               </Label>
