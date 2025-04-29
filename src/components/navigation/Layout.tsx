@@ -1,4 +1,4 @@
-import { ReactNode } from 'react main-grain';
+import { ReactNode } from 'react';
 import { Outlet } from 'react-router';
 import { useTheme } from '../theme/theme-provider';
 import AppSidebar from '../ui/app-sidebar';
