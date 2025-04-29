@@ -5,6 +5,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { Home } from 'lucide-react';
 import { Link, useLocation } from 'react-router';
 
 export default function AppBreadcrumb() {
@@ -15,6 +16,7 @@ export default function AppBreadcrumb() {
     <Breadcrumb className=" px-12 h-10 p-2  font-medium  w-full flex items-center border-b  dark:border-[#1F1F23] dark:bg-[#0e0e11]">
       <BreadcrumbList className="text-md">
         <BreadcrumbItem key={'home'}>
+          <Home height="16px" />
           <BreadcrumbLink asChild href="/">
             <Link to="/">Home</Link>
           </BreadcrumbLink>

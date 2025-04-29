@@ -13,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
   const { theme } = useTheme();
 
   return (
-    <SidebarProvider className="p-2 ">
+    <SidebarProvider className="p-2 " defaultOpen={false}>
       <AppSidebar />
       <main className="w-full">
         <header className="h-16 w-full flex border-b border-gray-200 dark:border-[#1F1F23] items-center">

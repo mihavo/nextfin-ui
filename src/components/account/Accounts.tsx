@@ -9,11 +9,11 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Download, Plus, Send } from 'lucide-react';
 import { Link } from 'react-router';
+import AccountItem from './AccountItem';
 
 export default function Accounts({ items }: { items: Account[] }) {
   const isLoading = useAppSelector((state) => state.accounts.isLoading);
@@ -40,7 +40,7 @@ export default function Accounts({ items }: { items: Account[] }) {
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="checking">Checking</TabsTrigger>
             <TabsTrigger value="savings">Savings</TabsTrigger>
-            <TabsTrigger value="credit">Credit Cards</TabsTrigger>
+            <TabsTrigger value="trust">Trust</TabsTrigger>
           </TabsList>
           <TabsContent
             value="checking"
@@ -51,29 +51,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             ) : (
               items
                 .filter((item) => item.accountType === 'CHECKING')
-                .map((item) => (
-                  <div className="grid gap-4">
-                    <div className="grid gap-2 px-3 py-2 hover:bg-muted hover:rounded-2xl transition-all">
-                      <div className="flex items-center">
-                        <div className="font-semibold">{item.accountType}</div>
-                        <div className="ml-auto text-sm">
-                          {item.friendlyName.toUpperCase() ??
-                            `Account No#${item.id}`}
-                        </div>
-                      </div>
-                      <div className="text-2xl font-bold">
-                        {currencyFormatter(item.currency, item.balance)}
-                      </div>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <div>Available Balance</div>
-                        <div className="ml-auto flex items-center gap-1">
-                          <span className="text-green-500">+$1,200.00</span>
-                          <span>today</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
+                .map((item) => <AccountItem item={item} key={item.id} />)
             )}
           </TabsContent>
           <TabsContent value="savings" className="pt-4">
@@ -83,59 +61,18 @@ export default function Accounts({ items }: { items: Account[] }) {
               ) : (
                 items
                   .filter((item) => item.accountType === 'SAVINGS')
-                  .map((item) => (
-                    <div className="grid gap-2 px-3 py-2 hover:bg-muted hover:rounded-2xl transition-all">
-                      <div className="flex items-center">
-                        <div className="font-semibold">{item.accountType}</div>
-                        <div className="ml-auto text-sm">
-                          {item.friendlyName?.toUpperCase() ??
-                            `Account No#${item.id}`}
-                        </div>
-                      </div>
-                      <div className="text-2xl font-bold">
-                        {currencyFormatter(item.currency, item.balance)}
-                      </div>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <div>Available Balance</div>
-                        <div className="ml-auto flex items-center gap-1">
-                          <span className="text-green-500">+$234.00</span>
-                          <span>this month</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                  .map((item) => <AccountItem item={item} key={item.id} />)
               )}
             </div>
           </TabsContent>
-          <TabsContent value="credit" className="pt-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <div className="font-semibold">Platinum Rewards</div>
-                  <div className="ml-auto text-sm">**** 5678</div>
-                </div>
-                <div className="text-2xl font-bold">$3,456.78</div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div>Current Balance</div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <span>$10,000.00 limit</span>
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <div className="font-semibold">Cash Back Card</div>
-                  <div className="ml-auto text-sm">**** 9012</div>
-                </div>
-                <div className="text-2xl font-bold">$1,234.56</div>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <div>Current Balance</div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <span>$5,000.00 limit</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <TabsContent value="trust" className="pt-4">
+            {isLoading === 'pending' ? (
+              <Skeleton className="h-6 w-2/3 rounded" />
+            ) : (
+              items
+                .filter((item) => item.accountType === 'TRUST')
+                .map((item) => <AccountItem item={item} key={item.id} />)
+            )}
           </TabsContent>
         </Tabs>
       </CardContent>

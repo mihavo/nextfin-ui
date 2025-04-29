@@ -6,6 +6,7 @@ import { Check, PiggyBank, Shield, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 import Breadcrumb from '@/components/navigation/Breadcrumb';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -25,16 +26,16 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { newAccountSchema } from '@/features/account/schemas/accountSchemas';
-import { AccountType } from '@/types/Account';
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@radix-ui/react-select';
+} from '@/components/ui/select';
+import { newAccountSchema } from '@/features/account/schemas/accountSchemas';
+import { AccountType } from '@/types/Account';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import * as z from 'zod';
@@ -48,14 +49,41 @@ const currencies = [
   { code: 'CAD', name: 'Canadian Dollar (C$)', symbol: 'C$' },
 ];
 
+const accountManagers = [
+  {
+    id: '1',
+    name: 'Sarah Johnson',
+    role: 'Senior Account Manager',
+    avatar: '/placeholder.svg?height=40&width=40',
+  },
+  {
+    id: '2',
+    name: 'Michael Chen',
+    role: 'Account Manager',
+    avatar: '/placeholder.svg?height=40&width=40',
+  },
+  {
+    id: '3',
+    name: 'Jessica Williams',
+    role: 'Account Manager',
+    avatar: '/placeholder.svg?height=40&width=40',
+  },
+  {
+    id: '4',
+    name: 'David Rodriguez',
+    role: 'Junior Account Manager',
+    avatar: '/placeholder.svg?height=40&width=40',
+  },
+];
+
 export default function AddAccount() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [clickedType, setClickedType] = useState<string | null>(null);
 
-  const [friendlyName, setFriendlyName] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
+  const [selectedManager, setSelectedManager] = useState(accountManagers[0].id);
 
   const handleSubmit = async (e: React.FormEvent) => {};
 
@@ -85,7 +113,7 @@ export default function AddAccount() {
       <Breadcrumb />
 
       <main className="flex flex-1 flex-col main-grain">
-        <Card className="mx-auto w-full mt-12 max-w-5xl min-h-[1000px]">
+        <Card className="mx-auto w-full mt-12 max-w-5xl min-h-[1000px] px-18 py-12 border-b-accent">
           <CardHeader>
             <CardTitle>Add a New Account</CardTitle>
             <CardDescription>
@@ -108,7 +136,7 @@ export default function AddAccount() {
           ) : (
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)}>
-                <CardContent className="flex flex-col justify-center  text-center space-y-6">
+                <CardContent className="flex flex-col justify-center  text-center space-y-8">
                   <FormField
                     control={form.control}
                     name="accountType"
@@ -172,46 +200,127 @@ export default function AddAccount() {
                     )}
                   />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="friendly-name">Friendly Name</Label>
-                    <Input
-                      id="friendly-name"
-                      placeholder="e.g. Vacation Fund, Emergency Savings"
-                      value={friendlyName}
-                      onChange={(e) => setFriendlyName(e.target.value)}
-                      required
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      A name to help you identify this account
-                    </p>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="friendlyName"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>Friendly Name</FormLabel>
+                        <p className="mr-auto text-xs text-muted-foreground">
+                          A name to help you identify this account
+                        </p>
+                        <FormControl>
+                          <Input
+                            id="friendly-name"
+                            className="w-full rounded"
+                            placeholder="e.g. Vacation Fund, Emergency Savings"
+                            {...field}
+                            required
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
-                  <div className="space-y-2">
-                    <Label htmlFor="default-currency">Default Currency</Label>
-                    <Select
-                      defaultValue={selectedCurrency}
-                      onValueChange={setSelectedCurrency}
-                    >
-                      <SelectTrigger id="default-currency">
-                        <SelectValue placeholder="Select currency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {currencies.map((currency) => (
-                          <SelectItem key={currency.code} value={currency.code}>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">
-                                {currency.symbol}
-                              </span>
-                              <span>{currency.name}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="currencyCode"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1">
+                        <FormLabel>Default Currency</FormLabel>
+                        <p className="mr-auto text-xs text-muted-foreground">
+                          The default currency for this account
+                        </p>
+                        <FormControl>
+                          <Select
+                            defaultValue={selectedCurrency}
+                            onValueChange={setSelectedCurrency}
+                          >
+                            <SelectTrigger
+                              id="default-currency"
+                              className="w-full rounded "
+                            >
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {currencies.map((currency) => (
+                                <SelectItem
+                                  key={currency.code}
+                                  value={currency.code}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium">
+                                      {currency.symbol}
+                                    </span>
+                                    <span>{currency.name}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="managerId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel>Account Manager</FormLabel>
+                        <p className="mr-auto text-xs text-muted-foreground">
+                          The employee responsible for opening this account
+                        </p>
+                        <FormControl>
+                          <Select
+                            defaultValue={selectedManager}
+                            onValueChange={setSelectedManager}
+                          >
+                            <SelectTrigger
+                              id="account-manager"
+                              className="w-full rounded"
+                            >
+                              <SelectValue
+                                className="p-2"
+                                placeholder="Select account manager"
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {accountManagers.map((manager) => (
+                                <SelectItem key={manager.id} value={manager.id}>
+                                  <div className="flex items-center gap-3">
+                                    <Avatar className="h-8 w-8">
+                                      <AvatarImage
+                                        src={
+                                          manager.avatar || '/placeholder.svg'
+                                        }
+                                        alt={manager.name}
+                                      />
+                                      <AvatarFallback>
+                                        {manager.name.charAt(0)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                      <div className="font-medium">
+                                        {manager.name}
+                                      </div>
+                                      <div className="text-xs text-muted-foreground">
+                                        {manager.role}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
 
-                <CardFooter className="flex justify-between">
+                <CardFooter className="mt-12 flex justify-end gap-6">
                   <Button
                     variant="outline"
                     type="button"
@@ -219,7 +328,11 @@ export default function AddAccount() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="dark:text-accent-foreground"
+                  >
                     {isSubmitting ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </CardFooter>
