@@ -113,8 +113,8 @@ export default function AddAccount() {
   const labelClasses = `flex flex-col items-center justify-between p-8 rounded-md transition-all duration-300 border-2 border-muted 
                                 peer-data-[state=checked]:border-primary   ${
                                   theme === 'dark'
-                                    ? 'main-grain-dark peer-data-[state=checked]:bg-slate-900 hover:bg-slate-900 hover:text-accent-foreground'
-                                    : 'main-grain hover:text-accent-foreground hover:bg-slate-400 peer-data-[state=checked]:bg-slate-400'
+                                    ? 'grained-dark peer-data-[state=checked]:bg-slate-900 hover:bg-slate-900 hover:text-accent-foreground'
+                                    : 'grained hover:text-accent-foreground hover:bg-slate-400 peer-data-[state=checked]:bg-slate-400'
                                 }`;
 
   return (
@@ -126,7 +126,7 @@ export default function AddAccount() {
           theme === 'dark' ? 'main-grain-dark' : 'main-grain'
         }`}
       >
-        <Card className="mx-auto w-full mt-12 max-w-5xl min-h-[1000px] px-18 py-12 border-b-accent">
+        <Card className="mx-auto w-full mt-8 max-w-5xl min-h-[350px] sm:min-h-[350px] md:min-h-[400px] lg:min-h-[500px] px-12 py-12 border-b-accent">
           <CardHeader>
             <CardTitle>Add a New Account</CardTitle>
             <CardDescription>
