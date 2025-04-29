@@ -15,8 +15,12 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider className="p-2 " defaultOpen={false}>
       <AppSidebar />
-      <main className="w-full main-grain-dark">
-        <header className="h-16 w-full flex border-b border-gray-200 dark:border-[#1F1F23] items-center bg-[#09090B]">
+      <main
+        className={`w-full  ${
+          theme === 'dark' ? ' main-grain-dark' : 'main-grain'
+        }`}
+      >
+        <header className="h-16 w-full flex border-b border-gray-200 dark:border-[#1F1F23] items-center bg-white dark:bg-[#09090B]">
           <SidebarTrigger className="text-8xl" />
           <TopNav />
         </header>
