@@ -13,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
   const { theme } = useTheme();
 
   return (
-    <SidebarProvider className="p-2 " defaultOpen={false}>
+    <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <main
         className={`w-full  ${
