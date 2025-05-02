@@ -1,5 +1,6 @@
 import accountsReducer from '@/features/account/accountSlice';
 import authReducer from '@/features/auth/authSlice';
+import EmployeeReducer from '@/features/employees/employeeSlice';
 import transactionReducer from '@/features/transactions/transactionSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
@@ -9,6 +10,7 @@ const rootReducer = {
   auth: authReducer,
   accounts: accountsReducer,
   transactions: transactionReducer,
+  employees: EmployeeReducer,
 };
 
 const persistConfig = { key: 'root', storage };

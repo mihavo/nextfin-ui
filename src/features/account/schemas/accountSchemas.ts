@@ -1,8 +1,9 @@
 import { AccountType } from '@/types/Account';
+import { employeeSchema } from '@/types/Employee';
 import { z } from 'zod';
 
 export const newAccountSchema = z.object({
-  managerId: z.string().min(1, { message: 'Manager is required' }),
+  manager: employeeSchema.nullish(),
   friendlyName: z.string(),
   accountType: z.enum([
     AccountType.CHECKING,

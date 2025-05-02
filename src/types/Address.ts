@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export enum Floor {
   BASEMENT = 'BASEMENT',
   GROUND = 'GROUND',
@@ -94,3 +96,14 @@ export interface Address {
   zipCode: string;
   type: AddressType;
 }
+
+export const addressSchema = z.object({
+  id: z.number(),
+  street: z.string(),
+  number: z.number(),
+  floor: z.nativeEnum(Floor),
+  city: z.string(),
+  state: z.string(),
+  zipCode: z.string(),
+  type: z.nativeEnum(AddressType),
+});

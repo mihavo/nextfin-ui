@@ -1,13 +1,12 @@
 'use client';
 
-import type React from 'react';
 
 import { Check, PiggyBank, Shield, Wallet } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Breadcrumb from '@/components/navigation/Breadcrumb';
 import { useTheme } from '@/components/theme/theme-provider';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,7 +34,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { newAccountSchema } from '@/features/account/schemas/accountSchemas';
+import { fetchEmployeesAction } from '@/features/employees/employeeSlice';
+import { formatEnumKey } from '@/lib/utils';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { AccountType } from '@/types/Account';
+import { Employee, EmployeeRole } from '@/types/Employee';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
@@ -50,44 +53,30 @@ const currencies = [
   { code: 'CAD', name: 'Canadian Dollar (C$)', symbol: 'C$' },
 ];
 
-const accountManagers = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    role: 'Senior Account Manager',
-    avatar: '/placeholder.svg?height=40&width=40',
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    role: 'Account Manager',
-    avatar: '/placeholder.svg?height=40&width=40',
-  },
-  {
-    id: '3',
-    name: 'Jessica Williams',
-    role: 'Account Manager',
-    avatar: '/placeholder.svg?height=40&width=40',
-  },
-  {
-    id: '4',
-    name: 'David Rodriguez',
-    role: 'Junior Account Manager',
-    avatar: '/placeholder.svg?height=40&width=40',
-  },
-];
-
 export default function AddAccount() {
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const managers = useAppSelector((state) => state.employees.entities);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [clickedType, setClickedType] = useState<string | null>(null);
 
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
-  const [selectedManager, setSelectedManager] = useState(accountManagers[0].id);
+  const [selectedManager, setSelectedManager] = useState<Employee | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {};
+  useEffect(() => {
+    dispatch(
+      fetchEmployeesAction([
+        EmployeeRole.JUNIOR_ACCOUNT_MANAGER,
+        EmployeeRole.MEDIOR_ACCOUNT_MANAGER,
+        EmployeeRole.SENIOR_ACCOUNT_MANAGER,
+      ])
+    );
+  }, [dispatch]);
+
+  const handleSubmit = async () => {};
 
   const handleAccountTypeChange = (value: string) => {
     setClickedType(value);
@@ -101,7 +90,7 @@ export default function AddAccount() {
   const form = useForm<z.infer<typeof newAccountSchema>>({
     resolver: zodResolver(newAccountSchema),
     defaultValues: {
-      managerId: '',
+      manager: null,
       friendlyName: '',
       accountType: AccountType.CHECKING,
       currencyCode: 'USD',
@@ -271,7 +260,7 @@ export default function AddAccount() {
 
                   <FormField
                     control={form.control}
-                    name="managerId"
+                    name="manager"
                     render={({ field }) => (
                       <FormItem className="space-y-2">
                         <FormLabel>Account Manager</FormLabel>
@@ -280,8 +269,13 @@ export default function AddAccount() {
                         </p>
                         <FormControl>
                           <Select
-                            defaultValue={selectedManager}
-                            onValueChange={setSelectedManager}
+                            defaultValue={selectedManager?.id.toString()}
+                            onValueChange={(value) => {
+                              const manager = managers.find(
+                                (e) => e.id.toString() === value
+                              );
+                              setSelectedManager(manager || null);
+                            }}
                           >
                             <SelectTrigger
                               id="account-manager"
@@ -293,26 +287,26 @@ export default function AddAccount() {
                               />
                             </SelectTrigger>
                             <SelectContent>
-                              {accountManagers.map((manager) => (
-                                <SelectItem key={manager.id} value={manager.id}>
+                              {managers.map((manager) => (
+                                <SelectItem
+                                  key={manager.id}
+                                  value={manager.id.toString()}
+                                >
                                   <div className="flex items-center gap-3">
                                     <Avatar className="h-8 w-8">
-                                      <AvatarImage
-                                        src={
-                                          manager.avatar || '/placeholder.svg'
-                                        }
-                                        alt={manager.name}
-                                      />
                                       <AvatarFallback>
-                                        {manager.name.charAt(0)}
+                                        {manager.firstName.charAt(0) +
+                                          manager.lastName.charAt(0)}
                                       </AvatarFallback>
                                     </Avatar>
                                     <div>
                                       <div className="font-medium">
-                                        {manager.name}
+                                        {manager.firstName +
+                                          ' ' +
+                                          manager.lastName}
                                       </div>
                                       <div className="text-xs text-muted-foreground">
-                                        {manager.role}
+                                        {formatEnumKey(manager.role)}
                                       </div>
                                     </div>
                                   </div>
