@@ -1,4 +1,4 @@
-import { nextfinRequest } from '@/api/api-client';
+import { nextfinRequest } from '@/api/apiClient';
 import { Employee, EmployeeRole } from '@/types/Employee';
 
 export type GetEmployeesResponse = Employee[];

@@ -1,4 +1,4 @@
-import { nextfinRequest } from '@/api/api-client';
+import { nextfinRequest } from '@/api/apiClient';
 import { PageRequest } from '@/types/PageRequest';
 import { Transaction } from '@/types/Transaction';
 import * as qs from 'qs';

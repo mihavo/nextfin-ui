@@ -1,4 +1,4 @@
-import { nextfinRequest } from '@/api/api-client';
+import { nextfinRequest } from '@/api/apiClient';
 import { Account, AccountType } from '@/types/Account';
 
 export interface UserAccountsResponse {

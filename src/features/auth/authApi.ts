@@ -1,4 +1,4 @@
-import { nextfinRequest } from '@/api/api-client';
+import { nextfinRequest } from '@/api/apiClient';
 import { User } from '@/types/User';
 
 export interface UserLoginResponse {
