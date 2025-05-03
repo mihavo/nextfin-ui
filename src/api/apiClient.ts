@@ -1,4 +1,6 @@
+import { authReset } from '@/features/auth/authSlice';
 import axios, { Method } from 'axios';
+import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_NEXTFIN_API_URL || 'http://localhost:3000',
@@ -7,6 +9,15 @@ const apiClient = axios.create({
   },
   withCredentials: true,
 });
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      useDispatch()(authReset());
+    }
+  }
+);
 
 export const nextfinRequest = async <T>(
   url: string,

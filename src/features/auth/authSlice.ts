@@ -45,10 +45,13 @@ export const fetchUserAction = createAsyncThunk(
   }
 );
 
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    reset: () => initialState,
+  },
   extraReducers: (builder) => {
     //Login
     builder.addCase(loginAction.fulfilled, (state) => {
@@ -75,4 +78,5 @@ export const authSlice = createSlice({
   },
 });
 
+export const { reset: authReset } = authSlice.actions;
 export default authSlice.reducer;
