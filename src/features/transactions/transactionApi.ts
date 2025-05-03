@@ -19,6 +19,5 @@ export const fetchUserTransactions = async (
     };
   }
   const query = '?' + qs.stringify(page, { skipNulls: true });
-  console.log(query);
   return await nextfinRequest('/transactions/' + query, 'GET');
 };
