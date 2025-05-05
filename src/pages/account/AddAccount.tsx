@@ -80,11 +80,6 @@ export default function AddAccount() {
 
   const handleAccountTypeChange = (value: string) => {
     setClickedType(value);
-    console.log(value);
-    // Reset the animation after it completes
-    setTimeout(() => {
-      setClickedType(null);
-    }, 600);
   };
 
   const form = useForm<z.infer<typeof newAccountSchema>>({
@@ -149,7 +144,7 @@ export default function AddAccount() {
                           <RadioGroup
                             defaultValue={AccountType.CHECKING}
                             className="grid grid-cols-3 gap-8"
-                            onValueChange={handleAccountTypeChange}
+                            onValueChange={setClickedType}
                           >
                             <div>
                               <RadioGroupItem

@@ -1,7 +1,12 @@
 import { authReset } from '@/features/auth/authSlice';
 import axios, { Method } from 'axios';
-import { useDispatch } from 'react-redux';
 import { toast } from 'sonner';
+
+// Define a custom error type that extends AxiosError and includes _handled
+interface HandledError {
+  _handled?: boolean;
+}
+
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_NEXTFIN_API_URL || 'http://localhost:3000',
   headers: {
@@ -10,12 +15,21 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
+// Interceptor to handle global auth errors
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      useDispatch()(authReset());
+    if (
+      error.response === undefined ||
+      error.code === 'ERR_NETWORK' ||
+      error.response.status === 401
+    ) {
+      import('../store/store').then(({ default: store }) => {
+        store.dispatch(authReset());
+      });
+      return Promise.reject({ _handled: true });
     }
+    return Promise.reject(error); // Pass the error to the next handler
   }
 );
 
@@ -32,12 +46,13 @@ export const nextfinRequest = async <T>(
     });
     return response.data;
   } catch (error) {
+    if ((error as HandledError)?._handled) return Promise.reject(error);
     if (axios.isAxiosError(error)) {
-      const message = error.response?.data?.message || error.message;
+      const message = error.response?.data?.message || 'An error occurred';
       toast.error(message);
       throw new Error(message);
     } else {
-      const message = `Unexpected error: ${error}`;
+      const message = 'An unexpected error occurred';
       toast.error(message);
       throw new Error(message);
     }
