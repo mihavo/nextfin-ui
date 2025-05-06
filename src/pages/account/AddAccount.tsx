@@ -41,7 +41,7 @@ import { AccountType } from '@/types/Account';
 import { Employee, EmployeeRole } from '@/types/Employee';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import * as z from 'zod';
 
 // Currency options
@@ -66,6 +66,8 @@ export default function AddAccount() {
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
   const [selectedManager, setSelectedManager] = useState<Employee | null>(null);
 
+  const location = useLocation();
+
   useEffect(() => {
     dispatch(
       fetchEmployeesAction([
@@ -74,13 +76,9 @@ export default function AddAccount() {
         EmployeeRole.SENIOR_ACCOUNT_MANAGER,
       ])
     );
-  }, [dispatch]);
+  }, [location, dispatch]);
 
   const handleSubmit = async () => {};
-
-  const handleAccountTypeChange = (value: string) => {
-    setClickedType(value);
-  };
 
   const form = useForm<z.infer<typeof newAccountSchema>>({
     resolver: zodResolver(newAccountSchema),
@@ -281,7 +279,7 @@ export default function AddAccount() {
                                 placeholder="Select account manager"
                               />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-100">
                               {managers.map((manager) => (
                                 <SelectItem
                                   key={manager.id}
