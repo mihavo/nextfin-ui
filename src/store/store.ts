@@ -12,6 +12,7 @@ import {
   REGISTER,
   REHYDRATE,
 } from 'redux-persist';
+import persistStore from 'redux-persist/es/persistStore';
 import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({
@@ -20,16 +21,6 @@ const rootReducer = combineReducers({
   transactions: transactionReducer,
   employees: EmployeeReducer,
 });
-
-// const appReducer: (
-//   state: ReturnType<typeof rootReducer> | undefined,
-//   action: Action
-// ) => ReturnType<typeof rootReducer> = (state, action) => {
-//   if (action.type === 'auth/reset') {
-//     return appReducer(undefined, action);
-//   }
-//   return rootReducer(state, action);
-// };
 
 const persistConfig = { key: 'root', storage };
 
@@ -44,9 +35,8 @@ const store = configureStore({
   devTools: process.env.NODE_ENV !== 'production',
 });
 
-
-
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
+export const persistor = persistStore(store);
 export default store;

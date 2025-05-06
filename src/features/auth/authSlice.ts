@@ -45,12 +45,13 @@ export const fetchUserAction = createAsyncThunk(
   }
 );
 
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    reset: () => initialState,
+    reset: () => {
+      return initialState;
+    },
   },
   extraReducers: (builder) => {
     //Login

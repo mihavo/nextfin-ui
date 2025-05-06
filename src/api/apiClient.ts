@@ -24,9 +24,12 @@ apiClient.interceptors.response.use(
       error.code === 'ERR_NETWORK' ||
       error.response.status === 401
     ) {
-      import('../store/store').then(({ default: store }) => {
+      import('../store/store').then(({ default: store, persistor }) => {
         store.dispatch(authReset());
+        persistor.purge();
       });
+      if (error.response === undefined || error.response == 'ERR_NETWORK')
+        toast.error('Connection Error');
       return Promise.reject({ _handled: true });
     }
     return Promise.reject(error); // Pass the error to the next handler

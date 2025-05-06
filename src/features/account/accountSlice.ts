@@ -36,7 +36,8 @@ export const accountSlice = createSlice({
   extraReducers: (builder) => {
     //Fetch User Acounts
     builder.addCase(fetchUserAccountsAction.fulfilled, (state, action) => {
-      state.entities.push(...action.payload.accounts);
+      console.log(action.payload.accounts);
+      state.entities = action.payload.accounts;
       state.isLoading = 'succeeded';
     });
     builder.addCase(fetchUserAccountsAction.pending, (state) => {
