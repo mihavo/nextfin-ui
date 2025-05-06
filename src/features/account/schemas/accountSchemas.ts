@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 export const newAccountSchema = z.object({
   manager: employeeSchema.nullish(),
-  friendlyName: z.string(),
+  friendlyName: z.string().optional(),
   accountType: z.enum([
     AccountType.CHECKING,
     AccountType.SAVINGS,

@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Download, Plus, Send } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import AccountItem from './AccountItem';
 
 export default function Accounts({ items }: { items: Account[] }) {

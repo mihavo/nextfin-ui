@@ -41,7 +41,7 @@ import { AccountType } from '@/types/Account';
 import { Employee, EmployeeRole } from '@/types/Employee';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import * as z from 'zod';
 
 // Currency options
@@ -57,7 +57,9 @@ export default function AddAccount() {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const managers = useAppSelector((state) => state.employees.entities);
+  const managers = useAppSelector(
+    (state) => state.employees.entities
+  ) as Employee[];
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -78,7 +80,9 @@ export default function AddAccount() {
     );
   }, [location, dispatch]);
 
-  const handleSubmit = async () => {};
+  const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {
+    console.log(data);
+  };
 
   const form = useForm<z.infer<typeof newAccountSchema>>({
     resolver: zodResolver(newAccountSchema),
@@ -89,8 +93,6 @@ export default function AddAccount() {
       currencyCode: 'USD',
     },
   });
-
-  const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {};
 
   const labelClasses = `flex flex-col items-center justify-between p-8 rounded-md transition-all duration-300 border-2 border-muted 
                                 peer-data-[state=checked]:border-primary   ${

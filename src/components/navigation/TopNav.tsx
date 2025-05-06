@@ -1,7 +1,5 @@
-'use client';
-
 import { BellIcon, Search } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { ModeToggle } from '../theme/mode-toggle';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';

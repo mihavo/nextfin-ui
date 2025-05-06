@@ -10,7 +10,7 @@ import {
 import { useAppSelector } from '@/store/hooks';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
 export default function LogoutPage() {

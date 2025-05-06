@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet } from 'react-router-dom';
 import { useTheme } from '../theme/theme-provider';
 import AppSidebar from '../ui/app-sidebar';
 import { SidebarProvider, SidebarTrigger } from '../ui/sidebar';
