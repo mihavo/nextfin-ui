@@ -41,7 +41,11 @@ export const getAccountByIdAction = createAsyncThunk(
 export const accountSlice = createSlice({
   name: 'accounts',
   initialState,
-  reducers: {},
+  reducers: {
+    resetStatus(state) {
+      state.status = 'idle';
+    },
+  },
   extraReducers: (builder) => {
     //Fetch User Acounts
     builder.addCase(fetchUserAccountsAction.fulfilled, (state, action) => {
@@ -67,16 +71,18 @@ export const accountSlice = createSlice({
     });
 
     //Get Account By Id
-    builder.addCase(createAccountAction.fulfilled, (state) => {
+    builder.addCase(getAccountByIdAction.fulfilled, (state) => {
       state.status = 'succeeded';
     });
-    builder.addCase(createAccountAction.pending, (state) => {
+    builder.addCase(getAccountByIdAction.pending, (state) => {
       state.status = 'pending';
     });
-    builder.addCase(createAccountAction.rejected, (state) => {
+    builder.addCase(getAccountByIdAction.rejected, (state) => {
       state.status = 'failed';
     });
   },
 });
+
+export const { resetStatus } = accountSlice.actions;
 
 export default accountSlice.reducer;

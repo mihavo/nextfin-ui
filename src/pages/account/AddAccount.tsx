@@ -31,7 +31,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { currencies } from '@/components/utils/currency';
-import { createAccountAction } from '@/features/account/accountSlice';
+import {
+  createAccountAction,
+  resetStatus,
+} from '@/features/account/accountSlice';
 import { newAccountSchema } from '@/features/account/schemas/accountSchemas';
 import { fetchEmployeesAction } from '@/features/employees/employeeSlice';
 import { formatEnumKey } from '@/lib/utils';
@@ -70,6 +73,12 @@ export default function AddAccount() {
       ])
     );
   }, [location, dispatch]);
+
+    useEffect(() => {
+      if (status === 'succeeded' || status === 'failed') {
+        dispatch(resetStatus());
+      }
+    }, [status, dispatch]);
 
   const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {
     dispatch(

@@ -46,7 +46,10 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getAccountByIdAction } from '@/features/account/accountSlice';
+import {
+  getAccountByIdAction,
+  resetStatus,
+} from '@/features/account/accountSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -164,6 +167,12 @@ export default function AccountDetailsPage() {
   }, [accountId, dispatch]);
 
   useEffect(() => {
+    if (status === 'succeeded' || status === 'failed') {
+      dispatch(resetStatus());
+    }
+  }, [status, dispatch]);
+
+  useEffect(() => {
     // Filter transactions based on search query
     if (searchQuery) {
       setFilteredTransactions(
@@ -216,7 +225,7 @@ export default function AccountDetailsPage() {
               The account you're looking for doesn't exist or you don't have
               access to it.
             </p>
-            <Button asChild className="mt-4">
+            <Button asChild className="mt-4 text-white">
               <Link to="/">Return to Dashboard</Link>
             </Button>
           </div>
