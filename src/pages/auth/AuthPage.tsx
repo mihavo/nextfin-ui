@@ -35,7 +35,7 @@ import { loginSchema, signupSchema } from '../../features/auth/schemas/authSchem
 export default function AuthPage() {
   const dispatch = useAppDispatch();
   const authStatus = useAppSelector((state) => state.auth.status);
-  const isLoading = authStatus === 'loading';
+  const status = authStatus === 'loading';
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
   const { theme } = useTheme();
@@ -156,9 +156,9 @@ export default function AuthPage() {
                   <Button
                     type="submit"
                     className="w-full dark:text-white"
-                    disabled={isLoading}
+                    disabled={status}
                   >
-                    {isLoading ? (
+                    {status ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Signing in...
@@ -296,9 +296,9 @@ export default function AuthPage() {
                   <Button
                     type="submit"
                     className="w-full dark:text-white"
-                    disabled={isLoading}
+                    disabled={status}
                   >
-                    {isLoading ? (
+                    {status ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Creating account...

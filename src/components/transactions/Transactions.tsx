@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 import { CreditCard } from 'lucide-react';
 
 export default function Transactions({ items }: { items: Transaction[] }) {
-  const { isLoading } = useAppSelector((state) => state.transactions);
+  const { status } = useAppSelector((state) => state.transactions);
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
   const calculateSign = (item: Transaction): '+' | '-' => {
@@ -27,7 +27,7 @@ export default function Transactions({ items }: { items: Transaction[] }) {
         <CardTitle>Recent Transactions</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {isLoading === 'pending' ? (
+        {status === 'pending' ? (
           <Skeleton className="p-2 h-5 w-1/2" />
         ) : (
           items.map((item) => (

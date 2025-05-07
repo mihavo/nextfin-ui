@@ -51,6 +51,7 @@ export default function AddAccount() {
     (state) => state.employees.entities
   ) as Employee[];
   useAppSelector((state) => state.accounts);
+  const status = useAppSelector((state) => state.accounts.status);
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [clickedType, setClickedType] = useState<string | null>(null);
@@ -317,10 +318,12 @@ export default function AddAccount() {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={status === 'submitting' || status === 'pending'}
                     className="dark:text-accent-foreground"
                   >
-                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                    {status === 'submitting'
+                      ? 'Creating Account...'
+                      : 'Create Account'}
                   </Button>
                 </CardFooter>
               </form>

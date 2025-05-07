@@ -8,12 +8,12 @@ import {
 
 interface TransactionsState {
   entities: Transaction[];
-  isLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  status: 'idle' | 'pending' | 'succeeded' | 'failed';
 }
 
 const initialState: TransactionsState = {
   entities: [],
-  isLoading: 'idle',
+  status: 'idle',
 };
 
 export const fetchUserTransactionsAction = createAsyncThunk(
@@ -30,13 +30,13 @@ export const transactionSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchUserTransactionsAction.fulfilled, (state, action) => {
       Object.assign(state.entities, action.payload.content);
-      state.isLoading = 'succeeded';
+      state.status = 'succeeded';
     });
     builder.addCase(fetchUserTransactionsAction.pending, (state) => {
-      state.isLoading = 'pending';
+      state.status = 'pending';
     });
     builder.addCase(fetchUserTransactionsAction.rejected, (state) => {
-      state.isLoading = 'failed';
+      state.status = 'failed';
     });
   },
 });

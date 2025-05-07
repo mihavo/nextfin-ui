@@ -23,6 +23,7 @@ function App() {
               <Route path="accounts">
                 <Route index element={<AccountPage />} />
                 <Route path="new" element={<AddAccount />} />
+                <Route path=":id" element={<AccountPage />} />
               </Route>
             </Route>
           ) : (

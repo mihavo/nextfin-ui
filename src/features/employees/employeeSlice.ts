@@ -4,12 +4,12 @@ import { fetchEmployees } from './employeeApi';
 
 interface EmployeeState {
   entities: Employee[];
-  isLoading: 'idle' | 'pending' | 'succeeded' | 'failed';
+  status: 'idle' | 'pending' | 'succeeded' | 'failed';
 }
 
 const initialState: EmployeeState = {
   entities: [],
-  isLoading: 'idle',
+  status: 'idle',
 };
 
 export const fetchEmployeesAction = createAsyncThunk(
@@ -26,13 +26,13 @@ export const employeeSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchEmployeesAction.fulfilled, (state, action) => {
       Object.assign(state.entities, action.payload);
-      state.isLoading = 'succeeded';
+      state.status = 'succeeded';
     });
     builder.addCase(fetchEmployeesAction.pending, (state) => {
-      state.isLoading = 'pending';
+      state.status = 'pending';
     });
     builder.addCase(fetchEmployeesAction.rejected, (state) => {
-      state.isLoading = 'failed';
+      state.status = 'failed';
     });
   },
 });

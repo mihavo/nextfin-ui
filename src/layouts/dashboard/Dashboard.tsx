@@ -22,7 +22,7 @@ export default function Dashboard() {
     (state) => state.transactions.entities
   );
   const hasLoaded =
-    useAppSelector((state) => state.accounts.isLoading) === 'succeeded';
+    useAppSelector((state) => state.accounts.status) === 'succeeded';
 
   useEffect(() => {
     if (hasLoaded) {

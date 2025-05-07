@@ -18,10 +18,22 @@ export interface CreateAccountResponse {
   holderId: string;
   transactionLimit: number;
 }
+
+interface AccountByIdResponse {
+  account: Account;
+  messsage: string;
+}
 export const fetchUserAccounts = async (): Promise<UserAccountsResponse> => {
   return await nextfinRequest('/accounts', 'GET');
 };
 
+export const fetchAccountById = async (accountId: string): Promise<Account> => {
+  const response = (await nextfinRequest(
+    `/accounts/${accountId}`,
+    'GET'
+  )) as AccountByIdResponse;
+  return response.account;
+};
 export const createAccount = async (
   account: CreateAccountRequest
 ): Promise<CreateAccountResponse> => {

@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom';
 import AccountItem from './AccountItem';
 
 export default function Accounts({ items }: { items: Account[] }) {
-  const isLoading = useAppSelector((state) => state.accounts.isLoading);
+  const status = useAppSelector((state) => state.accounts.status);
 
   return (
     <Card className="lg:col-span-2">
@@ -46,7 +46,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             value="checking"
             className="pt-4 max-h-72 overflow-y-auto"
           >
-            {isLoading === 'pending' ? (
+            {status === 'pending' ? (
               <Skeleton className="h-6 w-2/3 rounded" />
             ) : (
               items
@@ -56,7 +56,7 @@ export default function Accounts({ items }: { items: Account[] }) {
           </TabsContent>
           <TabsContent value="savings" className="pt-4">
             <div className="grid gap-4">
-              {isLoading === 'pending' ? (
+              {status === 'pending' ? (
                 <Skeleton className="h-6 w-2/3 rounded" />
               ) : (
                 items
@@ -66,7 +66,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             </div>
           </TabsContent>
           <TabsContent value="trust" className="pt-4">
-            {isLoading === 'pending' ? (
+            {status === 'pending' ? (
               <Skeleton className="h-6 w-2/3 rounded" />
             ) : (
               items
