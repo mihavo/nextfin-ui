@@ -1,6 +1,3 @@
-'use client';
-
-
 import { Check, PiggyBank, Shield, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -33,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { currencies } from '@/components/utils/currency';
+import { createAccountAction } from '@/features/account/accountSlice';
 import { newAccountSchema } from '@/features/account/schemas/accountSchemas';
 import { fetchEmployeesAction } from '@/features/employees/employeeSlice';
 import { formatEnumKey } from '@/lib/utils';
@@ -44,15 +43,6 @@ import { useForm } from 'react-hook-form';
 import { useLocation, useNavigate } from 'react-router-dom';
 import * as z from 'zod';
 
-// Currency options
-const currencies = [
-  { code: 'USD', name: 'US Dollar ($)', symbol: '$' },
-  { code: 'EUR', name: 'Euro (€)', symbol: '€' },
-  { code: 'GBP', name: 'British Pound (£)', symbol: '£' },
-  { code: 'JPY', name: 'Japanese Yen (¥)', symbol: '¥' },
-  { code: 'CAD', name: 'Canadian Dollar (C$)', symbol: 'C$' },
-];
-
 export default function AddAccount() {
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -60,8 +50,8 @@ export default function AddAccount() {
   const managers = useAppSelector(
     (state) => state.employees.entities
   ) as Employee[];
+  useAppSelector((state) => state.accounts);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [clickedType, setClickedType] = useState<string | null>(null);
 
@@ -81,13 +71,15 @@ export default function AddAccount() {
   }, [location, dispatch]);
 
   const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {
-    console.log(data);
+    dispatch(
+      createAccountAction({ ...data, managerId: data.manager?.id.toString() })
+    );
   };
 
   const form = useForm<z.infer<typeof newAccountSchema>>({
     resolver: zodResolver(newAccountSchema),
     defaultValues: {
-      manager: null,
+      manager: undefined,
       friendlyName: '',
       accountType: AccountType.CHECKING,
       currencyCode: 'USD',
@@ -205,7 +197,6 @@ export default function AddAccount() {
                             className="w-full rounded"
                             placeholder="e.g. Vacation Fund, Emergency Savings"
                             {...field}
-                            required
                           />
                         </FormControl>
                       </FormItem>
@@ -270,6 +261,7 @@ export default function AddAccount() {
                                 (e) => e.id.toString() === value
                               );
                               setSelectedManager(manager || null);
+                              field.onChange(manager);
                             }}
                           >
                             <SelectTrigger

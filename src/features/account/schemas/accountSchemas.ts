@@ -3,7 +3,7 @@ import { employeeSchema } from '@/types/Employee';
 import { z } from 'zod';
 
 export const newAccountSchema = z.object({
-  manager: employeeSchema.nullish(),
+  manager: employeeSchema,
   friendlyName: z.string().optional(),
   accountType: z.enum([
     AccountType.CHECKING,
