@@ -2,14 +2,12 @@
 
 import {
   ArrowDown,
-  ArrowLeft,
   ArrowUp,
   Calendar,
-  ChevronRight,
   CreditCard,
+  Dot,
   Download,
   Filter,
-  Home,
   MoreHorizontal,
   Pencil,
   Search,
@@ -18,6 +16,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import Breadcrumb from '@/components/navigation/Breadcrumb';
+import { useTheme } from '@/components/theme/theme-provider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -46,111 +46,24 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { currencyFormatter } from '@/components/utils/currency-formatter';
 import {
   getAccountByIdAction,
   resetStatus,
 } from '@/features/account/accountSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { Transaction } from '@/types/Transaction';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 // Sample transaction data
-const transactions = [
-  {
-    id: 'tx1',
-    date: '2023-05-01',
-    description: 'Amazon',
-    category: 'Online Shopping',
-    amount: -34.59,
-    type: 'purchase',
-    status: 'completed',
-  },
-  {
-    id: 'tx2',
-    date: '2023-05-01',
-    description: 'Starbucks',
-    category: 'Food & Drink',
-    amount: -5.25,
-    type: 'purchase',
-    status: 'completed',
-  },
-  {
-    id: 'tx3',
-    date: '2023-04-30',
-    description: 'Payroll Deposit',
-    category: 'Income',
-    amount: 2450.0,
-    type: 'deposit',
-    status: 'completed',
-  },
-  {
-    id: 'tx4',
-    date: '2023-04-28',
-    description: 'Netflix',
-    category: 'Subscription',
-    amount: -14.99,
-    type: 'purchase',
-    status: 'completed',
-  },
-  {
-    id: 'tx5',
-    date: '2023-04-27',
-    description: 'Uber',
-    category: 'Transportation',
-    amount: -28.5,
-    type: 'purchase',
-    status: 'completed',
-  },
-  {
-    id: 'tx6',
-    date: '2023-04-25',
-    description: 'Transfer to Savings',
-    category: 'Transfer',
-    amount: -500.0,
-    type: 'transfer',
-    status: 'completed',
-  },
-  {
-    id: 'tx7',
-    date: '2023-04-22',
-    description: 'Grocery Store',
-    category: 'Groceries',
-    amount: -78.35,
-    type: 'purchase',
-    status: 'completed',
-  },
-  {
-    id: 'tx8',
-    date: '2023-04-20',
-    description: 'Gas Station',
-    category: 'Transportation',
-    amount: -45.82,
-    type: 'purchase',
-    status: 'completed',
-  },
-  {
-    id: 'tx9',
-    date: '2023-04-15',
-    description: 'Payroll Deposit',
-    category: 'Income',
-    amount: 2450.0,
-    type: 'deposit',
-    status: 'completed',
-  },
-  {
-    id: 'tx10',
-    date: '2023-04-12',
-    description: 'Restaurant',
-    category: 'Food & Drink',
-    amount: -65.37,
-    type: 'purchase',
-    status: 'completed',
-  },
-];
+const transactions: Transaction[] = [];
 
 export default function AccountDetailsPage() {
   const { id: accountId } = useParams();
   const dispatch = useAppDispatch();
+  const { theme } = useTheme();
+  const themeBg = theme === 'dark' ? 'main-grain-dark' : 'main-grain';
   const [transactionPeriod, setTransactionPeriod] = useState('30days');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTransactions, setFilteredTransactions] =
@@ -189,16 +102,8 @@ export default function AccountDetailsPage() {
 
   if (status === 'pending') {
     return (
-      <div className="flex min-h-screen w-full flex-col">
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-          <Button variant="ghost" size="icon" asChild className="mr-2">
-            <Link to="/">
-              <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">Back to dashboard</span>
-            </Link>
-          </Button>
-          <h1 className="text-lg font-semibold">Account Details</h1>
-        </header>
+      <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
+        <Breadcrumb />
         <div className="flex flex-1 items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
         </div>
@@ -208,16 +113,8 @@ export default function AccountDetailsPage() {
 
   if (!account) {
     return (
-      <div className="flex min-h-screen w-full flex-col">
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-          <Button variant="ghost" size="icon" asChild className="mr-2">
-            <Link to="/">
-              <ArrowLeft className="h-5 w-5" />
-              <span className="sr-only">Back to dashboard</span>
-            </Link>
-          </Button>
-          <h1 className="text-lg font-semibold">Account Details</h1>
-        </header>
+      <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
+        <Breadcrumb />
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <h2 className="text-xl font-semibold">Account Not Found</h2>
@@ -234,15 +131,8 @@ export default function AccountDetailsPage() {
     );
   }
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: account.currency || 'USD',
-    }).format(amount);
-  };
-
   const getAccountIcon = () => {
-    switch (account.type) {
+    switch (account.accountType) {
       case 'checking':
       case 'savings':
         return <Wallet className="h-6 w-6" />;
@@ -276,51 +166,10 @@ export default function AccountDetailsPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-        <Button variant="ghost" size="icon" asChild className="mr-2">
-          <Link to="/">
-            <ArrowLeft className="h-5 w-5" />
-            <span className="sr-only">Back to dashboard</span>
-          </Link>
-        </Button>
-        <h1 className="text-lg font-semibold">Account Details</h1>
-      </header>
+    <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
+      <Breadcrumb />
 
-      {/* Breadcrumb navigation */}
-      <nav className="z-10 border-b bg-background/80 px-4 py-3 backdrop-blur-sm md:px-6">
-        <ol className="flex items-center text-sm">
-          <li className="flex items-center">
-            <Link
-              to="/"
-              className="flex items-center text-muted-foreground hover:text-foreground"
-            >
-              <Home className="mr-1 h-3.5 w-3.5" />
-              <span>Dashboard</span>
-            </Link>
-          </li>
-          <li className="mx-2 text-muted-foreground">
-            <ChevronRight className="h-4 w-4" />
-          </li>
-          <li>
-            <Link
-              to="#"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Accounts
-            </Link>
-          </li>
-          <li className="mx-2 text-muted-foreground">
-            <ChevronRight className="h-4 w-4" />
-          </li>
-          <li>
-            <span className="font-medium text-foreground">{account.name}</span>
-          </li>
-        </ol>
-      </nav>
-
-      <main className="main-grain relative flex flex-1 flex-col p-4 md:p-6">
-        {/* Account Summary Card */}
+      <main className={` relative flex flex-1 flex-col p-4 md:p-6 mx-56`}>
         <Card className="mb-6">
           <CardHeader className="flex flex-row items-start justify-between">
             <div className="flex items-center gap-3">
@@ -329,12 +178,19 @@ export default function AccountDetailsPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <CardTitle>{account.name}</CardTitle>
+                  <CardTitle className="text-2xl">
+                    {account.friendlyName ?? `Account No #{account.id}`}
+                  </CardTitle>
                   {getStatusBadge()}
                 </div>
-                <CardDescription>
-                  {account.accountNumber} •{' '}
-                  {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
+                <CardDescription className="mt-1 flex items-center gap-0.5">
+                  <span className="text-bold text-violet-700">
+                    {account.id}
+                  </span>
+                  <Dot></Dot>
+                  <span className="text-green-500 font-bold">
+                    {account.accountType}
+                  </span>
                 </CardDescription>
               </div>
             </div>
@@ -369,66 +225,32 @@ export default function AccountDetailsPage() {
                   Current Balance
                 </h3>
                 <div className="text-2xl font-bold">
-                  {formatCurrency(account.balance)}
+                  {currencyFormatter(account.currency, account.balance)}
                 </div>
               </div>
-
-              {account.type === 'credit' ? (
-                <>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Available Credit
-                    </h3>
-                    <div className="text-2xl font-bold">
-                      {formatCurrency(account.availableCredit)}
-                    </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium text-muted-foreground">
+                  Available Balance
+                </h3>
+                <div className="text-2xl font-bold">
+                  {currencyFormatter(account.currency, account.balance)}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium text-muted-foreground">
+                  Account ID
+                </h3>
+                <div className="text-2xl font-bold">{account.id}</div>
+              </div>
+              {account.accountType === 'savings' && (
+                <div className="space-y-1">
+                  <h3 className="text-sm font-medium text-muted-foreground">
+                    Interest Rate
+                  </h3>
+                  <div className="text-2xl font-bold">
+                    {account.interestRate}
                   </div>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Credit Limit
-                    </h3>
-                    <div className="text-2xl font-bold">
-                      {formatCurrency(account.creditLimit)}
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Minimum Payment
-                    </h3>
-                    <div className="text-2xl font-bold">
-                      {formatCurrency(account.minimumPayment)}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Available Balance
-                    </h3>
-                    <div className="text-2xl font-bold">
-                      {formatCurrency(account.availableBalance)}
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Routing Number
-                    </h3>
-                    <div className="text-2xl font-bold">
-                      {account.routingNumber}
-                    </div>
-                  </div>
-                  {account.type === 'savings' && (
-                    <div className="space-y-1">
-                      <h3 className="text-sm font-medium text-muted-foreground">
-                        Interest Rate
-                      </h3>
-                      <div className="text-2xl font-bold">
-                        {account.interestRate}
-                      </div>
-                    </div>
-                  )}
-                </>
+                </div>
               )}
             </div>
 
@@ -437,15 +259,9 @@ export default function AccountDetailsPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">
-                  Account Manager
-                </h3>
-                <p>{account.manager}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">
                   Opened On
                 </h3>
-                <p>{new Date(account.openedDate).toLocaleDateString()}</p>
+                <p>{new Date(account.dateOpened).toLocaleDateString()}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">
@@ -453,12 +269,12 @@ export default function AccountDetailsPage() {
                 </h3>
                 <p>{account.currency}</p>
               </div>
-              {account.type === 'credit' && (
+              {account.accountType === 'credit' && (
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">
-                    Payment Due Date
+                    Last Update
                   </h3>
-                  <p>{new Date(account.dueDate).toLocaleDateString()}</p>
+                  <p>{new Date(account.lastUpdated).toLocaleDateString()}</p>
                 </div>
               )}
             </div>
