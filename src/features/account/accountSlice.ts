@@ -71,7 +71,8 @@ export const accountSlice = createSlice({
     });
 
     //Get Account By Id
-    builder.addCase(getAccountByIdAction.fulfilled, (state) => {
+    builder.addCase(getAccountByIdAction.fulfilled, (state, action) => {
+      state.currentAccount = action.payload;
       state.status = 'succeeded';
     });
     builder.addCase(getAccountByIdAction.pending, (state) => {
