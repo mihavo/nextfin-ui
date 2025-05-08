@@ -1,4 +1,5 @@
 import { Account } from '@/types/Account';
+import { Transaction } from '@/types/Transaction';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   createAccount,
@@ -14,11 +15,15 @@ import {
 
 interface AccountState {
   entities: Account[];
-  currentAccount?: Account;
+  currentAccount: (Account & { transactions: Transaction[] }) | null;
   status: 'idle' | 'pending' | 'succeeded' | 'failed' | 'submitting';
 }
 
-const initialState: AccountState = { entities: [], status: 'idle' };
+const initialState: AccountState = {
+  entities: [],
+  currentAccount: null,
+  status: 'idle',
+};
 
 export const fetchUserAccountsAction = createAsyncThunk(
   'accounts/fetchUserAccounts',
@@ -36,7 +41,7 @@ export const createAccountAction = createAsyncThunk(
 
 export const getAccountByIdAction = createAsyncThunk(
   'accounts/getAccountById',
-  async (accountId: string): Promise<Account | undefined> => {
+  async (accountId: string): Promise<Account> => {
     return await fetchAccountById(accountId);
   }
 );
@@ -84,13 +89,25 @@ export const accountSlice = createSlice({
 
     //Get Account By Id
     builder.addCase(getAccountByIdAction.fulfilled, (state, action) => {
-      state.currentAccount = action.payload;
+      state.currentAccount = { ...action.payload, transactions: [] };
       state.status = 'succeeded';
     });
     builder.addCase(getAccountByIdAction.pending, (state) => {
       state.status = 'pending';
     });
     builder.addCase(getAccountByIdAction.rejected, (state) => {
+      state.status = 'failed';
+    });
+
+    //Get Account  transactions
+    builder.addCase(getAccountTransactionsAction.fulfilled, (state, action) => {
+      state.currentAccount!.transactions = action.payload.content;
+      state.status = 'succeeded';
+    });
+    builder.addCase(getAccountTransactionsAction.pending, (state) => {
+      state.status = 'pending';
+    });
+    builder.addCase(getAccountTransactionsAction.rejected, (state) => {
       state.status = 'failed';
     });
   },

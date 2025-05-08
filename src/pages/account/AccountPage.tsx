@@ -87,14 +87,17 @@ export default function AccountDetailsPage() {
   }, [accountId, dispatch]);
 
   useEffect(() => {
-    if (account) {
+    if (account?.id) {
       const request: GetAccountTransactionsRequest = {
         accountId: account.id,
         direction: 'ALL',
+        pageRequest: {
+          pageSize: 7,
+        },
       };
       dispatch(getAccountTransactionsAction(request));
     }
-  }, [account, dispatch]);
+  }, [account?.id, dispatch]);
 
   useEffect(() => {
     if (status === 'succeeded' || status === 'failed') {
