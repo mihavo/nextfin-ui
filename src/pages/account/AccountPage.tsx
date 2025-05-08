@@ -45,6 +45,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { GetAccountTransactionsRequest } from '@/features/account/accountApi';
@@ -365,7 +366,7 @@ export default function AccountDetailsPage() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="all">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="flex w-full ">
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="deposits">Deposits</TabsTrigger>
                 <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
@@ -374,7 +375,9 @@ export default function AccountDetailsPage() {
               {/* All Transactions Tab */}
               <TabsContent value="all" className="pt-4">
                 <div className="space-y-4">
-                  {filteredTransactions.length === 0 ? (
+                  {status === 'pending' ? (
+                    <Skeleton />
+                  ) : filteredTransactions.length === 0 ? (
                     <div className="flex h-32 flex-col items-center justify-center rounded-md border border-dashed p-4 text-center">
                       <p className="text-sm font-medium">
                         No transactions found
@@ -384,59 +387,59 @@ export default function AccountDetailsPage() {
                       </p>
                     </div>
                   ) : (
-                    filteredTransactions.map((transaction) => (
-                      <div
-                        key={transaction.id}
-                        className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
-                      >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                          {inferTransactionDirection(
-                            account.id,
-                            transaction
-                          ) === 'INCOMING' ? (
-                            <ArrowDown className="h-5 w-5 text-green-500" />
-                          ) : (
-                            <Send className="h-5 w-5" />
-                          )}
-                        </div>
-                        <div className="grid flex-1 gap-1">
-                          <div className="font-semibold">
-                            {transaction.description}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">
-                              {transaction.category}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              •
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(
-                                transaction.createdAt
-                              ).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={
-                              transaction.amount > 0
-                                ? 'text-green-500'
-                                : 'text-red-500'
-                            }
-                          >
-                            {transaction.amount > 0 ? '+' : ''}
-                            {currencyFormatter(
-                              transaction.currency,
-                              transaction.amount
+                    filteredTransactions.map((transaction) => {
+                      const isIncoming =
+                        inferTransactionDirection(account.id, transaction) ===
+                        'INCOMING';
+                      return (
+                        <div
+                          key={transaction.id}
+                          className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                        >
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                            {isIncoming ? (
+                              <ArrowDown className="h-5 w-5 text-green-500" />
+                            ) : (
+                              <ArrowUp className="h-5 w-5 text-red-500" />
                             )}
                           </div>
-                          <div className="text-xs capitalize text-muted-foreground">
-                            {transaction.status}
+                          <div className="grid flex-1 gap-1">
+                            <div className="font-semibold">
+                              {transaction.targetName}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground">
+                                {transaction.category}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                •
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(
+                                  transaction.createdAt
+                                ).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div
+                              className={
+                                isIncoming ? 'text-green-500' : 'text-red-500'
+                              }
+                            >
+                              {isIncoming ? '+' : '-'}
+                              {currencyFormatter(
+                                transaction.currency,
+                                transaction.amount
+                              )}
+                            </div>
+                            <div className="text-xs capitalize text-muted-foreground">
+                              {transaction.status}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </TabsContent>
@@ -459,7 +462,7 @@ export default function AccountDetailsPage() {
                         </div>
                         <div className="grid flex-1 gap-1">
                           <div className="font-semibold">
-                            Description Placeholder
+                            {transaction.targetName}
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
@@ -510,7 +513,7 @@ export default function AccountDetailsPage() {
                         </div>
                         <div className="grid flex-1 gap-1">
                           <div className="font-semibold">
-                            Description Placeholder
+                            {transaction.targetName}
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
@@ -528,6 +531,7 @@ export default function AccountDetailsPage() {
                         </div>
                         <div className="text-right">
                           <div className="text-red-500">
+                            -
                             {currencyFormatter(
                               transaction.currency,
                               transaction.amount
