@@ -32,7 +32,7 @@ export interface AccountByIdResponse {
 export interface GetAccountTransactionsRequest {
   accountId: string;
   direction: TransactionDirection;
-  pageRequest: PageRequest;
+  pageRequest?: PageRequest;
 }
 
 export interface GetAccountTransactionsResponse {

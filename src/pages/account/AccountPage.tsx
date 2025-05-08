@@ -47,8 +47,10 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
+import { GetAccountTransactionsRequest } from '@/features/account/accountApi';
 import {
   getAccountByIdAction,
+  getAccountTransactionsAction,
   resetStatus,
 } from '@/features/account/accountSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -78,6 +80,16 @@ export default function AccountDetailsPage() {
       toast.error('Account ID is missing');
     }
   }, [accountId, dispatch]);
+
+  useEffect(() => {
+    if (account) {
+      const request: GetAccountTransactionsRequest = {
+        accountId: account.id,
+        direction: 'ALL',
+      };
+      dispatch(getAccountTransactionsAction(request));
+    }
+  }, [account, dispatch]);
 
   useEffect(() => {
     if (status === 'succeeded' || status === 'failed') {
