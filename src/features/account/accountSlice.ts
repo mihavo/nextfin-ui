@@ -6,6 +6,9 @@ import {
   CreateAccountResponse,
   fetchAccountById,
   fetchUserAccounts,
+  getAccountTransactions,
+  GetAccountTransactionsRequest,
+  GetAccountTransactionsResponse,
   UserAccountsResponse,
 } from './accountApi';
 
@@ -35,6 +38,15 @@ export const getAccountByIdAction = createAsyncThunk(
   'accounts/getAccountById',
   async (accountId: string): Promise<Account | undefined> => {
     return await fetchAccountById(accountId);
+  }
+);
+
+export const getAccountTransactionsAction = createAsyncThunk(
+  'accounts/getTransactions',
+  async (
+    request: GetAccountTransactionsRequest
+  ): Promise<GetAccountTransactionsResponse> => {
+    return await getAccountTransactions(request);
   }
 );
 

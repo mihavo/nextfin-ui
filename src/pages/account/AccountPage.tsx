@@ -184,11 +184,15 @@ export default function AccountDetailsPage() {
                   {getStatusBadge()}
                 </div>
                 <CardDescription className="mt-1 flex items-center gap-0.5">
-                  <span className="text-bold text-violet-700">
+                  <span
+                    className={`font-semibold ${
+                      theme === 'dark' ? 'text-emerald-300' : 'text-emerald-400'
+                    } `}
+                  >
                     {account.id}
                   </span>
                   <Dot></Dot>
-                  <span className="text-green-500 font-bold">
+                  <span className="text-emerald-400 font-semibold">
                     {account.accountType}
                   </span>
                 </CardDescription>
@@ -344,7 +348,6 @@ export default function AccountDetailsPage() {
                 <TabsTrigger value="all">All</TabsTrigger>
                 <TabsTrigger value="deposits">Deposits</TabsTrigger>
                 <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
-                <TabsTrigger value="transfers">Transfers</TabsTrigger>
               </TabsList>
               <TabsContent value="all" className="pt-4">
                 <div className="space-y-4">
@@ -384,7 +387,9 @@ export default function AccountDetailsPage() {
                               •
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {new Date(transaction.date).toLocaleDateString()}
+                              {new Date(
+                                transaction.createdAt
+                              ).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
@@ -397,7 +402,10 @@ export default function AccountDetailsPage() {
                             }
                           >
                             {transaction.amount > 0 ? '+' : ''}
-                            {formatCurrency(transaction.amount)}
+                            {currencyFormatter(
+                              transaction.currency,
+                              transaction.amount
+                            )}
                           </div>
                           <div className="text-xs capitalize text-muted-foreground">
                             {transaction.status}
@@ -432,13 +440,19 @@ export default function AccountDetailsPage() {
                               •
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {new Date(transaction.date).toLocaleDateString()}
+                              {new Date(
+                                transaction.createdAt
+                              ).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-green-500">
-                            +{formatCurrency(transaction.amount)}
+                            +
+                            {currencyFormatter(
+                              transaction.currency,
+                              transaction.amount
+                            )}
                           </div>
                           <div className="text-xs capitalize text-muted-foreground">
                             {transaction.status}
@@ -472,60 +486,18 @@ export default function AccountDetailsPage() {
                               •
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {new Date(transaction.date).toLocaleDateString()}
+                              {new Date(
+                                transaction.createdAt
+                              ).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-red-500">
-                            {formatCurrency(transaction.amount)}
-                          </div>
-                          <div className="text-xs capitalize text-muted-foreground">
-                            {transaction.status}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </TabsContent>
-              <TabsContent value="transfers" className="pt-4">
-                <div className="space-y-4">
-                  {filteredTransactions
-                    .filter((tx) => tx.type === 'transfer')
-                    .map((transaction) => (
-                      <div
-                        key={transaction.id}
-                        className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
-                      >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                          <Send className="h-5 w-5" />
-                        </div>
-                        <div className="grid flex-1 gap-1">
-                          <div className="font-semibold">
-                            {transaction.description}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">
-                              {transaction.category}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              •
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(transaction.date).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={
-                              transaction.amount > 0
-                                ? 'text-green-500'
-                                : 'text-red-500'
-                            }
-                          >
-                            {transaction.amount > 0 ? '+' : ''}
-                            {formatCurrency(transaction.amount)}
+                            {currencyFormatter(
+                              transaction.currency,
+                              transaction.amount
+                            )}
                           </div>
                           <div className="text-xs capitalize text-muted-foreground">
                             {transaction.status}

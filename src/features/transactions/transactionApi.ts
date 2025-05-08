@@ -8,8 +8,7 @@ export interface GetTransactionsResponse {
   page: PageRequest;
 }
 
-export type GetAccountTransactionsResponse = GetTransactionsResponse;
-
+export type TransactionDirection = 'INCOMING' | 'OUTGOING' | 'ALL';
 export const fetchUserTransactions = async (
   page?: PageRequest
 ): Promise<GetTransactionsResponse> => {
@@ -18,6 +17,6 @@ export const fetchUserTransactions = async (
       pageSize: 4,
     };
   }
-  const query = '?' + qs.stringify(page, { skipNulls: true });
+  const query = qs.stringify(page, { skipNulls: true, addQueryPrefix: true });
   return await nextfinRequest('/transactions/' + query, 'GET');
 };
