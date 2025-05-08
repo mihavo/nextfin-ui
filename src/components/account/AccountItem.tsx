@@ -10,7 +10,7 @@ export default function AccountItem({ item }: { item: Account }) {
           <div className="flex items-center">
             <div className="font-semibold">{item.accountType}</div>
             <div className="ml-auto text-sm">
-              {item.friendlyName?.toUpperCase() ?? `Account No#${item.id}`}
+              {item.friendlyName?.toUpperCase() ?? `Account No #${item.id}`}
             </div>
           </div>
           <div className="text-2xl font-bold">

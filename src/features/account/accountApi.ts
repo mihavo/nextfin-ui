@@ -66,7 +66,7 @@ export const getAccountTransactions = async (
     { skipNulls: true, addQueryPrefix: true }
   );
   return await nextfinRequest(
-    `/accounts/${request.accountId}/transactions/${query}`,
+    `/accounts/${request.accountId}/transactions${query}`,
     'GET'
   );
 };

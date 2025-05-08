@@ -53,24 +53,29 @@ import {
   getAccountTransactionsAction,
   resetStatus,
 } from '@/features/account/accountSlice';
+import { inferTransactionDirection } from '@/features/transactions/transactionUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Transaction } from '@/types/Transaction';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-// Sample transaction data
-const transactions: Transaction[] = [];
-
 export default function AccountDetailsPage() {
   const { id: accountId } = useParams();
   const dispatch = useAppDispatch();
+
   const { theme } = useTheme();
   const themeBg = theme === 'dark' ? 'main-grain-dark' : 'main-grain';
+
   const [transactionPeriod, setTransactionPeriod] = useState('30days');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredTransactions, setFilteredTransactions] =
-    useState(transactions);
+
   const account = useAppSelector((state) => state.accounts.currentAccount);
+  const transactions: Transaction[] = useAppSelector(
+    (state) => state.accounts.currentAccount?.transactions ?? []
+  );
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    Transaction[]
+  >([]);
   const status = useAppSelector((state) => state.accounts.status);
 
   useEffect(() => {
@@ -98,19 +103,20 @@ export default function AccountDetailsPage() {
   }, [status, dispatch]);
 
   useEffect(() => {
-    // Filter transactions based on search query
-    if (searchQuery) {
-      setFilteredTransactions(
-        transactions.filter(
-          (tx) =>
-            tx.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            tx.category.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    } else {
+    if (status === 'succeeded' && transactions.length > 0) {
       setFilteredTransactions(transactions);
     }
-  }, [searchQuery]);
+  }, [status, transactions]);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setFilteredTransactions(
+        transactions.filter((tx) =>
+          tx.category.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    }
+  }, [searchQuery, transactions]);
 
   if (status === 'pending') {
     return (
@@ -361,6 +367,8 @@ export default function AccountDetailsPage() {
                 <TabsTrigger value="deposits">Deposits</TabsTrigger>
                 <TabsTrigger value="withdrawals">Withdrawals</TabsTrigger>
               </TabsList>
+
+              {/* All Transactions Tab */}
               <TabsContent value="all" className="pt-4">
                 <div className="space-y-4">
                   {filteredTransactions.length === 0 ? (
@@ -379,12 +387,13 @@ export default function AccountDetailsPage() {
                         className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
                       >
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                          {transaction.type === 'deposit' ? (
+                          {inferTransactionDirection(
+                            account.id,
+                            transaction
+                          ) === 'INCOMING' ? (
                             <ArrowDown className="h-5 w-5 text-green-500" />
-                          ) : transaction.type === 'transfer' ? (
-                            <Send className="h-5 w-5" />
                           ) : (
-                            <CreditCard className="h-5 w-5" />
+                            <Send className="h-5 w-5" />
                           )}
                         </div>
                         <div className="grid flex-1 gap-1">
@@ -428,10 +437,15 @@ export default function AccountDetailsPage() {
                   )}
                 </div>
               </TabsContent>
+
+              {/* Deposit Transactions */}
               <TabsContent value="deposits" className="pt-4">
                 <div className="space-y-4">
                   {filteredTransactions
-                    .filter((tx) => tx.amount > 0)
+                    .filter(
+                      (tx) =>
+                        inferTransactionDirection(account.id, tx) === 'INCOMING'
+                    )
                     .map((transaction) => (
                       <div
                         key={transaction.id}
@@ -442,7 +456,7 @@ export default function AccountDetailsPage() {
                         </div>
                         <div className="grid flex-1 gap-1">
                           <div className="font-semibold">
-                            {transaction.description}
+                            Description Placeholder
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
@@ -474,10 +488,15 @@ export default function AccountDetailsPage() {
                     ))}
                 </div>
               </TabsContent>
+
+              {/* Withdrawal Transactions */}
               <TabsContent value="withdrawals" className="pt-4">
                 <div className="space-y-4">
                   {filteredTransactions
-                    .filter((tx) => tx.amount < 0 && tx.type === 'purchase')
+                    .filter(
+                      (tx) =>
+                        inferTransactionDirection(account.id, tx) === 'OUTGOING'
+                    )
                     .map((transaction) => (
                       <div
                         key={transaction.id}
@@ -488,7 +507,7 @@ export default function AccountDetailsPage() {
                         </div>
                         <div className="grid flex-1 gap-1">
                           <div className="font-semibold">
-                            {transaction.description}
+                            Description Placeholder
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
