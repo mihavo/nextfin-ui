@@ -68,7 +68,9 @@ export const accountSlice = createSlice({
   reducers: {
     resetStatus(state, action: { payload: keyof AccountState }) {
       if (action.payload in state && action.payload.endsWith('Status')) {
-        (state[action.payload] as Status) = 'idle';
+        setTimeout(() => {
+          (state[action.payload] as Status) = 'idle';
+        }, 2000);
       }
     },
   },
@@ -86,7 +88,8 @@ export const accountSlice = createSlice({
     });
 
     //Create Account
-    builder.addCase(createAccountAction.fulfilled, (state) => {
+    builder.addCase(createAccountAction.fulfilled, (state, action) => {
+      state.currentAccount = { ...action.payload, transactions: [] };
       state.createAccountStatus = 'succeeded';
     });
     builder.addCase(createAccountAction.pending, (state) => {

@@ -55,8 +55,7 @@ export default function AddAccount() {
   ) as Employee[];
   useAppSelector((state) => state.accounts);
   const status = useAppSelector((state) => state.accounts.createAccountStatus);
-
-  const [isSuccess, setIsSuccess] = useState(false);
+  const account = useAppSelector((state) => state.accounts.currentAccount);
   const [clickedType, setClickedType] = useState<string | null>(null);
 
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0].code);
@@ -79,6 +78,14 @@ export default function AddAccount() {
       dispatch(resetStatus('createAccountStatus'));
     }
   }, [status, dispatch]);
+
+  useEffect(() => {
+    if (status === 'succeeded' && account) {
+      setTimeout(() => {
+        navigate(`/accounts/${account.id}`);
+      }, 2000);
+    }
+  }, [status, account, navigate]);
 
   const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {
     dispatch(
@@ -120,16 +127,20 @@ export default function AddAccount() {
             </CardDescription>
           </CardHeader>
 
-          {isSuccess ? (
-            <CardContent className="flex flex-col items-center justify-center  text-center">
-              <div className="mb-4 rounded-full bg-green-100 p-3">
+          {status === 'succeeded' && account ? (
+            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="mb-4 rounded-full bg-emerald-100 dark:bg-emerald-900 p-3">
                 <Check className="h-8 w-8 text-green-600" />
               </div>
               <h3 className="text-xl font-medium">
                 Account Created Successfully!
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Your new account has been added to your dashboard.
+                Your new account has been added with account number {account.id}
+                .
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Redirecting to account details...
               </p>
             </CardContent>
           ) : (
