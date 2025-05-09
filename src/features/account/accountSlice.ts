@@ -13,7 +13,7 @@ import {
   UserAccountsResponse,
 } from './accountApi';
 
-export type Status = 'idle' | 'pending' | 'succeeded' | 'failed' | 'submitting';
+export type Status = 'idle' | 'pending' | 'succeeded' | 'failed';
 interface AccountState {
   entities: Account[];
   currentAccount: (Account & { transactions: Transaction[] }) | null;
@@ -90,7 +90,7 @@ export const accountSlice = createSlice({
       state.createAccountStatus = 'succeeded';
     });
     builder.addCase(createAccountAction.pending, (state) => {
-      state.createAccountStatus = 'submitting';
+      state.createAccountStatus = 'pending';
     });
     builder.addCase(createAccountAction.rejected, (state) => {
       state.createAccountStatus = 'failed';

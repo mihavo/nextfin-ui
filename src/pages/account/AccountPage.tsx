@@ -37,7 +37,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -56,11 +55,11 @@ import {
   resetStatus,
 } from '@/features/account/accountSlice';
 import { inferTransactionDirection } from '@/features/transactions/transactionUtils';
-import { getProgressValue } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
 import { Link, useParams } from 'react-router-dom';
+import { BarLoader } from 'react-spinners';
 import { toast } from 'sonner';
 
 export default function AccountDetailsPage() {
@@ -143,7 +142,12 @@ export default function AccountDetailsPage() {
       <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
         <Breadcrumb />
         <div className="flex flex-1 items-center justify-center w-1/2 mx-auto">
-          <Progress value={getProgressValue(getAccountByIdStatus)} />
+          <BarLoader
+            height="10px"
+            width="35vw"
+            className="rounded"
+            color={theme === 'dark' ? '#ccc' : '#18181B'}
+          />
         </div>
       </div>
     );
@@ -273,9 +277,13 @@ export default function AccountDetailsPage() {
                 <h3 className="text-sm font-medium text-muted-foreground">
                   Current Balance
                 </h3>
-                <div className="text-2xl font-bold">
-                  {currencyFormatter(account.currency, account.balance)}
-                </div>
+                {getAccountByIdStatus === 'pending' ? (
+                  <Skeleton className="w-2 h-2" />
+                ) : (
+                  <div className="text-2xl font-bold">
+                    {currencyFormatter(account.currency, account.balance)}
+                  </div>
+                )}
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-muted-foreground">
