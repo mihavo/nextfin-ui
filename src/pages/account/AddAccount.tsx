@@ -54,7 +54,7 @@ export default function AddAccount() {
     (state) => state.employees.entities
   ) as Employee[];
   useAppSelector((state) => state.accounts);
-  const status = useAppSelector((state) => state.accounts.status);
+  const status = useAppSelector((state) => state.accounts.createAccountStatus);
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [clickedType, setClickedType] = useState<string | null>(null);
@@ -74,11 +74,11 @@ export default function AddAccount() {
     );
   }, [location, dispatch]);
 
-    useEffect(() => {
-      if (status === 'succeeded' || status === 'failed') {
-        dispatch(resetStatus());
-      }
-    }, [status, dispatch]);
+  useEffect(() => {
+    if (status === 'succeeded' || status === 'failed') {
+      dispatch(resetStatus('createAccountStatus'));
+    }
+  }, [status, dispatch]);
 
   const onSubmit = async (data: z.infer<typeof newAccountSchema>) => {
     dispatch(

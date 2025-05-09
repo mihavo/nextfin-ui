@@ -37,6 +37,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -52,8 +53,10 @@ import { GetAccountTransactionsRequest } from '@/features/account/accountApi';
 import {
   getAccountByIdAction,
   getAccountTransactionsAction,
+  resetStatus,
 } from '@/features/account/accountSlice';
 import { inferTransactionDirection } from '@/features/transactions/transactionUtils';
+import { getProgressValue } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
@@ -79,7 +82,12 @@ export default function AccountDetailsPage() {
   const [filteredTransactions, setFilteredTransactions] = useState<
     Transaction[]
   >([]);
-  const status = useAppSelector((state) => state.accounts.status);
+  const getAccountTransactionsStatus = useAppSelector(
+    (state) => state.accounts.getAccountTransactionsStatus
+  );
+  const getAccountByIdStatus = useAppSelector(
+    (state) => state.accounts.getAccountByIdStatus
+  );
 
   useEffect(() => {
     if (accountId) {
@@ -90,7 +98,7 @@ export default function AccountDetailsPage() {
   }, [accountId, dispatch]);
 
   useEffect(() => {
-    if (account?.id) {
+    if (account?.id && getAccountByIdStatus === 'succeeded') {
       const request: GetAccountTransactionsRequest = {
         accountId: account.id.toString(),
         direction: 'ALL',
@@ -100,19 +108,25 @@ export default function AccountDetailsPage() {
       };
       dispatch(getAccountTransactionsAction(request));
     }
-  }, [account?.id, dispatch]);
-
-  // useEffect(() => {
-  //   if (status === 'succeeded' || status === 'failed') {
-  //     dispatch(resetStatus());
-  //   }
-  // }, [status, dispatch]);
+  }, [account?.id, getAccountByIdStatus, dispatch]);
 
   useEffect(() => {
-    if (status === 'succeeded' && transactions.length > 0) {
+    if (
+      getAccountByIdStatus === 'succeeded' ||
+      getAccountByIdStatus === 'failed'
+    ) {
+      dispatch(resetStatus('getAccountByIdStatus'));
+    }
+  }, [getAccountByIdStatus, dispatch]);
+
+  useEffect(() => {
+    if (
+      getAccountTransactionsStatus === 'succeeded' &&
+      transactions.length > 0
+    ) {
       setFilteredTransactions(transactions);
     }
-  }, [status, transactions]);
+  }, [getAccountTransactionsStatus, transactions]);
 
   useEffect(() => {
     if (searchQuery) {
@@ -124,12 +138,12 @@ export default function AccountDetailsPage() {
     }
   }, [searchQuery, transactions]);
 
-  if (status === 'pending') {
+  if (getAccountByIdStatus === 'pending') {
     return (
       <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
         <Breadcrumb />
-        <div className="flex flex-1 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        <div className="flex flex-1 items-center justify-center w-1/2 mx-auto">
+          <Progress value={getProgressValue(getAccountByIdStatus)} />
         </div>
       </div>
     );
@@ -372,8 +386,12 @@ export default function AccountDetailsPage() {
               {/* All Transactions Tab */}
               <TabsContent value="all" className="pt-4">
                 <div className="space-y-4">
-                  {status === 'pending' ? (
-                    <Skeleton />
+                  {getAccountTransactionsStatus === 'pending' ? (
+                    <>
+                      <Skeleton className="p-2 h-5 w-1/4" />
+                      <Skeleton className="p-2 h-5 w-1/3" />
+                      <Skeleton className="p-2 h-5 w-1/2" />
+                    </>
                   ) : filteredTransactions.length === 0 ? (
                     <div className="flex h-32 flex-col items-center justify-center rounded-md border border-dashed p-4 text-center">
                       <p className="text-sm font-medium">
@@ -386,8 +404,8 @@ export default function AccountDetailsPage() {
                   ) : (
                     filteredTransactions.map((transaction) => (
                       <AccountTransactionItem
+                        key={transaction.id}
                         accountId={account.id.toString()}
-                        key={account.id.toString()}
                         transaction={transaction}
                       />
                     ))
@@ -407,7 +425,6 @@ export default function AccountDetailsPage() {
                     .map((transaction) => (
                       <AccountTransactionItem
                         accountId={account.id.toString()}
-                        key={account.id.toString()}
                         transaction={transaction}
                       />
                     ))}
@@ -426,7 +443,6 @@ export default function AccountDetailsPage() {
                     .map((transaction) => (
                       <AccountTransactionItem
                         accountId={account.id.toString()}
-                        key={account.id.toString()}
                         transaction={transaction}
                       />
                     ))}
@@ -447,4 +463,4 @@ export default function AccountDetailsPage() {
       </main>
     </div>
   );
-}
+} 

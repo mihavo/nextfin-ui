@@ -26,7 +26,6 @@ export default function AccountTransactionItem({
   return (
     <>
       <div
-        key={transaction.id}
         className="transaction-item group relative flex items-center gap-4 rounded-lg border bg-card p-4 shadow-sm transition-all duration-200 hover:bg-accent/10 hover:shadow-md cursor-pointer dark:border-gray-800 dark:hover:bg-gray-800/50"
         onClick={() => openTransactionModal()}
       >

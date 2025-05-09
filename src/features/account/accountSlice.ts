@@ -13,33 +13,14 @@ import {
   UserAccountsResponse,
 } from './accountApi';
 
+export type Status = 'idle' | 'pending' | 'succeeded' | 'failed' | 'submitting';
 interface AccountState {
   entities: Account[];
   currentAccount: (Account & { transactions: Transaction[] }) | null;
-  getUserAccountsStatus:
-    | 'idle'
-    | 'pending'
-    | 'succeeded'
-    | 'failed'
-    | 'submitting';
-  createAccountStatus:
-    | 'idle'
-    | 'pending'
-    | 'succeeded'
-    | 'failed'
-    | 'submitting';
-  getAccountByIdStatus:
-    | 'idle'
-    | 'pending'
-    | 'succeeded'
-    | 'failed'
-    | 'submitting';
-  getAccountTransactionsStatus:
-    | 'idle'
-    | 'pending'
-    | 'succeeded'
-    | 'failed'
-    | 'submitting';
+  getUserAccountsStatus: Status;
+  createAccountStatus: Status;
+  getAccountByIdStatus: Status;
+  getAccountTransactionsStatus: Status;
 }
 
 const initialState: AccountState = {
@@ -85,9 +66,11 @@ export const accountSlice = createSlice({
   name: 'accounts',
   initialState,
   reducers: {
-    // resetStatus(state) {
-    //   state.status = 'idle';
-    // },
+    resetStatus(state, action: { payload: keyof AccountState }) {
+      if (action.payload in state && action.payload.endsWith('Status')) {
+        (state[action.payload] as Status) = 'idle';
+      }
+    },
   },
   extraReducers: (builder) => {
     //Fetch User Acounts
@@ -139,6 +122,6 @@ export const accountSlice = createSlice({
   },
 });
 
-// export const { resetStatus } = accountSlice.actions;
+export const { resetStatus } = accountSlice.actions;
 
 export default accountSlice.reducer;

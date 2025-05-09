@@ -18,12 +18,14 @@ import { Link } from 'react-router-dom';
 import AccountItem from './AccountItem';
 
 export default function Accounts({ items }: { items: Account[] }) {
-  const status = useAppSelector((state) => state.accounts.status);
+  const status = useAppSelector(
+    (state) => state.accounts.getUserAccountsStatus
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (status === 'succeeded' || status === 'failed') {
-      dispatch(resetStatus());
+      dispatch(resetStatus('getUserAccountsStatus'));
     }
   }, [status, dispatch]);
 

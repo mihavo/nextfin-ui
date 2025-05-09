@@ -31,7 +31,7 @@ export default function Transactions({ items }: { items: Transaction[] }) {
           <Skeleton className="p-2 h-5 w-1/2" />
         ) : (
           items.map((item) => (
-            <div className="flex items-center gap-4">
+            <div key={item.id} className="flex items-center gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                 <CreditCard className="h-5 w-5" />
               </div>
