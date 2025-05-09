@@ -2,14 +2,15 @@
 
 import {
   Calendar,
-  CreditCard,
   Dot,
   Download,
   Filter,
   MoreHorizontal,
   Pencil,
+  PiggyBank,
   Search,
   Send,
+  Shield,
   Wallet,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -51,10 +52,10 @@ import { GetAccountTransactionsRequest } from '@/features/account/accountApi';
 import {
   getAccountByIdAction,
   getAccountTransactionsAction,
-  resetStatus,
 } from '@/features/account/accountSlice';
 import { inferTransactionDirection } from '@/features/transactions/transactionUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { Account } from '@/types/Account';
 import { Transaction } from '@/types/Transaction';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -69,7 +70,9 @@ export default function AccountDetailsPage() {
   const [transactionPeriod, setTransactionPeriod] = useState('30days');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const account = useAppSelector((state) => state.accounts.currentAccount);
+  const account = useAppSelector(
+    (state) => state.accounts.currentAccount
+  ) as Account;
   const transactions: Transaction[] = useAppSelector(
     (state) => state.accounts.currentAccount?.transactions ?? []
   );
@@ -89,7 +92,7 @@ export default function AccountDetailsPage() {
   useEffect(() => {
     if (account?.id) {
       const request: GetAccountTransactionsRequest = {
-        accountId: account.id,
+        accountId: account.id.toString(),
         direction: 'ALL',
         pageRequest: {
           pageSize: 7,
@@ -99,11 +102,11 @@ export default function AccountDetailsPage() {
     }
   }, [account?.id, dispatch]);
 
-  useEffect(() => {
-    if (status === 'succeeded' || status === 'failed') {
-      dispatch(resetStatus());
-    }
-  }, [status, dispatch]);
+  // useEffect(() => {
+  //   if (status === 'succeeded' || status === 'failed') {
+  //     dispatch(resetStatus());
+  //   }
+  // }, [status, dispatch]);
 
   useEffect(() => {
     if (status === 'succeeded' && transactions.length > 0) {
@@ -154,11 +157,11 @@ export default function AccountDetailsPage() {
 
   const getAccountIcon = () => {
     switch (account.accountType) {
-      case 'checking':
-      case 'savings':
-        return <Wallet className="h-6 w-6" />;
-      case 'credit':
-        return <CreditCard className="h-6 w-6" />;
+      case 'CHECKING':
+        return <PiggyBank className="h-6 w-6" />;
+      case 'TRUST':
+        return <Shield className="h-6 w-6" />;
+      case 'SAVINGS':
       default:
         return <Wallet className="h-6 w-6" />;
     }
@@ -166,17 +169,23 @@ export default function AccountDetailsPage() {
 
   const getStatusBadge = () => {
     switch (account.status) {
-      case 'active':
+      case 'ACTIVE':
         return (
-          <Badge className="bg-green-500 hover:bg-green-600">Active</Badge>
+          <Badge className="bg-emerald-400 rounded hover:bg-emerald-300 transition-all duration-300">
+            Active
+          </Badge>
         );
-      case 'inactive':
-        return <Badge variant="secondary">Inactive</Badge>;
-      case 'pending':
+      case 'INACTIVE':
+        return (
+          <Badge variant="secondary" className="rounded">
+            Inactive
+          </Badge>
+        );
+      case 'CLOSED':
         return (
           <Badge
             variant="outline"
-            className="text-orange-500 border-orange-500"
+            className="text-orange-500 border-orange-500 rounded border-orange-500"
           >
             Pending
           </Badge>
@@ -214,7 +223,8 @@ export default function AccountDetailsPage() {
                   </span>
                   <Dot></Dot>
                   <span className="text-emerald-400 font-semibold">
-                    {account.accountType}
+                    {account.accountType.charAt(0).toUpperCase() +
+                      account.accountType.slice(1).toLowerCase()}
                   </span>
                 </CardDescription>
               </div>
@@ -267,16 +277,6 @@ export default function AccountDetailsPage() {
                 </h3>
                 <div className="text-2xl font-bold">{account.id}</div>
               </div>
-              {account.accountType === 'savings' && (
-                <div className="space-y-1">
-                  <h3 className="text-sm font-medium text-muted-foreground">
-                    Interest Rate
-                  </h3>
-                  <div className="text-2xl font-bold">
-                    {account.interestRate}
-                  </div>
-                </div>
-              )}
             </div>
 
             <Separator className="my-6" />
@@ -294,14 +294,12 @@ export default function AccountDetailsPage() {
                 </h3>
                 <p>{account.currency}</p>
               </div>
-              {account.accountType === 'credit' && (
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">
-                    Last Update
-                  </h3>
-                  <p>{new Date(account.lastUpdated).toLocaleDateString()}</p>
-                </div>
-              )}
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">
+                  Last Update
+                </h3>
+                <p>{new Date(account.lastUpdated).toLocaleDateString()}</p>
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between border-t px-6 py-4">
@@ -388,8 +386,8 @@ export default function AccountDetailsPage() {
                   ) : (
                     filteredTransactions.map((transaction) => (
                       <AccountTransactionItem
-                        accountId={account.id}
-                        key={account.id}
+                        accountId={account.id.toString()}
+                        key={account.id.toString()}
                         transaction={transaction}
                       />
                     ))
@@ -403,12 +401,13 @@ export default function AccountDetailsPage() {
                   {filteredTransactions
                     .filter(
                       (tx) =>
-                        inferTransactionDirection(account.id, tx) === 'INCOMING'
+                        inferTransactionDirection(account.id.toString(), tx) ===
+                        'INCOMING'
                     )
                     .map((transaction) => (
                       <AccountTransactionItem
-                        accountId={account.id}
-                        key={account.id}
+                        accountId={account.id.toString()}
+                        key={account.id.toString()}
                         transaction={transaction}
                       />
                     ))}
@@ -421,12 +420,13 @@ export default function AccountDetailsPage() {
                   {filteredTransactions
                     .filter(
                       (tx) =>
-                        inferTransactionDirection(account.id, tx) === 'OUTGOING'
+                        inferTransactionDirection(account.id.toString(), tx) ===
+                        'OUTGOING'
                     )
                     .map((transaction) => (
                       <AccountTransactionItem
-                        accountId={account.id}
-                        key={account.id}
+                        accountId={account.id.toString()}
+                        key={account.id.toString()}
                         transaction={transaction}
                       />
                     ))}

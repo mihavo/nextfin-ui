@@ -16,13 +16,39 @@ import {
 interface AccountState {
   entities: Account[];
   currentAccount: (Account & { transactions: Transaction[] }) | null;
-  status: 'idle' | 'pending' | 'succeeded' | 'failed' | 'submitting';
+  getUserAccountsStatus:
+    | 'idle'
+    | 'pending'
+    | 'succeeded'
+    | 'failed'
+    | 'submitting';
+  createAccountStatus:
+    | 'idle'
+    | 'pending'
+    | 'succeeded'
+    | 'failed'
+    | 'submitting';
+  getAccountByIdStatus:
+    | 'idle'
+    | 'pending'
+    | 'succeeded'
+    | 'failed'
+    | 'submitting';
+  getAccountTransactionsStatus:
+    | 'idle'
+    | 'pending'
+    | 'succeeded'
+    | 'failed'
+    | 'submitting';
 }
 
 const initialState: AccountState = {
   entities: [],
   currentAccount: null,
-  status: 'idle',
+  getUserAccountsStatus: 'idle',
+  createAccountStatus: 'idle',
+  getAccountByIdStatus: 'idle',
+  getAccountTransactionsStatus: 'idle',
 };
 
 export const fetchUserAccountsAction = createAsyncThunk(
@@ -59,60 +85,60 @@ export const accountSlice = createSlice({
   name: 'accounts',
   initialState,
   reducers: {
-    resetStatus(state) {
-      state.status = 'idle';
-    },
+    // resetStatus(state) {
+    //   state.status = 'idle';
+    // },
   },
   extraReducers: (builder) => {
     //Fetch User Acounts
     builder.addCase(fetchUserAccountsAction.fulfilled, (state, action) => {
       state.entities = action.payload.accounts;
-      state.status = 'succeeded';
+      state.getUserAccountsStatus = 'succeeded';
     });
     builder.addCase(fetchUserAccountsAction.pending, (state) => {
-      state.status = 'pending';
+      state.getUserAccountsStatus = 'pending';
     });
     builder.addCase(fetchUserAccountsAction.rejected, (state) => {
-      state.status = 'failed';
+      state.getUserAccountsStatus = 'failed';
     });
 
     //Create Account
     builder.addCase(createAccountAction.fulfilled, (state) => {
-      state.status = 'succeeded';
+      state.createAccountStatus = 'succeeded';
     });
     builder.addCase(createAccountAction.pending, (state) => {
-      state.status = 'submitting';
+      state.createAccountStatus = 'submitting';
     });
     builder.addCase(createAccountAction.rejected, (state) => {
-      state.status = 'failed';
+      state.createAccountStatus = 'failed';
     });
 
     //Get Account By Id
     builder.addCase(getAccountByIdAction.fulfilled, (state, action) => {
       state.currentAccount = { ...action.payload, transactions: [] };
-      state.status = 'succeeded';
+      state.getAccountByIdStatus = 'succeeded';
     });
     builder.addCase(getAccountByIdAction.pending, (state) => {
-      state.status = 'pending';
+      state.getAccountByIdStatus = 'pending';
     });
     builder.addCase(getAccountByIdAction.rejected, (state) => {
-      state.status = 'failed';
+      state.getAccountByIdStatus = 'failed';
     });
 
     //Get Account  transactions
     builder.addCase(getAccountTransactionsAction.fulfilled, (state, action) => {
       state.currentAccount!.transactions = action.payload.content;
-      state.status = 'succeeded';
+      state.getAccountTransactionsStatus = 'succeeded';
     });
     builder.addCase(getAccountTransactionsAction.pending, (state) => {
-      state.status = 'pending';
+      state.getAccountTransactionsStatus = 'pending';
     });
     builder.addCase(getAccountTransactionsAction.rejected, (state) => {
-      state.status = 'failed';
+      state.getAccountTransactionsStatus = 'failed';
     });
   },
 });
 
-export const { resetStatus } = accountSlice.actions;
+// export const { resetStatus } = accountSlice.actions;
 
 export default accountSlice.reducer;
