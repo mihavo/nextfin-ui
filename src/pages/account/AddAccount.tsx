@@ -327,10 +327,10 @@ export default function AddAccount() {
                   </Button>
                   <Button
                     type="submit"
-                    disabled={status === 'submitting' || status === 'pending'}
+                    disabled={status === 'pending'}
                     className="dark:text-accent-foreground"
                   >
-                    {status === 'submitting'
+                    {status === 'pending'
                       ? 'Creating Account...'
                       : 'Create Account'}
                   </Button>

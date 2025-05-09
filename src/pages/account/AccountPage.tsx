@@ -277,13 +277,9 @@ export default function AccountDetailsPage() {
                 <h3 className="text-sm font-medium text-muted-foreground">
                   Current Balance
                 </h3>
-                {getAccountByIdStatus === 'pending' ? (
-                  <Skeleton className="w-2 h-2" />
-                ) : (
-                  <div className="text-2xl font-bold">
-                    {currencyFormatter(account.currency, account.balance)}
-                  </div>
-                )}
+                <div className="text-2xl font-bold">
+                  {currencyFormatter(account.currency, account.balance)}
+                </div>
               </div>
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-muted-foreground">
