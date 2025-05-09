@@ -9,3 +9,8 @@ export const inferTransactionDirection = (
     ? 'OUTGOING'
     : 'INCOMING';
 };
+
+
+export const filterTransactionsByDate(transactions: Transaction[], period: string) {
+  return 
+}

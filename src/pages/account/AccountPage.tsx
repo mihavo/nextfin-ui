@@ -130,12 +130,18 @@ export default function AccountDetailsPage() {
   useEffect(() => {
     if (searchQuery) {
       setFilteredTransactions(
-        transactions.filter((tx) =>
-          tx.category.toLowerCase().includes(searchQuery.toLowerCase())
+        transactions.filter(
+          (tx) =>
+            tx.category?.toLowerCase().includes(searchQuery.toLowerCase()) ??
+            true
         )
       );
-    }
+    } else setFilteredTransactions(transactions);
   }, [searchQuery, transactions]);
+
+  useEffect(() => {
+    setFilteredTransactions(filteredTransactions.filter((tx) => tx.createdAt));
+  }, [transactionPeriod, filteredTransactions]);
 
   if (getAccountByIdStatus === 'pending') {
     return (
@@ -343,19 +349,28 @@ export default function AccountDetailsPage() {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <CardTitle>Transaction History</CardTitle>
               <div className="flex items-center gap-2">
+                <div className="relative w-fit">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                    className="pl-8 w-fit"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
                 <Select
                   defaultValue={transactionPeriod}
                   onValueChange={setTransactionPeriod}
                 >
-                  <SelectTrigger className="account-type-grain h-8 w-[180px]">
+                  <SelectTrigger className="h-8 w-[180px]">
                     <SelectValue placeholder="Select period" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="7days">Last 7 days</SelectItem>
-                    <SelectItem value="30days">Last 30 days</SelectItem>
-                    <SelectItem value="90days">Last 90 days</SelectItem>
+                    <SelectItem value="7">Last 7 days</SelectItem>
+                    <SelectItem value="30">Last 30 days</SelectItem>
+                    <SelectItem value="90">Last 90 days</SelectItem>
                     <SelectItem value="year">This year</SelectItem>
-                    <SelectItem value="all">All time</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -367,16 +382,6 @@ export default function AccountDetailsPage() {
                   Date Range
                 </Button>
               </div>
-            </div>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search transactions..."
-                className="account-type-grain pl-8"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
             </div>
           </CardHeader>
           <CardContent>

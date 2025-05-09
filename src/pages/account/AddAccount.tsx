@@ -75,7 +75,9 @@ export default function AddAccount() {
 
   useEffect(() => {
     if (status === 'succeeded' || status === 'failed') {
-      dispatch(resetStatus('createAccountStatus'));
+      setTimeout(() => {
+        dispatch(resetStatus('createAccountStatus'));
+      }, 2000);
     }
   }, [status, dispatch]);
 

@@ -68,9 +68,7 @@ export const accountSlice = createSlice({
   reducers: {
     resetStatus(state, action: { payload: keyof AccountState }) {
       if (action.payload in state && action.payload.endsWith('Status')) {
-        setTimeout(() => {
-          (state[action.payload] as Status) = 'idle';
-        }, 2000);
+        (state[action.payload] as Status) = 'idle';
       }
     },
   },
