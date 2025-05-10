@@ -21,7 +21,7 @@ export interface TransactionRequestOptions {
   timestamp?: string;
 }
 
-export interface TransactionResponse {
+export interface NewTransactionResponse {
   transactionId: string;
   sourceAccountId: number;
   targetAccountId: number;
@@ -45,11 +45,10 @@ export const fetchUserTransactions = async (
   return await nextfinRequest('/transactions/' + query, 'GET');
 };
 
-
 export const transact = async (
   request: TransactionRequest,
   options: TransactionRequestOptions
-): Promise<TransactionResponse> => {
+): Promise<NewTransactionResponse> => {
   if (options.isScheduled) {
     return await nextfinRequest('/transactions/schedule', 'POST', {
       request,

@@ -5,19 +5,25 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   fetchUserTransactions,
   GetTransactionsResponse,
+  NewTransactionResponse,
+  transact,
+  TransactionRequest,
+  TransactionRequestOptions,
 } from './transactionApi';
 
 interface TransactionsState {
   entities: Transaction[];
-  fetchUserTransactionsStatus: Status;
 
-  transaction: Transaction | null;
+  newTransaction: NewTransactionResponse | null;
+  fetchUserTransactionsStatus: Status;
+  newTransactionStatus: Status;
 }
 
 const initialState: TransactionsState = {
   entities: [],
+  newTransaction: null,
   fetchUserTransactionsStatus: 'idle',
-  transaction: null,
+  newTransactionStatus: 'idle',
 };
 
 export const fetchUserTransactionsAction = createAsyncThunk(
@@ -27,6 +33,18 @@ export const fetchUserTransactionsAction = createAsyncThunk(
   }
 );
 
+export const transactAction = createAsyncThunk(
+  '/transactions/new',
+  async ({
+    request,
+    options,
+  }: {
+    request: TransactionRequest;
+    options: TransactionRequestOptions;
+  }): Promise<NewTransactionResponse> => {
+    return await transact(request, options);
+  }
+);
 export const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
@@ -40,6 +58,16 @@ export const transactionSlice = createSlice({
       state.fetchUserTransactionsStatus = 'pending';
     });
     builder.addCase(fetchUserTransactionsAction.rejected, (state) => {
+      state.fetchUserTransactionsStatus = 'failed';
+    });
+    builder.addCase(transactAction.fulfilled, (state, action) => {
+      state.newTransaction = action.payload;
+      state.fetchUserTransactionsStatus = 'succeeded';
+    });
+    builder.addCase(transactAction.pending, (state) => {
+      state.fetchUserTransactionsStatus = 'pending';
+    });
+    builder.addCase(transactAction.rejected, (state) => {
       state.fetchUserTransactionsStatus = 'failed';
     });
   },
