@@ -1,4 +1,5 @@
 import { PageRequest } from '@/types/PageRequest';
+import { Status } from '@/types/Status';
 import { Transaction } from '@/types/Transaction';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
@@ -8,12 +9,15 @@ import {
 
 interface TransactionsState {
   entities: Transaction[];
-  status: 'idle' | 'pending' | 'succeeded' | 'failed';
+  fetchUserTransactionsStatus: Status;
+
+  transaction: Transaction | null;
 }
 
 const initialState: TransactionsState = {
   entities: [],
-  status: 'idle',
+  fetchUserTransactionsStatus: 'idle',
+  transaction: null,
 };
 
 export const fetchUserTransactionsAction = createAsyncThunk(
@@ -30,13 +34,13 @@ export const transactionSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchUserTransactionsAction.fulfilled, (state, action) => {
       Object.assign(state.entities, action.payload.content);
-      state.status = 'succeeded';
+      state.fetchUserTransactionsStatus = 'succeeded';
     });
     builder.addCase(fetchUserTransactionsAction.pending, (state) => {
-      state.status = 'pending';
+      state.fetchUserTransactionsStatus = 'pending';
     });
     builder.addCase(fetchUserTransactionsAction.rejected, (state) => {
-      state.status = 'failed';
+      state.fetchUserTransactionsStatus = 'failed';
     });
   },
 });

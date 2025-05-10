@@ -8,6 +8,30 @@ export interface GetTransactionsResponse {
   page: PageRequest;
 }
 
+export interface TransactionRequest {
+  sourceAccountId: number;
+  targetAccountId: number;
+  amount: number;
+  currency: string;
+  transactionType: string;
+}
+
+export interface TransactionRequestOptions {
+  isScheduled: boolean;
+  timestamp?: string;
+}
+
+export interface TransactionResponse {
+  transactionId: string;
+  sourceAccountId: number;
+  targetAccountId: number;
+  currency: string;
+  status: string;
+  category: string;
+  message: string;
+  timestamp: string;
+}
+
 export type TransactionDirection = 'INCOMING' | 'OUTGOING' | 'ALL';
 export const fetchUserTransactions = async (
   page?: PageRequest
@@ -19,4 +43,18 @@ export const fetchUserTransactions = async (
   }
   const query = qs.stringify(page, { skipNulls: true, addQueryPrefix: true });
   return await nextfinRequest('/transactions/' + query, 'GET');
+};
+
+
+export const transact = async (
+  request: TransactionRequest,
+  options: TransactionRequestOptions
+): Promise<TransactionResponse> => {
+  if (options.isScheduled) {
+    return await nextfinRequest('/transactions/schedule', 'POST', {
+      request,
+      timestamp: options.timestamp,
+    });
+  }
+  return await nextfinRequest('/transactions/initiate', 'POST', request);
 };

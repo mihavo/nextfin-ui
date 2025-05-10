@@ -1,4 +1,5 @@
 import { Account } from '@/types/Account';
+import { Status } from '@/types/Status';
 import { Transaction } from '@/types/Transaction';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
@@ -13,7 +14,6 @@ import {
   UserAccountsResponse,
 } from './accountApi';
 
-export type Status = 'idle' | 'pending' | 'succeeded' | 'failed';
 interface AccountState {
   entities: Account[];
   currentAccount: (Account & { transactions: Transaction[] }) | null;
