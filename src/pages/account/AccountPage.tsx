@@ -1,4 +1,4 @@
-'use client';
+('');
 
 import {
   Calendar,
@@ -494,4 +494,4 @@ export default function AccountDetailsPage() {
       </main>
     </div>
   );
-} 
+}

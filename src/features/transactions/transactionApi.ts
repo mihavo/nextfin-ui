@@ -9,8 +9,8 @@ export interface GetTransactionsResponse {
 }
 
 export interface TransactionRequest {
-  sourceAccountId: number;
-  targetAccountId: number;
+  sourceAccountId: string;
+  targetAccountId: string;
   amount: number;
   currency: string;
   transactionType: string;
@@ -23,9 +23,10 @@ export interface TransactionRequestOptions {
 
 export interface NewTransactionResponse {
   transactionId: string;
-  sourceAccountId: number;
-  targetAccountId: number;
+  sourceAccountId: string;
+  targetAccountId: string;
   currency: string;
+  amount: number;
   status: string;
   category: string;
   message: string;

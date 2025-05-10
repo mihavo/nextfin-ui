@@ -1,4 +1,4 @@
-'use client';
+('');
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Github, Loader2 } from 'lucide-react';
@@ -30,7 +30,10 @@ import { Toaster } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginAction } from '../../features/auth/authSlice';
-import { loginSchema, signupSchema } from '../../features/auth/schemas/authSchemas';
+import {
+  loginSchema,
+  signupSchema,
+} from '../../features/auth/schemas/authSchemas';
 
 export default function AuthPage() {
   const dispatch = useAppDispatch();
