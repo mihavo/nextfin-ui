@@ -25,15 +25,35 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { resetStatus } from '@/features/transactions/transactionSlice';
+import { useAppSelector } from '@/store/hooks';
 import { CalendarIcon, Clock } from 'lucide-react';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 export default function NewTransactionPage() {
   const handleNewTransaction = () => {};
 
+  const dispatch = useDispatch();
+  const status = useAppSelector(
+    (state) => state.transactions.newTransactionStatus
+  );
+  const transaction = useAppSelector(
+    (state) => state.transactions.newTransaction
+  );
+
+  useEffect(() => {
+    if (status === 'succeeded') {
+      setTimeout(() => {
+        dispatch(resetStatus('newTransactionStatus'));
+      }, 2000);
+    }
+  }, [dispatch, status]);
+
   return (
     <main className="main-grain relative flex flex-1 flex-col items-center justify-center p-6 md:p-10">
       <Card className="relative mx-auto w-full max-w-2xl shadow-xl">
-        {isSuccess ? (
+        {status === 'succeeded' ? (
           <div className="success-message">
             <CardHeader>
               <div className="flex flex-col items-center text-center">

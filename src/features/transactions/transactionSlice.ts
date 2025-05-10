@@ -48,7 +48,13 @@ export const transactAction = createAsyncThunk(
 export const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
-  reducers: {},
+  reducers: {
+    resetStatus(state, action: { payload: keyof TransactionsState }) {
+      if (action.payload in state && action.payload.endsWith('Status')) {
+        (state[action.payload] as Status) = 'idle';
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchUserTransactionsAction.fulfilled, (state, action) => {
       Object.assign(state.entities, action.payload.content);
@@ -72,5 +78,7 @@ export const transactionSlice = createSlice({
     });
   },
 });
+
+export const { resetStatus } = transactionSlice.actions;
 
 export default transactionSlice.reducer;

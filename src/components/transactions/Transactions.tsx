@@ -14,7 +14,9 @@ import dayjs from 'dayjs';
 import { CreditCard } from 'lucide-react';
 
 export default function Transactions({ items }: { items: Transaction[] }) {
-  const { status } = useAppSelector((state) => state.transactions);
+  const status = useAppSelector(
+    (state) => state.transactions.newTransactionStatus
+  );
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
   const calculateSign = (item: Transaction): '+' | '-' => {
