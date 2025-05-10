@@ -25,11 +25,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { newTransactionSchema } from '@/features/transactions/schemas/transactionSchema';
 import { resetStatus } from '@/features/transactions/transactionSlice';
 import { useAppSelector } from '@/store/hooks';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { CalendarIcon, Clock } from 'lucide-react';
 import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import { z } from 'zod';
 
 export default function NewTransactionPage() {
   const handleNewTransaction = () => {};
@@ -49,6 +53,18 @@ export default function NewTransactionPage() {
       }, 2000);
     }
   }, [dispatch, status]);
+
+  const form = useForm<z.infer<typeof newTransactionSchema>>({
+    resolver: zodResolver(newTransactionSchema),
+    defaultValues: {
+      amount: 0,
+      sourceAccountId: 0,
+      targetAccountId: 0,
+      transactionType: 'ACCOUNT',
+      isScheduled: false,
+      timestamp: undefined,
+    },
+  });
 
   return (
     <main className="main-grain relative flex flex-1 flex-col items-center justify-center p-6 md:p-10">
