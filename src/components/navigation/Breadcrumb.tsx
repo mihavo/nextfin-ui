@@ -5,16 +5,27 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Home } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { ArrowLeft, Home } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '../ui/button';
 
 export default function AppBreadcrumb() {
   const location = useLocation();
+  const navigate = useNavigate();
   const pathnames = location.pathname.split('/');
 
   return (
     <Breadcrumb className=" px-12 h-10 p-2  font-medium  w-full flex items-center border-b  dark:border-[#1F1F23] dark:bg-[#0e0e11]">
       <BreadcrumbList className="text-md">
+        <BreadcrumbItem key={'back'}>
+          <Button
+            onClick={() => navigate(-1)}
+            variant="link"
+            className="mr-2 text-slate-300 hover:bg-accent"
+          >
+            <ArrowLeft />
+          </Button>
+        </BreadcrumbItem>
         <BreadcrumbItem key={'home'}>
           <Home height="16px" />
           <BreadcrumbLink asChild href="/">

@@ -1,3 +1,5 @@
+import { TransactionDirection } from '@/features/transactions/transactionApi';
+
 export type TransactionStatus = 'CREATED' | 'PENDING' | 'COMPLETED' | 'FAILED';
 export type TransactionType = 'INSTANT' | 'SCHEDULED';
 export type TransactionCategory =
@@ -30,6 +32,20 @@ export const TransactionCategoryLabels: Record<TransactionCategory, string> = {
   CHARITY: 'Charity Donations',
   OTHER: 'Other',
 };
+
+export interface TransactionRequestOptions {
+  direction: TransactionDirection;
+  pageSize?: number;
+  skip?: number;
+  sortBy?: TransactionSortingOptions;
+  sortDirection?: 'ASC' | 'DESC';
+}
+
+export type TransactionSortingOptions =
+  | 'CREATED_AT'
+  | 'AMOUNT'
+  | 'ID'
+  | 'CURRENCY';
 
 export interface Transaction {
   id: string;

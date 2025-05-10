@@ -54,9 +54,13 @@ import {
   getAccountTransactionsAction,
   resetStatus,
 } from '@/features/account/accountSlice';
-import { inferTransactionDirection } from '@/features/transactions/transactionUtils';
+import {
+  filterTransactionsByDate,
+  inferTransactionDirection,
+} from '@/features/transactions/transactionUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
+import { DatePeriod } from '@/types/Dates';
 import { Transaction } from '@/types/Transaction';
 import { Link, useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
@@ -69,7 +73,7 @@ export default function AccountDetailsPage() {
   const { theme } = useTheme();
   const themeBg = theme === 'dark' ? 'main-grain-dark' : 'main-grain';
 
-  const [transactionPeriod, setTransactionPeriod] = useState('30days');
+  const [transactionPeriod, setTransactionPeriod] = useState<DatePeriod>('7d');
   const [searchQuery, setSearchQuery] = useState('');
 
   const account = useAppSelector(
@@ -100,9 +104,11 @@ export default function AccountDetailsPage() {
     if (account?.id && getAccountByIdStatus === 'succeeded') {
       const request: GetAccountTransactionsRequest = {
         accountId: account.id.toString(),
-        direction: 'ALL',
-        pageRequest: {
+        options: {
+          direction: 'ALL',
           pageSize: 7,
+          sortBy: 'CREATED_AT',
+          sortDirection: 'DESC',
         },
       };
       dispatch(getAccountTransactionsAction(request));
@@ -140,8 +146,11 @@ export default function AccountDetailsPage() {
   }, [searchQuery, transactions]);
 
   useEffect(() => {
-    setFilteredTransactions(filteredTransactions.filter((tx) => tx.createdAt));
-  }, [transactionPeriod, filteredTransactions]);
+    console.log(filterTransactionsByDate(transactions, transactionPeriod));
+    setFilteredTransactions(
+      filterTransactionsByDate(transactions, transactionPeriod)
+    );
+  }, [transactionPeriod, transactions]);
 
   if (getAccountByIdStatus === 'pending') {
     return (
@@ -346,38 +355,51 @@ export default function AccountDetailsPage() {
         {/* Transactions Section */}
         <Card>
           <CardHeader>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <CardTitle>Transaction History</CardTitle>
-              <div className="flex items-center gap-2">
-                <div className="relative w-fit">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between flex-wrap">
+              <CardTitle className="text-lg md:text-2xl">
+                Transaction History
+              </CardTitle>
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 w-full md:w-auto">
+                <div className="relative w-full sm:w-auto">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
                     type="search"
                     placeholder="Search..."
-                    className="pl-8 w-fit"
+                    className="pl-8 w-full sm:w-[200px]"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <Select
                   defaultValue={transactionPeriod}
-                  onValueChange={setTransactionPeriod}
+                  onValueChange={(value) =>
+                    setTransactionPeriod(value as DatePeriod)
+                  }
                 >
-                  <SelectTrigger className="h-8 w-[180px]">
+                  <SelectTrigger className="h-8 w-full sm:w-[180px]">
                     <SelectValue placeholder="Select period" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="7">Last 7 days</SelectItem>
-                    <SelectItem value="30">Last 30 days</SelectItem>
-                    <SelectItem value="90">Last 90 days</SelectItem>
-                    <SelectItem value="year">This year</SelectItem>
+                    <SelectItem value="1d">Last 24 hours</SelectItem>
+                    <SelectItem value="7d">Last 7 days</SelectItem>
+                    <SelectItem value="30d">Last 30 days</SelectItem>
+                    <SelectItem value="90d">Last 90 days</SelectItem>
+                    <SelectItem value="1y">This year</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button variant="outline" size="sm" className="h-8 gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1 w-full sm:w-auto"
+                >
                   <Filter className="h-3.5 w-3.5" />
                   Filter
                 </Button>
-                <Button variant="outline" size="sm" className="h-8 gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1 w-full sm:w-auto"
+                >
                   <Calendar className="h-3.5 w-3.5" />
                   Date Range
                 </Button>

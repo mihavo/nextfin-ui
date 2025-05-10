@@ -1,10 +1,8 @@
 import { nextfinRequest } from '@/api/apiClient';
 import { Account, AccountType } from '@/types/Account';
-import { PageRequest } from '@/types/PageRequest';
 import { PageResponse } from '@/types/PageResponse';
-import { Transaction } from '@/types/Transaction';
+import { Transaction, TransactionRequestOptions } from '@/types/Transaction';
 import qs from 'qs';
-import { TransactionDirection } from '../transactions/transactionApi';
 
 export interface UserAccountsResponse {
   accounts: Account[];
@@ -25,8 +23,7 @@ export interface AccountByIdResponse {
 
 export interface GetAccountTransactionsRequest {
   accountId: string;
-  direction: TransactionDirection;
-  pageRequest?: PageRequest;
+  options: TransactionRequestOptions;
 }
 
 export interface GetAccountTransactionsResponse {
@@ -56,7 +53,7 @@ export const getAccountTransactions = async (
   request: GetAccountTransactionsRequest
 ): Promise<GetAccountTransactionsResponse> => {
   const query = qs.stringify(
-    { direction: request.direction, ...request.pageRequest },
+    { ...request.options },
     { skipNulls: true, addQueryPrefix: true }
   );
   return await nextfinRequest(
