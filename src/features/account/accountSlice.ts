@@ -3,6 +3,8 @@ import { Status } from '@/types/Status';
 import { Transaction } from '@/types/Transaction';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
+  AccountSearchOptions,
+  AccountSearchResponse,
   createAccount,
   CreateAccountRequest,
   CreateAccountResponse,
@@ -11,12 +13,15 @@ import {
   getAccountTransactions,
   GetAccountTransactionsRequest,
   GetAccountTransactionsResponse,
+  searchAccounts,
   UserAccountsResponse,
 } from './accountApi';
 
 interface AccountState {
   entities: Account[];
   currentAccount: (Account & { transactions: Transaction[] }) | null;
+
+  searchResults: AccountSearchResponse | null;
   getUserAccountsStatus: Status;
   createAccountStatus: Status;
   getAccountByIdStatus: Status;
@@ -59,6 +64,13 @@ export const getAccountTransactionsAction = createAsyncThunk(
     request: GetAccountTransactionsRequest
   ): Promise<GetAccountTransactionsResponse> => {
     return await getAccountTransactions(request);
+  }
+);
+
+export const searchAccountsAction = createAsyncThunk(
+  'accounts/search',
+  async (request: { query: string; options?: AccountSearchOptions }) => {
+    return await searchAccounts(request.query, request.options);
   }
 );
 
@@ -118,6 +130,18 @@ export const accountSlice = createSlice({
       state.getAccountTransactionsStatus = 'pending';
     });
     builder.addCase(getAccountTransactionsAction.rejected, (state) => {
+      state.getAccountTransactionsStatus = 'failed';
+    });
+
+    //Search Accounts
+    builder.addCase(searchAccountsAction.fulfilled, (state, action) => {
+      state.searchResults = action.payload;
+      state.getAccountTransactionsStatus = 'succeeded';
+    });
+    builder.addCase(searchAccountsAction.pending, (state) => {
+      state.getAccountTransactionsStatus = 'pending';
+    });
+    builder.addCase(searchAccountsAction.rejected, (state) => {
       state.getAccountTransactionsStatus = 'failed';
     });
   },

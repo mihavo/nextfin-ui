@@ -1,5 +1,4 @@
 import {
-  Calendar,
   Check,
   Command,
   CreditCard,
@@ -50,12 +49,17 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
-import { fetchUserAccountsAction } from '@/features/account/accountSlice';
+import { AccountSearchResult } from '@/features/account/accountApi';
+import {
+  fetchUserAccountsAction,
+  searchAccountsAction,
+} from '@/features/account/accountSlice';
 import { newTransactionSchema } from '@/features/transactions/schemas/transactionSchema';
 import { resetStatus } from '@/features/transactions/transactionSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { friendlyFormatIBAN } from 'ibantools';
 import { CalendarIcon, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Form, useForm } from 'react-hook-form';
@@ -67,16 +71,23 @@ export default function NewTransactionPage() {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const status = useAppSelector(
     (state) => state.transactions.newTransactionStatus
   );
+
   const transaction = useAppSelector(
     (state) => state.transactions.newTransaction
   );
+
   const accounts = useAppSelector((state) => state.accounts.entities);
 
   const [selectedSourceAccount, setSelectedSourceAccount] = useState<Account>(
     accounts[0]
+  );
+
+  const searchResults = useAppSelector(
+    (state) => state.accounts.searchResults?.content || []
   );
 
   const getRecipientLabel = () => {
@@ -109,9 +120,8 @@ export default function NewTransactionPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [openCombobox, setOpenCombobox] = useState(false);
-  const [selectedRecipient, setSelectedRecipient] = useState<Account | null>(
-    null
-  );
+  const [selectedRecipient, setSelectedRecipient] =
+    useState<AccountSearchResult | null>(null);
 
   useEffect(() => {
     const account = accounts.find((account) => account.id === sourceAccountId);
@@ -132,7 +142,21 @@ export default function NewTransactionPage() {
     }
   }, [accounts, dispatch]);
 
-  const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {};
+  useEffect(() => {
+    if (searchQuery.length > 3) {
+      dispatch(searchAccountsAction({ query: searchQuery }));
+    }
+  }, [searchQuery, dispatch]);
+
+  const handleSelectedRecipient = (recipient: AccountSearchResult) => {
+    form.setValue('targetAccountId', recipient.id);
+    setSelectedRecipient(recipient);
+    setOpenCombobox(false);
+  };
+
+  const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {
+    console.log('to submit', data);
+  };
 
   return (
     <main className="main-grain relative flex flex-1 flex-col items-center justify-center p-6 md:p-10">
@@ -411,7 +435,7 @@ export default function NewTransactionPage() {
                                     onClick={() => {
                                       setSearchQuery('');
                                       setSelectedRecipient(null);
-                                      form.setValue('targetAccountId', '');
+                                      form.setValue('targetAccountId', 0);
                                     }}
                                     type="button"
                                     disabled={status === 'pending'}
@@ -422,6 +446,7 @@ export default function NewTransactionPage() {
                                 )}
                               </div>
                             </div>
+                            ;
                             {openCombobox && (
                               <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
                                 <Command className="rounded-md">
@@ -430,30 +455,22 @@ export default function NewTransactionPage() {
                                       No results found.
                                     </CommandEmpty>
                                     <CommandGroup>
-                                      {getFilteredRecipients().map((item) => {
+                                      {searchResults.map((item) => {
                                         let primaryText = '';
                                         let secondaryText = '';
 
-                                        if ('holder' in item) {
-                                          // Account or card
-                                          primaryText = item.name;
-                                          secondaryText = `${item.holder} • ****${item.id}`;
-                                        } else {
-                                          // External recipient
-                                          primaryText = item.name;
-                                          secondaryText =
-                                            item.accountNumber ||
-                                            item.username ||
-                                            item.phone ||
-                                            item.method;
-                                        }
+                                        primaryText =
+                                          item.firstName + ' ' + item.lastName;
+                                        secondaryText = `${friendlyFormatIBAN(
+                                          item.iban
+                                        )} ${item.currency}`;
 
                                         return (
                                           <CommandItem
                                             key={item.id}
-                                            value={item.id}
+                                            value={item.id.toString()}
                                             onSelect={() =>
-                                              handleSelectRecipient(item.id)
+                                              handleSelectedRecipient(item)
                                             }
                                             className="flex flex-col items-start py-3"
                                           >
@@ -477,17 +494,12 @@ export default function NewTransactionPage() {
                       {selectedRecipient && (
                         <div className="mt-2 rounded-md border bg-muted/30 p-2 text-sm">
                           <div className="font-medium">
-                            {selectedRecipient.name}
-                            {selectedRecipient.holder &&
-                              ` (${selectedRecipient.holder})`}
+                            {selectedRecipient.firstName}{' '}
+                            {selectedRecipient.lastName}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {selectedRecipient.accountNumber ||
-                              selectedRecipient.username ||
-                              selectedRecipient.phone ||
-                              ''}
-                            {selectedRecipient.method &&
-                              ` • ${selectedRecipient.method}`}
+                            {friendlyFormatIBAN(selectedRecipient.iban)}{' '}
+                            {selectedRecipient.currency}
                           </div>
                         </div>
                       )}
@@ -571,7 +583,7 @@ export default function NewTransactionPage() {
                               </FormControl>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
-                              <Calendar
+                              {/* <Calendar
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
@@ -580,7 +592,7 @@ export default function NewTransactionPage() {
                                   date <
                                   new Date(new Date().setHours(0, 0, 0, 0))
                                 }
-                              />
+                              /> */}
                             </PopoverContent>
                           </Popover>
                           <FormMessage />

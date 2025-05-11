@@ -37,11 +37,13 @@ export interface AccountSearchOptions {
 }
 
 export interface AccountSearchResult {
+  id: number;
   iban: string;
-  accountName: string;
+  firstName: string;
   lastName: string;
   currency: string;
 }
+
 export interface AccountSearchResponse {
   content: AccountSearchResult[];
   page: PageResponse;
@@ -80,7 +82,7 @@ export const getAccountTransactions = async (
 
 export const searchAccounts = async (
   query: string,
-  options: AccountSearchOptions
+  options?: AccountSearchOptions
 ): Promise<AccountSearchResponse> => {
   const parsedOptions = qs.stringify(options, { skipNulls: true });
   return await nextfinRequest(
