@@ -405,7 +405,7 @@ export default function NewTransactionPage() {
                   name="targetAccountId"
                   render={({ field }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel>{getRecipientLabel()}</FormLabel>
+                      {/* <FormLabel>{getRecipientLabel()}</FormLabel> */}
                       <div className="relative">
                         <FormControl>
                           <div className="relative">

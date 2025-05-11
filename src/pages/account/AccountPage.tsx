@@ -63,13 +63,14 @@ import { Account } from '@/types/Account';
 import { DatePeriod } from '@/types/Dates';
 import { Transaction } from '@/types/Transaction';
 import { friendlyFormatIBAN } from 'ibantools';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { toast } from 'sonner';
 
 export default function AccountDetailsPage() {
   const { id: accountId } = useParams();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { theme } = useTheme();
   const themeBg = theme === 'dark' ? 'main-grain-dark' : 'main-grain';
@@ -280,7 +281,7 @@ export default function AccountDetailsPage() {
                   <Download className="mr-2 h-4 w-4" />
                   <span>Download Statements</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/transactions/new')}>
                   <Send className="mr-2 h-4 w-4" />
                   <span>Transfer Money</span>
                 </DropdownMenuItem>
@@ -341,7 +342,12 @@ export default function AccountDetailsPage() {
               Last updated: {new Date().toLocaleString()}
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="h-8 gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1"
+                onClick={() => navigate('/transactions/new')}
+              >
                 <Send className="h-3.5 w-3.5" />
                 Transfer
               </Button>

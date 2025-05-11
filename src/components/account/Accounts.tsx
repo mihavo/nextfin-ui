@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Download, Plus, Send } from 'lucide-react';
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AccountItem from './AccountItem';
 
 export default function Accounts({ items }: { items: Account[] }) {
@@ -22,6 +22,7 @@ export default function Accounts({ items }: { items: Account[] }) {
     (state) => state.accounts.getUserAccountsStatus
   );
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (status === 'succeeded' || status === 'failed') {
@@ -92,7 +93,12 @@ export default function Accounts({ items }: { items: Account[] }) {
           Updated 2 minutes ago
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-8 gap-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1"
+            onClick={() => navigate('/transactions/new')}
+          >
             <Send className="h-3.5 w-3.5" />
             Transfer
           </Button>
