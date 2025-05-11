@@ -56,7 +56,7 @@ export default function Accounts({ items }: { items: Account[] }) {
           </TabsList>
           <TabsContent
             value="checking"
-            className="pt-4 max-h-72 overflow-y-auto"
+            className="flex  flex-col pt-4 max-h-72 overflow-y-auto gap-6"
           >
             {status === 'pending' ? (
               <Skeleton className="h-6 w-2/3 rounded" />

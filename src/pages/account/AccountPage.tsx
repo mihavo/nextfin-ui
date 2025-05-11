@@ -2,6 +2,8 @@
 
 import {
   Calendar,
+  Check,
+  Copy,
   Dot,
   Download,
   Filter,
@@ -77,6 +79,7 @@ export default function AccountDetailsPage() {
 
   const [transactionPeriod, setTransactionPeriod] = useState<DatePeriod>('7d');
   const [searchQuery, setSearchQuery] = useState('');
+  const [ibanCopied, setIbanCopied] = useState(false);
 
   const account = useAppSelector(
     (state) => state.accounts.currentAccount
@@ -148,11 +151,18 @@ export default function AccountDetailsPage() {
   }, [searchQuery, transactions]);
 
   useEffect(() => {
-    console.log(filterTransactionsByDate(transactions, transactionPeriod));
     setFilteredTransactions(
       filterTransactionsByDate(transactions, transactionPeriod)
     );
   }, [transactionPeriod, transactions]);
+
+  const handleIbanCopy = async () => {
+    await navigator.clipboard.writeText(account.iban);
+    setIbanCopied(true);
+    setTimeout(() => {
+      setIbanCopied(false);
+    }, 3000);
+  };
 
   if (getAccountByIdStatus === 'pending') {
     return (
@@ -248,14 +258,19 @@ export default function AccountDetailsPage() {
                   </CardTitle>
                   {getStatusBadge()}
                 </div>
-                <CardDescription className="mt-1 flex items-center gap-0.5">
-                  <span
-                    className={`font-semibold ${
-                      theme === 'dark' ? 'text-emerald-300' : 'text-emerald-400'
-                    } `}
-                  >
-                    {friendlyFormatIBAN(account.iban)}
-                  </span>
+                <CardDescription
+                  className={`mt-1 flex items-center gap-0.5 font-semibold ${
+                    theme === 'dark' ? 'text-emerald-300' : 'text-emerald-400'
+                  }`}
+                >
+                  {friendlyFormatIBAN(account.iban)}
+                  <Button variant="link" size={'sm'} onClick={handleIbanCopy}>
+                    {ibanCopied ? (
+                      <Check className="w-1 h-1 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-1 h-1 text-white" />
+                    )}
+                  </Button>
                   <Dot></Dot>
                   <span className="text-emerald-400 font-semibold">
                     {account.accountType.charAt(0).toUpperCase() +
