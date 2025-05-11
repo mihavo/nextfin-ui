@@ -31,6 +31,22 @@ export interface GetAccountTransactionsResponse {
   page: PageResponse;
 }
 
+export interface AccountSearchOptions {
+  pageSize: number;
+  skip: number;
+}
+
+export interface AccountSearchResult {
+  iban: string;
+  accountName: string;
+  lastName: string;
+  currency: string;
+}
+export interface AccountSearchResponse {
+  content: AccountSearchResult[];
+  page: PageResponse;
+}
+
 export const fetchUserAccounts = async (): Promise<UserAccountsResponse> => {
   return await nextfinRequest('/accounts', 'GET');
 };
@@ -58,6 +74,17 @@ export const getAccountTransactions = async (
   );
   return await nextfinRequest(
     `/accounts/${request.accountId}/transactions${query}`,
+    'GET'
+  );
+};
+
+export const searchAccounts = async (
+  query: string,
+  options: AccountSearchOptions
+): Promise<AccountSearchResponse> => {
+  const parsedOptions = qs.stringify(options, { skipNulls: true });
+  return await nextfinRequest(
+    `/accounts/search?${query}&${parsedOptions}`,
     'GET'
   );
 };

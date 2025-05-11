@@ -62,6 +62,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { DatePeriod } from '@/types/Dates';
 import { Transaction } from '@/types/Transaction';
+import { friendlyFormatIBAN } from 'ibantools';
 import { Link, useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { toast } from 'sonner';
@@ -204,7 +205,7 @@ export default function AccountDetailsPage() {
     switch (account.status) {
       case 'ACTIVE':
         return (
-          <Badge className="bg-emerald-400 rounded hover:bg-emerald-300 transition-all duration-300">
+          <Badge className=" rounded bg-emerald-300 transition-all duration-300">
             Active
           </Badge>
         );
@@ -252,7 +253,7 @@ export default function AccountDetailsPage() {
                       theme === 'dark' ? 'text-emerald-300' : 'text-emerald-400'
                     } `}
                   >
-                    {account.id}
+                    {friendlyFormatIBAN(account.iban)}
                   </span>
                   <Dot></Dot>
                   <span className="text-emerald-400 font-semibold">
