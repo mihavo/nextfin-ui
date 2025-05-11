@@ -63,6 +63,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             ) : (
               items
                 .filter((item) => item.accountType === 'CHECKING')
+                .sort((a, b) => b.balance - a.balance)
                 .map((item) => <AccountItem item={item} key={item.id} />)
             )}
           </TabsContent>
@@ -73,6 +74,7 @@ export default function Accounts({ items }: { items: Account[] }) {
               ) : (
                 items
                   .filter((item) => item.accountType === 'SAVINGS')
+                  .sort((a, b) => b.balance - a.balance)
                   .map((item) => <AccountItem item={item} key={item.id} />)
               )}
             </div>
@@ -83,6 +85,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             ) : (
               items
                 .filter((item) => item.accountType === 'TRUST')
+                .sort((a, b) => b.balance - a.balance)
                 .map((item) => <AccountItem item={item} key={item.id} />)
             )}
           </TabsContent>
