@@ -14,7 +14,7 @@ import Transactions from '../../components/transactions/Transactions';
 import QuickActions from './QuickActions';
 
 export default function Dashboard() {
-  const [totalBalance, setTotalBalance] = useState(0);
+  const [totalBalance, setTotalBalance] = useState<number | null>(null);
   const accounts: Account[] = useAppSelector(
     (state) => state.accounts.entities
   );
@@ -27,9 +27,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (hasLoaded) {
+      console.log('has loaded');
       const total = accounts
         .map((acc) => Number(acc.balance))
         .reduce((sum, balance) => sum + balance, 0);
+      console.log(total);
       setTotalBalance(total);
     }
   }, [hasLoaded, accounts]);
@@ -52,7 +54,7 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {!hasLoaded ? (
+            {totalBalance == null ? (
               <Skeleton className="p-2 h-5 w-1/2" />
             ) : (
               <>
