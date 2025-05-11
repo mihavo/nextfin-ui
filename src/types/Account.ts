@@ -8,6 +8,7 @@ export enum AccountType {
 
 export interface Account {
   id: number;
+  iban: string;
   balance: number;
   currency: string;
   status?: AccountStatus;
