@@ -16,7 +16,6 @@ export default function AccountTransactionItem({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openTransactionModal = () => {
-    console.log(isModalOpen);
     setIsModalOpen(true);
   };
 

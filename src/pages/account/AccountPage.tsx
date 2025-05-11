@@ -68,6 +68,7 @@ import { friendlyFormatIBAN } from 'ibantools';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { toast } from 'sonner';
+import NewTransactionModal from '../transactions/NewTransactionModal';
 
 export default function AccountDetailsPage() {
   const { id: accountId } = useParams();
@@ -75,11 +76,12 @@ export default function AccountDetailsPage() {
   const navigate = useNavigate();
 
   const { theme } = useTheme();
-  const themeBg = theme === 'dark' ? 'main-grain-dark' : 'main-grain';
+  const bgTheme = theme === 'dark' ? 'main-grain-dark' : 'main-grain';
 
   const [transactionPeriod, setTransactionPeriod] = useState<DatePeriod>('7d');
   const [searchQuery, setSearchQuery] = useState('');
   const [ibanCopied, setIbanCopied] = useState(false);
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
 
   const account = useAppSelector(
     (state) => state.accounts.currentAccount
@@ -164,9 +166,13 @@ export default function AccountDetailsPage() {
     }, 3000);
   };
 
+  const toggleTransferModal = () => {
+    setTransferModalOpen(true);
+  };
+
   if (getAccountByIdStatus === 'pending') {
     return (
-      <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
+      <div className={`flex min-h-screen w-full flex-col ${bgTheme}`}>
         <Breadcrumb />
         <div className="flex flex-1 items-center justify-center w-1/2 mx-auto">
           <BarLoader
@@ -182,7 +188,7 @@ export default function AccountDetailsPage() {
 
   if (!account) {
     return (
-      <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
+      <div className={`flex min-h-screen w-full flex-col ${bgTheme}`}>
         <Breadcrumb />
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
@@ -216,7 +222,7 @@ export default function AccountDetailsPage() {
     switch (account.status) {
       case 'ACTIVE':
         return (
-          <Badge className=" rounded bg-emerald-300 transition-all duration-300">
+          <Badge className=" rounded bg-emerald-400 transition-all duration-300">
             Active
           </Badge>
         );
@@ -241,7 +247,7 @@ export default function AccountDetailsPage() {
   };
 
   return (
-    <div className={`flex min-h-screen w-full flex-col ${themeBg}`}>
+    <div className={`flex min-h-screen w-full flex-col ${bgTheme}`}>
       <Breadcrumb />
 
       <main className={` relative flex flex-1 flex-col p-4 md:p-6 mx-56`}>
@@ -268,7 +274,7 @@ export default function AccountDetailsPage() {
                     {ibanCopied ? (
                       <Check className="w-1 h-1 text-emerald-400" />
                     ) : (
-                      <Copy className="w-1 h-1 text-white" />
+                      <Copy className="w-1 h-1 text-black dark:text-white" />
                     )}
                   </Button>
                   <Dot></Dot>
@@ -361,7 +367,7 @@ export default function AccountDetailsPage() {
                 variant="outline"
                 size="sm"
                 className="h-8 gap-1"
-                onClick={() => navigate('/transactions/new')}
+                onClick={toggleTransferModal}
               >
                 <Send className="h-3.5 w-3.5" />
                 Transfer
@@ -513,6 +519,10 @@ export default function AccountDetailsPage() {
             </Button>
           </CardFooter>
         </Card>
+        <NewTransactionModal
+          isModalOpen={transferModalOpen}
+          onOpenChange={setTransferModalOpen}
+        />
       </main>
     </div>
   );

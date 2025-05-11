@@ -9,7 +9,7 @@ export default function TopNav() {
   return (
     <nav className="px-3 sm:px-6 w-full font-medium flex items-center justify-between">
       <div className="left-items flex items-center gap-6  h-full">
-        <Link to="#" className="flex items-center gap-3 text-xl font-semibold">
+        <Link to="/" className="flex items-center gap-3 text-xl font-semibold">
           <img
             src="/assets/logo.png"
             alt="nextfin-logo"

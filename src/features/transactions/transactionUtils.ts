@@ -18,13 +18,6 @@ export const filterTransactionsByDate = (
   const cutoff = getCutoffDate(period);
   const result = transactions.filter((tx) => {
     if (!tx.createdAt) return false;
-    console.log(
-      'tx.createdAt',
-      new Date(tx.createdAt),
-      tx.createdAt,
-      'cutoff',
-      cutoff
-    );
     return cutoff ? new Date(tx.createdAt) >= cutoff : true;
   });
   console.log(result);

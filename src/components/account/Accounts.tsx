@@ -10,10 +10,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { resetStatus } from '@/features/account/accountSlice';
+import NewTransactionModal from '@/pages/transactions/NewTransactionModal';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { Download, Plus, Send } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AccountItem from './AccountItem';
 
@@ -23,12 +24,17 @@ export default function Accounts({ items }: { items: Account[] }) {
   );
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
 
   useEffect(() => {
     if (status === 'succeeded' || status === 'failed') {
       dispatch(resetStatus('getUserAccountsStatus'));
     }
   }, [status, dispatch]);
+
+  const toggleTransferModal = () => {
+    setTransferModalOpen(true);
+  };
 
   return (
     <Card className="lg:col-span-2">
@@ -100,7 +106,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             variant="outline"
             size="sm"
             className="h-8 gap-1"
-            onClick={() => navigate('/transactions/new')}
+            onClick={toggleTransferModal}
           >
             <Send className="h-3.5 w-3.5" />
             Transfer
@@ -111,6 +117,10 @@ export default function Accounts({ items }: { items: Account[] }) {
           </Button>
         </div>
       </CardFooter>
+      <NewTransactionModal
+        isModalOpen={transferModalOpen}
+        onOpenChange={setTransferModalOpen}
+      />
     </Card>
   );
 }

@@ -8,7 +8,6 @@ import AddAccount from './pages/account/AddAccount';
 import AuthPage from './pages/auth/AuthPage';
 import LogoutPage from './pages/auth/LogoutPage';
 import NotFound from './pages/misc/NotFound';
-import NewTransactionPage from './pages/transactions/NewTransactionPage';
 import { useAppSelector } from './store/hooks';
 
 function App() {
@@ -25,9 +24,6 @@ function App() {
                 <Route index element={<AccountPage />} />
                 <Route path="new" element={<AddAccount />} />
                 <Route path=":id" element={<AccountPage />} />
-              </Route>
-              <Route path="transactions">
-                <Route path="new" element={<NewTransactionPage />} />
               </Route>
             </Route>
           ) : (
