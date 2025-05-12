@@ -37,7 +37,9 @@ import {
 } from '@/components/ui/command';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -67,7 +69,6 @@ import { resetStatus } from '@/features/transactions/transactionSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogClose, DialogDescription } from '@radix-ui/react-dialog';
 import { friendlyFormatIBAN } from 'ibantools';
 import { CalendarIcon, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -179,6 +180,8 @@ export default function NewTransactionModal({
   const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {
     console.log('to submit', data);
   };
+
+  const labelClasses = `flex flex-col items-center justify-between transition-all rounded-md border-2 border-muted p-4 hover:bg-accent/50 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${componentTheme}`;
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onOpenChange}>
@@ -304,309 +307,311 @@ export default function NewTransactionModal({
                 </DialogDescription>
               </DialogHeader>
 
-              <FormField
-                control={form.control}
-                name="transactionType"
-                render={({ field }) => (
-                  <FormItem className="space-y-4">
-                    <FormLabel>Transaction Type</FormLabel>
-                    <FormControl>
-                      <RadioGroup
+              <div className="flex-col space-y-6">
+                <FormField
+                  control={form.control}
+                  name="transactionType"
+                  render={({ field }) => (
+                    <FormItem className="space-y-4">
+                      <FormLabel>Transaction Type</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="grid grid-cols-3 gap-4"
+                          disabled={status === 'pending'}
+                        >
+                          <div>
+                            <RadioGroupItem
+                              value="account"
+                              id="account"
+                              className="peer sr-only"
+                            />
+                            <FormLabel
+                              htmlFor="account"
+                              className={labelClasses}
+                            >
+                              <Wallet className="mb-3 h-6 w-6" />
+                              <span className="text-sm font-medium">
+                                Account
+                              </span>
+                            </FormLabel>
+                          </div>
+
+                          <div>
+                            <RadioGroupItem
+                              value="card"
+                              id="card"
+                              className="peer sr-only"
+                            />
+                            <FormLabel htmlFor="card" className={labelClasses}>
+                              <CreditCard className="mb-3 h-6 w-6" />
+                              <span className="text-sm font-medium">Card</span>
+                            </FormLabel>
+                          </div>
+
+                          <div>
+                            <RadioGroupItem
+                              value="external"
+                              id="external"
+                              className="peer sr-only"
+                            />
+                            <FormLabel
+                              htmlFor="external"
+                              className={labelClasses}
+                            >
+                              <ExternalLink className="mb-3 h-6 w-6" />
+                              <span className="text-sm font-medium">
+                                External
+                              </span>
+                            </FormLabel>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormDescription>
+                        {transactionType === 'ACCOUNT'
+                          ? 'Transfer money between your accounts'
+                          : transactionType === 'CARD'
+                          ? 'Make a payment to your credit card'
+                          : 'Send money to an external account or service'}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="sourceAccountId"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel>From Account</FormLabel>
+                      <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="grid grid-cols-3 gap-4"
+                        defaultValue={field.value.toString()}
                         disabled={status === 'pending'}
                       >
-                        <div>
-                          <RadioGroupItem
-                            value="account"
-                            id="account"
-                            className="peer sr-only"
-                          />
-                          <FormLabel
-                            htmlFor="account"
-                            className={`lex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent/50 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${componentTheme}`}
-                          >
-                            <Wallet className="mb-3 h-6 w-6" />
-                            <span className="text-sm font-medium">Account</span>
-                          </FormLabel>
-                        </div>
+                        <FormControl>
+                          <SelectTrigger className="">
+                            <SelectValue placeholder="Select account" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-75">
+                          {accounts.map((account) => (
+                            <SelectItem
+                              key={account.id}
+                              value={account.id.toString()}
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <span>
+                                  {account.friendlyName ??
+                                    `Account No #${account.id}`}
+                                </span>
+                                <span className="text-muted-foreground">
+                                  ${account.balance.toFixed(2)}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Available balance:{' '}
+                        {currencyFormatter(
+                          selectedSourceAccount.currency,
+                          selectedSourceAccount.balance
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                        <div>
-                          <RadioGroupItem
-                            value="card"
-                            id="card"
-                            className="peer sr-only"
-                          />
-                          <FormLabel
-                            htmlFor="card"
-                            className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent/50 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${componentTheme}`}
-                          >
-                            <CreditCard className="mb-3 h-6 w-6" />
-                            <span className="text-sm font-medium">Card</span>
-                          </FormLabel>
-                        </div>
-
-                        <div>
-                          <RadioGroupItem
-                            value="external"
-                            id="external"
-                            className="peer sr-only"
-                          />
-                          <FormLabel
-                            htmlFor="external"
-                            className={`lex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent/50 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${componentTheme}`}
-                          >
-                            <ExternalLink className="mb-3 h-6 w-6" />
-                            <span className="text-sm font-medium">
-                              External
-                            </span>
-                          </FormLabel>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormDescription>
-                      {transactionType === 'ACCOUNT'
-                        ? 'Transfer money between your accounts'
-                        : transactionType === 'CARD'
-                        ? 'Make a payment to your credit card'
-                        : 'Send money to an external account or service'}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="sourceAccountId"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>From Account</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value.toString()}
-                      disabled={status === 'pending'}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="">
-                          <SelectValue placeholder="Select account" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {accounts.map((account) => (
-                          <SelectItem
-                            key={account.id}
-                            value={account.id.toString()}
-                          >
-                            <div className="flex items-center justify-between w-full">
-                              <span>
-                                {account.friendlyName ??
-                                  `Account No #${account.id}`}
-                              </span>
-                              <span className="text-muted-foreground">
-                                ${account.balance.toFixed(2)}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Available balance:{' '}
-                      {currencyFormatter(
-                        selectedSourceAccount.currency,
-                        selectedSourceAccount.balance
-                      )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="targetAccountId"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>{getRecipientLabel()}</FormLabel>
-                    <div className="relative">
-                      <FormControl>
-                        <div className="relative">
-                          <div className="flex items-center">
-                            <div className="relative flex-1">
-                              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                              <Input
-                                placeholder={`Search by name or ${
-                                  transactionType === 'EXTERNAL'
-                                    ? 'details'
-                                    : 'account ID'
-                                }`}
-                                className=" pl-9 pr-10"
-                                value={searchQuery}
-                                onChange={(e) => {
-                                  setSearchQuery(e.target.value);
-                                  setOpenCombobox(true);
-                                }}
-                                onFocus={() => setOpenCombobox(true)}
-                                disabled={status === 'pending'}
-                              />
-                              {searchQuery && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="absolute right-1 top-1 h-7 w-7 rounded-full p-0"
-                                  onClick={() => {
-                                    setSearchQuery('');
-                                    setSelectedRecipient(null);
-                                    form.setValue('targetAccountId', 0);
+                <FormField
+                  control={form.control}
+                  name="targetAccountId"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel>{getRecipientLabel()}</FormLabel>
+                      <div className="relative">
+                        <FormControl>
+                          <div className="relative">
+                            <div className="flex items-center">
+                              <div className="relative flex-1">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                  placeholder={`Search by name or ${
+                                    transactionType === 'EXTERNAL'
+                                      ? 'details'
+                                      : 'account ID'
+                                  }`}
+                                  className=" pl-9 pr-10"
+                                  value={searchQuery}
+                                  onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    setOpenCombobox(true);
                                   }}
-                                  type="button"
+                                  onFocus={() => setOpenCombobox(true)}
+                                  disabled={status === 'pending'}
+                                />
+                                {searchQuery && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-1 top-1 h-7 w-7 rounded-full p-0"
+                                    onClick={() => {
+                                      setSearchQuery('');
+                                      setSelectedRecipient(null);
+                                      form.setValue('targetAccountId', 0);
+                                    }}
+                                    type="button"
+                                    disabled={status === 'pending'}
+                                  >
+                                    <X className="h-4 w-4" />
+                                    <span className="sr-only">Clear</span>
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                            {openCombobox && (
+                              <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
+                                <Command className="rounded-md">
+                                  <CommandList>
+                                    <CommandEmpty>
+                                      No results found.
+                                    </CommandEmpty>
+                                    <CommandGroup>
+                                      {searchResults.map((item) => {
+                                        let primaryText = '';
+                                        let secondaryText = '';
+
+                                        primaryText =
+                                          item.firstName + ' ' + item.lastName;
+                                        secondaryText = `${friendlyFormatIBAN(
+                                          item.iban
+                                        )} ${item.currency}`;
+
+                                        return (
+                                          <CommandItem
+                                            key={item.id}
+                                            value={item.id.toString()}
+                                            onSelect={() =>
+                                              handleSelectedRecipient(item)
+                                            }
+                                            className="flex flex-col items-start py-3"
+                                          >
+                                            <div className="font-medium">
+                                              {primaryText}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                              {secondaryText}
+                                            </div>
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </div>
+                            )}
+                          </div>
+                        </FormControl>
+                      </div>
+                      {selectedRecipient && (
+                        <div className="mt-2 rounded-md border bg-muted/30 p-2 text-sm">
+                          <div className="font-medium">
+                            {selectedRecipient.firstName}{' '}
+                            {selectedRecipient.lastName}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {friendlyFormatIBAN(selectedRecipient.iban)}{' '}
+                            {selectedRecipient.currency}
+                          </div>
+                        </div>
+                      )}
+                      <FormDescription>
+                        {transactionType === 'ACCOUNT'
+                          ? 'Search for one of your accounts to transfer to'
+                          : transactionType === 'CARD'
+                          ? 'Search for a card to pay'
+                          : 'Search for an external recipient'}
+                      </FormDescription>
+                      <FormMessage />
+                      <input type="hidden" {...field} />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel>
+                        Amount ({form.getValues('currency') ?? 'EUR'})
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0.01"
+                          step="0.01"
+                          placeholder="0.00"
+                          {...field}
+                          className=""
+                          disabled={status === 'pending'}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="isScheduled"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={status === 'pending'}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>Schedule for later</FormLabel>
+                        <FormDescription>
+                          Select this option to schedule the transaction for a
+                          future date and time
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                {form.getValues('isScheduled') && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="isScheduled"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  className="w-full justify-start text-left font-normal "
                                   disabled={status === 'pending'}
                                 >
-                                  <X className="h-4 w-4" />
-                                  <span className="sr-only">Clear</span>
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {field.value ?? <span>Pick a date</span>}
                                 </Button>
-                              )}
-                            </div>
-                          </div>
-                          {openCombobox && (
-                            <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
-                              <Command className="rounded-md">
-                                <CommandList>
-                                  <CommandEmpty>No results found.</CommandEmpty>
-                                  <CommandGroup>
-                                    {searchResults.map((item) => {
-                                      let primaryText = '';
-                                      let secondaryText = '';
-
-                                      primaryText =
-                                        item.firstName + ' ' + item.lastName;
-                                      secondaryText = `${friendlyFormatIBAN(
-                                        item.iban
-                                      )} ${item.currency}`;
-
-                                      return (
-                                        <CommandItem
-                                          key={item.id}
-                                          value={item.id.toString()}
-                                          onSelect={() =>
-                                            handleSelectedRecipient(item)
-                                          }
-                                          className="flex flex-col items-start py-3"
-                                        >
-                                          <div className="font-medium">
-                                            {primaryText}
-                                          </div>
-                                          <div className="text-xs text-muted-foreground">
-                                            {secondaryText}
-                                          </div>
-                                        </CommandItem>
-                                      );
-                                    })}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </div>
-                          )}
-                        </div>
-                      </FormControl>
-                    </div>
-                    {selectedRecipient && (
-                      <div className="mt-2 rounded-md border bg-muted/30 p-2 text-sm">
-                        <div className="font-medium">
-                          {selectedRecipient.firstName}{' '}
-                          {selectedRecipient.lastName}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {friendlyFormatIBAN(selectedRecipient.iban)}{' '}
-                          {selectedRecipient.currency}
-                        </div>
-                      </div>
-                    )}
-                    <FormDescription>
-                      {transactionType === 'ACCOUNT'
-                        ? 'Search for one of your accounts to transfer to'
-                        : transactionType === 'CARD'
-                        ? 'Search for a card to pay'
-                        : 'Search for an external recipient'}
-                    </FormDescription>
-                    <FormMessage />
-                    <input type="hidden" {...field} />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="amount"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel>
-                      Amount ({form.getValues('currency') ?? 'EUR'})
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0.01"
-                        step="0.01"
-                        placeholder="0.00"
-                        {...field}
-                        className=""
-                        disabled={status === 'pending'}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="isScheduled"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        disabled={status === 'pending'}
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel>Schedule for later</FormLabel>
-                      <FormDescription>
-                        Select this option to schedule the transaction for a
-                        future date and time
-                      </FormDescription>
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              {form.getValues('isScheduled') && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="isScheduled"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className="w-full justify-start text-left font-normal "
-                                disabled={status === 'pending'}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {field.value ?? <span>Pick a date</span>}
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            {/* <Calendar
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              {/* <Calendar
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
@@ -616,53 +621,54 @@ export default function NewTransactionModal({
                                   new Date(new Date().setHours(0, 0, 0, 0))
                                 }
                               /> */}
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="timestamp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Time</FormLabel>
-                        <FormControl>
-                          <div className="flex items-center">
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start text-left font-normal "
-                              disabled={status === 'pending'}
-                              type="button"
-                              onClick={() => {
-                                const timeInput =
-                                  document.getElementById('time-input');
-                                if (timeInput) {
-                                  timeInput.click();
-                                }
-                              }}
-                            >
-                              <Clock className="mr-2 h-4 w-4" />
-                              {field.value}
-                            </Button>
-                            <input
-                              id="time-input"
-                              type="time"
-                              value={field.value}
-                              onChange={(e) => field.onChange(e.target.value)}
-                              className="sr-only"
-                              disabled={status === 'pending'}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
+                    <FormField
+                      control={form.control}
+                      name="timestamp"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Time</FormLabel>
+                          <FormControl>
+                            <div className="flex items-center">
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start text-left font-normal "
+                                disabled={status === 'pending'}
+                                type="button"
+                                onClick={() => {
+                                  const timeInput =
+                                    document.getElementById('time-input');
+                                  if (timeInput) {
+                                    timeInput.click();
+                                  }
+                                }}
+                              >
+                                <Clock className="mr-2 h-4 w-4" />
+                                {field.value}
+                              </Button>
+                              <input
+                                id="time-input"
+                                type="time"
+                                value={field.value}
+                                onChange={(e) => field.onChange(e.target.value)}
+                                className="sr-only"
+                                disabled={status === 'pending'}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+              </div>
 
               <DialogFooter className="mt-10 flex items-center justify-between sm:justify-between">
                 <DialogClose asChild>
