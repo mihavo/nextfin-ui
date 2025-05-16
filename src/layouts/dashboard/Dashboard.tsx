@@ -27,11 +27,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (hasLoaded) {
-      console.log('has loaded');
       const total = accounts
         .map((acc) => Number(acc.balance))
         .reduce((sum, balance) => sum + balance, 0);
-      console.log(total);
       setTotalBalance(total);
     }
   }, [hasLoaded, accounts]);

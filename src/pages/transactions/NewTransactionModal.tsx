@@ -53,11 +53,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover } from '@/components/ui/popover';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { AccountSearchResult } from '@/features/account/accountApi';
 import {
@@ -70,7 +66,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { friendlyFormatIBAN } from 'ibantools';
-import { CalendarIcon, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -109,9 +105,7 @@ export default function NewTransactionModal({
     accounts[0]
   );
 
-  const searchResults = useAppSelector(
-    (state) => state.accounts.searchResults?.content || []
-  );
+  const searchResults = useAppSelector((state) => state.accounts.searchResults);
 
   const getRecipientLabel = () => {
     switch (transactionType) {
@@ -481,34 +475,37 @@ export default function NewTransactionModal({
                                       No results found.
                                     </CommandEmpty>
                                     <CommandGroup>
-                                      {searchResults.map((item) => {
-                                        let primaryText = '';
-                                        let secondaryText = '';
+                                      {searchResults &&
+                                        searchResults.content.map((item) => {
+                                          let primaryText = '';
+                                          let secondaryText = '';
 
-                                        primaryText =
-                                          item.firstName + ' ' + item.lastName;
-                                        secondaryText = `${friendlyFormatIBAN(
-                                          item.iban
-                                        )} ${item.currency}`;
+                                          primaryText =
+                                            item.firstName +
+                                            ' ' +
+                                            item.lastName;
+                                          secondaryText = `${friendlyFormatIBAN(
+                                            item.iban
+                                          )} ${item.currency}`;
 
-                                        return (
-                                          <CommandItem
-                                            key={item.id}
-                                            value={item.id.toString()}
-                                            onSelect={() =>
-                                              handleSelectedRecipient(item)
-                                            }
-                                            className="flex flex-col items-start py-3"
-                                          >
-                                            <div className="font-medium">
-                                              {primaryText}
-                                            </div>
-                                            <div className="text-xs text-muted-foreground">
-                                              {secondaryText}
-                                            </div>
-                                          </CommandItem>
-                                        );
-                                      })}
+                                          return (
+                                            <CommandItem
+                                              key={item.id}
+                                              value={item.id.toString()}
+                                              onSelect={() =>
+                                                handleSelectedRecipient(item)
+                                              }
+                                              className="flex flex-col items-start py-3"
+                                            >
+                                              <div className="font-medium">
+                                                {primaryText}
+                                              </div>
+                                              <div className="text-xs text-muted-foreground">
+                                                {secondaryText}
+                                              </div>
+                                            </CommandItem>
+                                          );
+                                        })}
                                     </CommandGroup>
                                   </CommandList>
                                 </Command>
@@ -593,35 +590,12 @@ export default function NewTransactionModal({
                   <div className="grid gap-4 sm:grid-cols-2">
                     <FormField
                       control={form.control}
-                      name="isScheduled"
+                      name="timestamp" // ← bind your date picker into the same timestamp field
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
                           <FormLabel>Date</FormLabel>
                           <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant="outline"
-                                  className="w-full justify-start text-left font-normal "
-                                  disabled={status === 'pending'}
-                                >
-                                  <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {field.value ?? <span>Pick a date</span>}
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                              {/* <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                initialFocus
-                                disabled={(date) =>
-                                  date <
-                                  new Date(new Date().setHours(0, 0, 0, 0))
-                                }
-                              /> */}
-                            </PopoverContent>
+                            {/* put your Calendar here, call field.onChange(dateString) */}
                           </Popover>
                           <FormMessage />
                         </FormItem>

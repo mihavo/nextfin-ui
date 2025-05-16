@@ -6,6 +6,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { ArrowLeft, Home } from 'lucide-react';
+import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 
@@ -36,17 +37,19 @@ export default function AppBreadcrumb() {
           const routeTo = `/${pathnames.slice(1, index + 2).join('/')}`;
           const isLast = index === pathnames.length - 1;
           return (
-            <BreadcrumbItem key={routeTo}>
+            <React.Fragment key={routeTo}>
               <BreadcrumbSeparator />
-              <BreadcrumbLink
-                asChild
-                className={isLast ? 'text-muted-foreground' : ''}
-              >
-                <Link to={routeTo}>
-                  {name.charAt(0).toUpperCase() + name.slice(1)}
-                </Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
+              <BreadcrumbItem key={routeTo}>
+                <BreadcrumbLink
+                  asChild
+                  className={isLast ? 'text-muted-foreground' : ''}
+                >
+                  <Link to={routeTo}>
+                    {name.charAt(0).toUpperCase() + name.slice(1)}
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </React.Fragment>
           );
         })}
       </BreadcrumbList>

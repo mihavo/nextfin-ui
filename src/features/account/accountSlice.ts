@@ -35,6 +35,7 @@ const initialState: AccountState = {
   createAccountStatus: 'idle',
   getAccountByIdStatus: 'idle',
   getAccountTransactionsStatus: 'idle',
+  searchResults: null,
 };
 
 export const fetchUserAccountsAction = createAsyncThunk(

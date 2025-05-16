@@ -20,7 +20,6 @@ export const filterTransactionsByDate = (
     if (!tx.createdAt) return false;
     return cutoff ? new Date(tx.createdAt) >= cutoff : true;
   });
-  console.log(result);
   return result;
 };
 
