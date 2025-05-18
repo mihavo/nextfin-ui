@@ -24,7 +24,7 @@ export default function AppBreadcrumb() {
             variant="link"
             className="mr-2 text-slate-300 hover:bg-accent"
           >
-            <ArrowLeft />
+            <ArrowLeft className="text-[#71717B]" />
           </Button>
         </BreadcrumbItem>
         <BreadcrumbItem key={'home'}>

@@ -242,7 +242,7 @@ export default function AddAccount() {
                           >
                             <SelectTrigger
                               id="default-currency"
-                              className="w-full rounded "
+                              className="w-full rounded"
                             >
                               <SelectValue placeholder="Select currency" />
                             </SelectTrigger>

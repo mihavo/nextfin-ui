@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select';
 
 import { useTheme } from '@/components/theme/theme-provider';
+import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   CommandEmpty,
@@ -53,7 +54,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Popover } from '@/components/ui/popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { AccountSearchResult } from '@/features/account/accountApi';
 import {
@@ -94,17 +99,10 @@ export default function NewTransactionModal({
   const status = useAppSelector(
     (state) => state.transactions.newTransactionStatus
   );
-
   const transaction = useAppSelector(
     (state) => state.transactions.newTransaction
   );
-
   const accounts = useAppSelector((state) => state.accounts.entities);
-
-  const [selectedSourceAccount, setSelectedSourceAccount] = useState<Account>(
-    accounts[0]
-  );
-
   const searchResults = useAppSelector((state) => state.accounts.searchResults);
 
   const getRecipientLabel = () => {
@@ -137,6 +135,9 @@ export default function NewTransactionModal({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [openCombobox, setOpenCombobox] = useState(false);
+  const [selectedSourceAccount, setSelectedSourceAccount] = useState<Account>(
+    accounts[0]
+  );
   const [selectedRecipient, setSelectedRecipient] =
     useState<AccountSearchResult | null>(null);
 
@@ -165,14 +166,20 @@ export default function NewTransactionModal({
     }
   }, [searchQuery, dispatch]);
 
-  const handleSelectedRecipient = (recipient: AccountSearchResult) => {
-    form.setValue('targetAccountId', recipient.id);
+  const handleSelectedRecipient = (recipient: AccountSearchResult | null) => {
+    if (recipient) form.setValue('targetAccountId', recipient.id);
     setSelectedRecipient(recipient);
     setOpenCombobox(false);
   };
 
   const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {
     console.log('to submit', data);
+  };
+  const handleUpdateSourceAccount = (accountId: string) => {
+    const account = accounts.find(
+      (account) => account.id === Number(accountId)
+    );
+    if (account) setSelectedSourceAccount(account);
   };
 
   const labelClasses = `flex flex-col items-center justify-between transition-all rounded-md border-2 border-muted p-4 hover:bg-accent/50 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${componentTheme}`;
@@ -380,35 +387,35 @@ export default function NewTransactionModal({
                   render={({ field }) => (
                     <FormItem className="space-y-2">
                       <FormLabel>From Account</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value.toString()}
-                        disabled={status === 'pending'}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="">
+                      <FormControl>
+                        <Select
+                          defaultValue={selectedSourceAccount.toString()}
+                          onValueChange={handleUpdateSourceAccount}
+                          disabled={status === 'pending'}
+                        >
+                          <SelectTrigger id="soure-account">
                             <SelectValue placeholder="Select account" />
                           </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-75">
-                          {accounts.map((account) => (
-                            <SelectItem
-                              key={account.id}
-                              value={account.id.toString()}
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <span>
-                                  {account.friendlyName ??
-                                    `Account No #${account.id}`}
-                                </span>
-                                <span className="text-muted-foreground">
-                                  ${account.balance.toFixed(2)}
-                                </span>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                          <SelectContent className="max-h-75">
+                            {accounts.map((account) => (
+                              <SelectItem
+                                key={account.id}
+                                value={account.id.toString()}
+                              >
+                                <div className="flex items-center justify-between w-full">
+                                  <span>
+                                    {account.friendlyName ??
+                                      `Account No #${account.id}`}
+                                  </span>
+                                  <span className="text-muted-foreground">
+                                    ${account.balance.toFixed(2)}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
                       <FormDescription>
                         Available balance:{' '}
                         {currencyFormatter(
@@ -445,17 +452,17 @@ export default function NewTransactionModal({
                                     setSearchQuery(e.target.value);
                                     setOpenCombobox(true);
                                   }}
-                                  onFocus={() => setOpenCombobox(true)}
                                   disabled={status === 'pending'}
                                 />
-                                {searchQuery && (
+                                {searchQuery != null && (
                                   <Button
                                     variant="ghost"
                                     size="sm"
                                     className="absolute right-1 top-1 h-7 w-7 rounded-full p-0"
                                     onClick={() => {
                                       setSearchQuery('');
-                                      setSelectedRecipient(null);
+                                      setOpenCombobox(false);
+                                      handleSelectedRecipient(null);
                                       form.setValue('targetAccountId', 0);
                                     }}
                                     type="button"
@@ -476,36 +483,24 @@ export default function NewTransactionModal({
                                     </CommandEmpty>
                                     <CommandGroup>
                                       {searchResults &&
-                                        searchResults.content.map((item) => {
-                                          let primaryText = '';
-                                          let secondaryText = '';
-
-                                          primaryText =
-                                            item.firstName +
-                                            ' ' +
-                                            item.lastName;
-                                          secondaryText = `${friendlyFormatIBAN(
-                                            item.iban
-                                          )} ${item.currency}`;
-
-                                          return (
-                                            <CommandItem
-                                              key={item.id}
-                                              value={item.id.toString()}
-                                              onSelect={() =>
-                                                handleSelectedRecipient(item)
-                                              }
-                                              className="flex flex-col items-start py-3"
-                                            >
-                                              <div className="font-medium">
-                                                {primaryText}
-                                              </div>
-                                              <div className="text-xs text-muted-foreground">
-                                                {secondaryText}
-                                              </div>
-                                            </CommandItem>
-                                          );
-                                        })}
+                                        searchResults.content.map((item) => (
+                                          <CommandItem
+                                            key={item.id}
+                                            value={item.id.toString()}
+                                            onSelect={() =>
+                                              handleSelectedRecipient(item)
+                                            }
+                                            className="flex flex-col items-start py-3"
+                                          >
+                                            <div className="font-medium">
+                                              {item.firstName} {item.lastName}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                              {friendlyFormatIBAN(item.iban)}{' '}
+                                              {item.currency}
+                                            </div>
+                                          </CommandItem>
+                                        ))}
                                     </CommandGroup>
                                   </CommandList>
                                 </Command>
@@ -595,7 +590,19 @@ export default function NewTransactionModal({
                         <FormItem className="flex flex-col">
                           <FormLabel>Date</FormLabel>
                           <Popover>
-                            {/* put your Calendar here, call field.onChange(dateString) */}
+                            <PopoverTrigger asChild>
+                              <Button>{field.value || 'Pick date'}</Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={(date) =>
+                                  field.onChange(date.toISOString())
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
                           </Popover>
                           <FormMessage />
                         </FormItem>
