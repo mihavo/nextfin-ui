@@ -167,9 +167,12 @@ export default function NewTransactionModal({
   }, [accounts, dispatch]);
 
   useEffect(() => {
-    if (searchQuery.length > 3) {
-      dispatch(searchAccountsAction({ query: searchQuery }));
-    }
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.length > 3) {
+        dispatch(searchAccountsAction({ query: searchQuery }));
+      }
+    }, 500);
+    return () => clearTimeout(timeoutId);
   }, [searchQuery, dispatch]);
 
   const handleSelectedRecipient = (recipient: AccountSearchResult | null) => {
