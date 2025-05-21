@@ -1,4 +1,5 @@
 import {
+  CalendarIcon,
   Check,
   CreditCard,
   ExternalLink,
@@ -72,7 +73,6 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { friendlyFormatIBAN } from 'ibantools';
-import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -136,6 +136,7 @@ export default function NewTransactionModal({
 
   const transactionType = form.watch('transactionType');
   const sourceAccountId = form.watch('sourceAccountId');
+  const isScheduled = form.watch('isScheduled');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [openCombobox, setOpenCombobox] = useState(false);
@@ -144,6 +145,8 @@ export default function NewTransactionModal({
 
   const [selectedRecipient, setSelectedRecipient] =
     useState<AccountSearchResult | null>(null);
+
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   useEffect(() => {
     const account = accounts.find((account) => account.id === sourceAccountId);
@@ -569,7 +572,9 @@ export default function NewTransactionModal({
                           step="0.01"
                           placeholder="0.00"
                           {...field}
-                          className=""
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
                           disabled={status === 'pending'}
                         />
                       </FormControl>
@@ -601,73 +606,79 @@ export default function NewTransactionModal({
                   )}
                 />
 
-                {form.getValues('isScheduled') && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="timestamp" // ← bind your date picker into the same timestamp field
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button>{field.value || 'Pick date'}</Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={(date) =>
-                                  field.onChange(date ? date.toISOString() : '')
-                                }
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                {isScheduled && (
+                  <FormField
+                    control={form.control}
+                    name="timestamp"
+                    render={({ field }) => {
+                      // parse our ISO string (or default to now)
+                      const dt = field.value
+                        ? new Date(field.value)
+                        : new Date();
 
-                    <FormField
-                      control={form.control}
-                      name="timestamp"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Time</FormLabel>
-                          <FormControl>
-                            <div className="flex items-center">
-                              <Button
-                                variant="outline"
-                                className="w-full justify-start text-left font-normal "
-                                disabled={status === 'pending'}
-                                type="button"
-                                onClick={() => {
-                                  const timeInput =
-                                    document.getElementById('time-input');
-                                  if (timeInput) {
-                                    timeInput.click();
-                                  }
-                                }}
-                              >
-                                <Clock className="mr-2 h-4 w-4" />
-                                {field.value}
-                              </Button>
+                      // format for the time input
+                      const hhmm = dt.toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+
+                      return (
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Date</FormLabel>
+                            <Popover
+                              open={datePopoverOpen}
+                              onOpenChange={setDatePopoverOpen}
+                            >
+                              <PopoverTrigger asChild>
+                                <Button
+                                  type="button"
+                                  className="dark:bg-accent text-white"
+                                >
+                                  <CalendarIcon className="h-4 w-4 mr-2" />
+                                  {dt.toLocaleDateString()}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                  mode="single"
+                                  selected={dt}
+                                  onSelect={(d) => {
+                                    if (d) {
+                                      field.onChange(d.toISOString());
+                                      setDatePopoverOpen(false);
+                                    }
+                                  }}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Time</FormLabel>
+                            <FormControl>
                               <input
-                                id="time-input"
                                 type="time"
-                                value={field.value}
-                                onChange={(e) => field.onChange(e.target.value)}
-                                className="sr-only"
+                                value={hhmm}
+                                onChange={(e) => {
+                                  const [h, m] = e.target.value
+                                    .split(':')
+                                    .map((x) => parseInt(x, 10));
+                                  dt.setHours(h, m);
+                                  field.onChange(dt.toISOString());
+                                }}
+                                className="border px-2 py-1 rounded"
                                 disabled={status === 'pending'}
                               />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        </div>
+                      );
+                    }}
+                  />
                 )}
               </div>
 
