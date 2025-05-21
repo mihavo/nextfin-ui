@@ -494,7 +494,7 @@ export default function NewTransactionModal({
                                 )}
                               </div>
                             </div>
-                            {openCombobox != null && (
+                            {openCombobox && (
                               <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
                                 <Command className="rounded-md">
                                   <CommandList>
