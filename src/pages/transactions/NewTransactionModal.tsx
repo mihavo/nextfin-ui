@@ -1,6 +1,5 @@
 import {
   Check,
-  Command,
   CreditCard,
   ExternalLink,
   Search,
@@ -31,6 +30,7 @@ import { useTheme } from '@/components/theme/theme-provider';
 import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandItem,
@@ -59,6 +59,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Skeleton } from '@/components/ui/skeleton';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { AccountSearchResult } from '@/features/account/accountApi';
 import {
@@ -103,6 +104,9 @@ export default function NewTransactionModal({
     (state) => state.transactions.newTransaction
   );
   const accounts = useAppSelector((state) => state.accounts.entities);
+  const accountsStatus = useAppSelector(
+    (state) => state.accounts.getUserAccountsStatus
+  );
   const searchResults = useAppSelector((state) => state.accounts.searchResults);
 
   const getRecipientLabel = () => {
@@ -135,9 +139,9 @@ export default function NewTransactionModal({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [openCombobox, setOpenCombobox] = useState(false);
-  const [selectedSourceAccount, setSelectedSourceAccount] = useState<Account>(
-    accounts[0]
-  );
+  const [selectedSourceAccount, setSelectedSourceAccount] =
+    useState<Account | null>(null);
+
   const [selectedRecipient, setSelectedRecipient] =
     useState<AccountSearchResult | null>(null);
 
@@ -157,6 +161,8 @@ export default function NewTransactionModal({
   useEffect(() => {
     if (accounts.length === 0) {
       dispatch(fetchUserAccountsAction());
+    } else {
+      setSelectedSourceAccount(accounts[0]);
     }
   }, [accounts, dispatch]);
 
@@ -172,9 +178,6 @@ export default function NewTransactionModal({
     setOpenCombobox(false);
   };
 
-  const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {
-    console.log('to submit', data);
-  };
   const handleUpdateSourceAccount = (accountId: string) => {
     const account = accounts.find(
       (account) => account.id === Number(accountId)
@@ -182,7 +185,14 @@ export default function NewTransactionModal({
     if (account) setSelectedSourceAccount(account);
   };
 
-  const labelClasses = `flex flex-col items-center justify-between transition-all rounded-md border-2 border-muted p-4 hover:bg-accent/50 hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary ${componentTheme}`;
+  const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {
+    console.log('to submit', data);
+  };
+
+  const labelClasses = `flex flex-col items-center justify-between transition-all
+   rounded-md border-2 border-muted p-4 hover:bg-accent/50
+   hover:text-accent-foreground peer-data-[state=checked]:border-primary
+    [&:has([data-state=checked])]:border-primary ${componentTheme}`;
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onOpenChange}>
@@ -387,42 +397,49 @@ export default function NewTransactionModal({
                   render={({ field }) => (
                     <FormItem className="space-y-2">
                       <FormLabel>From Account</FormLabel>
-                      <FormControl>
-                        <Select
-                          defaultValue={selectedSourceAccount.toString()}
-                          onValueChange={handleUpdateSourceAccount}
-                          disabled={status === 'pending'}
-                        >
-                          <SelectTrigger id="soure-account">
-                            <SelectValue placeholder="Select account" />
-                          </SelectTrigger>
-                          <SelectContent className="max-h-75">
-                            {accounts.map((account) => (
-                              <SelectItem
-                                key={account.id}
-                                value={account.id.toString()}
+                      {selectedSourceAccount == null ? (
+                        <Skeleton className="h-6 w-2/3 rounded" />
+                      ) : (
+                        <>
+                          <FormControl>
+                            <Select
+                              defaultValue={selectedSourceAccount.toString()}
+                              onValueChange={handleUpdateSourceAccount}
+                              disabled={status === 'pending'}
+                            >
+                              <SelectTrigger
+                                id="soure-account"
+                                className="w-full"
                               >
-                                <div className="flex items-center justify-between w-full">
-                                  <span>
-                                    {account.friendlyName ??
-                                      `Account No #${account.id}`}
-                                  </span>
-                                  <span className="text-muted-foreground">
-                                    ${account.balance.toFixed(2)}
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormDescription>
-                        Available balance:{' '}
-                        {currencyFormatter(
-                          selectedSourceAccount.currency,
-                          selectedSourceAccount.balance
-                        )}
-                      </FormDescription>
+                                <SelectValue placeholder="Select account" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-75">
+                                {accounts.map((account) => (
+                                  <SelectItem
+                                    key={account.id}
+                                    value={account.id.toString()}
+                                  >
+                                    <div className="flex items-center justify-between text-muted-foreground gap-2">
+                                      <div>
+                                        {account.friendlyName ??
+                                          `Account No #${account.id}`}
+                                      </div>
+                                      <div>${account.balance.toFixed(2)}</div>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormDescription>
+                            Available balance:{' '}
+                            {currencyFormatter(
+                              selectedSourceAccount.currency,
+                              selectedSourceAccount.balance
+                            )}
+                          </FormDescription>
+                        </>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -474,7 +491,7 @@ export default function NewTransactionModal({
                                 )}
                               </div>
                             </div>
-                            {openCombobox && (
+                            {openCombobox != null && (
                               <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
                                 <Command className="rounded-md">
                                   <CommandList>
@@ -482,8 +499,8 @@ export default function NewTransactionModal({
                                       No results found.
                                     </CommandEmpty>
                                     <CommandGroup>
-                                      {searchResults &&
-                                        searchResults.content.map((item) => (
+                                      {searchResults != null &&
+                                        searchResults.content?.map((item) => (
                                           <CommandItem
                                             key={item.id}
                                             value={item.id.toString()}
@@ -598,7 +615,7 @@ export default function NewTransactionModal({
                                 mode="single"
                                 selected={field.value}
                                 onSelect={(date) =>
-                                  field.onChange(date.toISOString())
+                                  field.onChange(date ? date.toISOString() : '')
                                 }
                                 initialFocus
                               />

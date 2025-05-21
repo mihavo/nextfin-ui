@@ -86,7 +86,7 @@ export const searchAccounts = async (
 ): Promise<AccountSearchResponse> => {
   const parsedOptions = qs.stringify(options, { skipNulls: true });
   return await nextfinRequest(
-    `/accounts/search?${query}&${parsedOptions}`,
+    `/accounts/search?query=${query}&${parsedOptions}`,
     'GET'
   );
 };
