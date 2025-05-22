@@ -61,6 +61,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Skeleton } from '@/components/ui/skeleton';
+import { currencies } from '@/components/utils/currency';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { AccountSearchResult } from '@/features/account/accountApi';
 import {
@@ -76,6 +77,7 @@ import { friendlyFormatIBAN } from 'ibantools';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { BarLoader } from 'react-spinners';
 import { z } from 'zod';
 
 type NewTransactionModalProps = {
@@ -108,6 +110,7 @@ export default function NewTransactionModal({
     (state) => state.accounts.getUserAccountsStatus
   );
   const searchResults = useAppSelector((state) => state.accounts.searchResults);
+  const searchStatus = useAppSelector((state) => state.accounts.searchStatus);
 
   const getRecipientLabel = () => {
     switch (transactionType) {
@@ -137,6 +140,7 @@ export default function NewTransactionModal({
   const transactionType = form.watch('transactionType');
   const sourceAccountId = form.watch('sourceAccountId');
   const isScheduled = form.watch('isScheduled');
+  const currency = form.watch('currency');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [openCombobox, setOpenCombobox] = useState(false);
@@ -145,8 +149,6 @@ export default function NewTransactionModal({
 
   const [selectedRecipient, setSelectedRecipient] =
     useState<AccountSearchResult | null>(null);
-
-  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
 
   useEffect(() => {
     const account = accounts.find((account) => account.id === sourceAccountId);
@@ -174,7 +176,7 @@ export default function NewTransactionModal({
       if (searchQuery.length > 3) {
         dispatch(searchAccountsAction({ query: searchQuery }));
       }
-    }, 500);
+    }, 400);
     return () => clearTimeout(timeoutId);
   }, [searchQuery, dispatch]);
 
@@ -501,8 +503,22 @@ export default function NewTransactionModal({
                               <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-md">
                                 <Command className="rounded-md">
                                   <CommandList>
-                                    <CommandEmpty>
-                                      No results found.
+                                    <CommandEmpty className="flex h-12 items-center justify-center">
+                                      {searchStatus === 'idle' && (
+                                        <span>No results found.</span>
+                                      )}
+                                      {searchStatus === 'pending' && (
+                                        <BarLoader
+                                          height="10px"
+                                          width="20vw"
+                                          className="rounded"
+                                          color={
+                                            theme === 'dark'
+                                              ? '#ccc'
+                                              : '#18181B'
+                                          }
+                                        />
+                                      )}
                                     </CommandEmpty>
                                     <CommandGroup>
                                       {searchResults != null &&
@@ -557,31 +573,74 @@ export default function NewTransactionModal({
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="amount"
-                  render={({ field }) => (
-                    <FormItem className="space-y-2">
-                      <FormLabel>
-                        Amount ({form.getValues('currency') ?? 'EUR'})
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="0.01"
-                          step="0.01"
-                          placeholder="0.00"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
-                          }
+                <div className="flex gap-8 justify-between">
+                  <FormField
+                    control={form.control}
+                    name="currency"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2">
+                        <FormLabel>Currency</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
                           disabled={status === 'pending'}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                        >
+                          <FormControl className=" w-full">
+                            <SelectTrigger className="account-type-grain">
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {currencies.map((currency) => (
+                              <SelectItem
+                                key={currency.code}
+                                value={currency.code}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="text-base">
+                                    {currency.flag}
+                                  </span>
+                                  <span>{currency.name}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          Select the currency for this transaction
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="amount"
+                    render={({ field }) => (
+                      <FormItem className="space-y-2 flex-1">
+                        <FormLabel>Amount ({currency})</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0.00"
+                            {...field}
+                            value={field.value.toFixed(2)}
+                            onChange={(e) =>
+                              field.onChange(parseFloat(e.target.value))
+                            }
+                            disabled={status === 'pending'}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Enter the transaction amount
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
@@ -611,45 +670,40 @@ export default function NewTransactionModal({
                     control={form.control}
                     name="timestamp"
                     render={({ field }) => {
-                      // parse our ISO string (or default to now)
                       const dt = field.value
                         ? new Date(field.value)
                         : new Date();
-
-                      // format for the time input
                       const hhmm = dt.toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
                       });
-
                       return (
                         <div className="grid gap-4 sm:grid-cols-2">
                           <FormItem className="flex flex-col">
                             <FormLabel>Date</FormLabel>
-                            <Popover
-                              open={datePopoverOpen}
-                              onOpenChange={setDatePopoverOpen}
-                            >
-                              <PopoverTrigger asChild>
-                                <Button
-                                  type="button"
-                                  className="dark:bg-accent text-white"
-                                >
-                                  <CalendarIcon className="h-4 w-4 mr-2" />
-                                  {dt.toLocaleDateString()}
-                                </Button>
-                              </PopoverTrigger>
+                            <Popover>
+                              <FormControl>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    className="dark:bg-accent text-white"
+                                  >
+                                    <CalendarIcon className="h-4 w-4 mr-2" />
+                                    {dt.toLocaleDateString()}
+                                  </Button>
+                                </PopoverTrigger>
+                              </FormControl>
                               <PopoverContent className="w-auto p-0">
                                 <Calendar
                                   mode="single"
                                   selected={dt}
-                                  onSelect={(d) => {
-                                    if (d) {
-                                      field.onChange(d.toISOString());
-                                      setDatePopoverOpen(false);
-                                    }
-                                  }}
-                                  initialFocus
+                                  onSelect={(date) =>
+                                    field.onChange(date || new Date())
+                                  }
+                                  disabled={(date) =>
+                                    date <
+                                    new Date(new Date().setHours(0, 0, 0, 0))
+                                  }
                                 />
                               </PopoverContent>
                             </Popover>
@@ -659,7 +713,7 @@ export default function NewTransactionModal({
                           <FormItem className="flex flex-col">
                             <FormLabel>Time</FormLabel>
                             <FormControl>
-                              <input
+                              <Input
                                 type="time"
                                 value={hhmm}
                                 onChange={(e) => {

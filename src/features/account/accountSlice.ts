@@ -26,6 +26,7 @@ interface AccountState {
   createAccountStatus: Status;
   getAccountByIdStatus: Status;
   getAccountTransactionsStatus: Status;
+  searchStatus: Status;
 }
 
 const initialState: AccountState = {
@@ -35,6 +36,7 @@ const initialState: AccountState = {
   createAccountStatus: 'idle',
   getAccountByIdStatus: 'idle',
   getAccountTransactionsStatus: 'idle',
+  searchStatus: 'idle',
   searchResults: null,
 };
 
@@ -122,7 +124,7 @@ export const accountSlice = createSlice({
       state.getAccountByIdStatus = 'failed';
     });
 
-    //Get Account  transactions
+    //Get Account transactions
     builder.addCase(getAccountTransactionsAction.fulfilled, (state, action) => {
       state.currentAccount!.transactions = action.payload.content;
       state.getAccountTransactionsStatus = 'succeeded';
@@ -137,13 +139,14 @@ export const accountSlice = createSlice({
     //Search Accounts
     builder.addCase(searchAccountsAction.fulfilled, (state, action) => {
       state.searchResults = action.payload;
-      state.getAccountTransactionsStatus = 'succeeded';
+      state.searchStatus = 'succeeded';
     });
     builder.addCase(searchAccountsAction.pending, (state) => {
-      state.getAccountTransactionsStatus = 'pending';
+      state.searchResults = null;
+      state.searchStatus = 'pending';
     });
     builder.addCase(searchAccountsAction.rejected, (state) => {
-      state.getAccountTransactionsStatus = 'failed';
+      state.searchStatus = 'failed';
     });
   },
 });
