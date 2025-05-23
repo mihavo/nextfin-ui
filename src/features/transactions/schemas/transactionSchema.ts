@@ -9,5 +9,6 @@ export const newTransactionSchema = z.object({
     .length(3, { message: 'Currency code must be 3 characters' }),
   transactionType: z.enum(['CARD', 'ACCOUNT', 'EXTERNAL']),
   isScheduled: z.boolean(),
-  timestamp: z.string().optional(),
+  scheduledDate: z.date().optional(),
+  scheduledTime: z.string().optional(),
 });

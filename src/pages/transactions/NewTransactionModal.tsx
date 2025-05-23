@@ -1,3 +1,4 @@
+import { Calendar } from '@/components/ui/calendar';
 import {
   CalendarIcon,
   Check,
@@ -28,7 +29,6 @@ import {
 } from '@/components/ui/select';
 
 import { useTheme } from '@/components/theme/theme-provider';
-import { Calendar } from '@/components/ui/calendar';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Command,
@@ -133,7 +133,8 @@ export default function NewTransactionModal({
       targetAccountId: 0,
       transactionType: 'ACCOUNT',
       isScheduled: false,
-      timestamp: undefined,
+      scheduledDate: new Date(),
+      scheduledTime: '00:00',
     },
   });
 
@@ -144,6 +145,7 @@ export default function NewTransactionModal({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [openCombobox, setOpenCombobox] = useState(false);
+  const [openCalendar, setOpenCalendar] = useState(false);
   const [selectedSourceAccount, setSelectedSourceAccount] =
     useState<Account | null>(null);
 
@@ -666,73 +668,69 @@ export default function NewTransactionModal({
                 />
 
                 {isScheduled && (
-                  <FormField
-                    control={form.control}
-                    name="timestamp"
-                    render={({ field }) => {
-                      const dt = field.value
-                        ? new Date(field.value)
-                        : new Date();
-                      const hhmm = dt.toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      return (
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Date</FormLabel>
-                            <Popover>
-                              <FormControl>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    type="button"
-                                    className="dark:bg-accent text-white"
-                                  >
-                                    <CalendarIcon className="h-4 w-4 mr-2" />
-                                    {dt.toLocaleDateString()}
-                                  </Button>
-                                </PopoverTrigger>
-                              </FormControl>
-                              <PopoverContent className="w-auto p-0">
-                                <Calendar
-                                  mode="single"
-                                  selected={dt}
-                                  onSelect={(date) =>
-                                    field.onChange(date || new Date())
-                                  }
-                                  disabled={(date) =>
-                                    date <
-                                    new Date(new Date().setHours(0, 0, 0, 0))
-                                  }
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Time</FormLabel>
+                  <div className="flex items-center gap-4 justify-between">
+                    <FormField
+                      control={form.control}
+                      name="scheduledDate"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col w-1/2">
+                          <FormLabel>Date</FormLabel>
+                          <Popover
+                            open={openCalendar}
+                            onOpenChange={setOpenCalendar}
+                          >
                             <FormControl>
-                              <Input
-                                type="time"
-                                value={hhmm}
-                                onChange={(e) => {
-                                  const [h, m] = e.target.value
-                                    .split(':')
-                                    .map((x) => parseInt(x, 10));
-                                  dt.setHours(h, m);
-                                  field.onChange(dt.toISOString());
-                                }}
-                                className="border px-2 py-1 rounded"
-                                disabled={status === 'pending'}
-                              />
+                              <PopoverTrigger asChild>
+                                <Button
+                                  type="button"
+                                  className="dark:bg-accent text-white"
+                                >
+                                  <CalendarIcon className="h-4 w-4 mr-2" />
+                                  {field.value
+                                    ? field.value.toLocaleDateString()
+                                    : 'Select date'}
+                                </Button>
+                              </PopoverTrigger>
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        </div>
-                      );
-                    }}
-                  />
+                            <PopoverContent className="w-auto p-0">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={(date) => {
+                                  field.onChange(date);
+                                  setOpenCalendar(false);
+                                }}
+                                disabled={(date) =>
+                                  date <
+                                  new Date(new Date().setHours(0, 0, 0, 0))
+                                }
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="scheduledTime"
+                      render={({ field }) => (
+                        <FormItem className=" flex-1">
+                          <FormLabel>Time</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="time"
+                              value={field.value}
+                              onChange={field.onChange}
+                              className="border px-2 py-1 rounded"
+                              disabled={status === 'pending'}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 )}
               </div>
 
