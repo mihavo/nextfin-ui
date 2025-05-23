@@ -70,6 +70,7 @@ import {
 } from '@/features/account/accountSlice';
 import { newTransactionSchema } from '@/features/transactions/schemas/transactionSchema';
 import { resetStatus } from '@/features/transactions/transactionSlice';
+import { convertTimeAndDateToTimestamp } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -192,11 +193,29 @@ export default function NewTransactionModal({
     const account = accounts.find(
       (account) => account.id === Number(accountId)
     );
-    if (account) setSelectedSourceAccount(account);
+    if (account) {
+      setSelectedSourceAccount(account);
+      form.setValue('sourceAccountId', account.id);
+    }
   };
 
   const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {
     console.log('to submit', data);
+    let timestamp;
+    if (isScheduled) {
+      timestamp = convertTimeAndDateToTimestamp(
+        data.scheduledDate!.toISOString().split('T')[0],
+        data.scheduledTime!
+      );
+    }
+    const transactionData = {
+      ...data,
+      sourceAccountId: data.sourceAccountId,
+      targetAccountId: data.targetAccountId,
+      amount: parseFloat(data.amount.toFixed(2)),
+      timestamp,
+    };
+    console.log('transactionData', transactionData);
   };
 
   const labelClasses = `flex flex-col items-center justify-between transition-all
@@ -276,7 +295,10 @@ export default function NewTransactionModal({
                       <h4 className="text-sm font-medium text-muted-foreground">
                         Scheduled For
                       </h4>
-                      <p className="text-sm">{form.getValues('timestamp')}</p>
+                      <p className="text-sm">
+                        {form.getValues('scheduledDate')!.toString()} at{' '}
+                        {form.getValues('scheduledTime')}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -344,7 +366,7 @@ export default function NewTransactionModal({
                         >
                           <div>
                             <RadioGroupItem
-                              value="account"
+                              value="ACCOUNT"
                               id="account"
                               className="peer sr-only"
                             />
@@ -361,7 +383,7 @@ export default function NewTransactionModal({
 
                           <div>
                             <RadioGroupItem
-                              value="card"
+                              value="CARD"
                               id="card"
                               className="peer sr-only"
                             />
@@ -373,7 +395,7 @@ export default function NewTransactionModal({
 
                           <div>
                             <RadioGroupItem
-                              value="external"
+                              value="EXTERNAL"
                               id="external"
                               className="peer sr-only"
                             />
