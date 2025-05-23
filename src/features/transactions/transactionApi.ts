@@ -16,7 +16,7 @@ export interface TransactionRequest {
   transactionType: string;
 }
 
-export interface TransactionRequestOptions {
+export interface TransactionSchedulingOptions {
   isScheduled: boolean;
   timestamp?: string;
 }
@@ -48,7 +48,7 @@ export const fetchUserTransactions = async (
 
 export const transact = async (
   request: TransactionRequest,
-  options: TransactionRequestOptions
+  options: TransactionSchedulingOptions
 ): Promise<NewTransactionResponse> => {
   if (options.isScheduled) {
     return await nextfinRequest('/transactions/schedule', 'POST', {

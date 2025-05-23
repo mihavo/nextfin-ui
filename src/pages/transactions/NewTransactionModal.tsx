@@ -69,7 +69,11 @@ import {
   searchAccountsAction,
 } from '@/features/account/accountSlice';
 import { newTransactionSchema } from '@/features/transactions/schemas/transactionSchema';
-import { resetStatus } from '@/features/transactions/transactionSlice';
+import { TransactionSchedulingOptions } from '@/features/transactions/transactionApi';
+import {
+  resetStatus,
+  transactAction,
+} from '@/features/transactions/transactionSlice';
 import { convertTimeAndDateToTimestamp } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
@@ -90,7 +94,6 @@ type NewTransactionModalProps = {
 export default function NewTransactionModal({
   isModalOpen,
   onOpenChange,
-  account,
 }: NewTransactionModalProps) {
   const handleNewTransaction = () => {};
 
@@ -107,9 +110,6 @@ export default function NewTransactionModal({
     (state) => state.transactions.newTransaction
   );
   const accounts = useAppSelector((state) => state.accounts.entities);
-  const accountsStatus = useAppSelector(
-    (state) => state.accounts.getUserAccountsStatus
-  );
   const searchResults = useAppSelector((state) => state.accounts.searchResults);
   const searchStatus = useAppSelector((state) => state.accounts.searchStatus);
 
@@ -200,22 +200,30 @@ export default function NewTransactionModal({
   };
 
   const handleSubmit = (data: z.infer<typeof newTransactionSchema>) => {
-    console.log('to submit', data);
     let timestamp;
+    let transactionOptions: TransactionSchedulingOptions = {
+      isScheduled: data.isScheduled,
+    };
     if (isScheduled) {
       timestamp = convertTimeAndDateToTimestamp(
         data.scheduledDate!.toISOString().split('T')[0],
         data.scheduledTime!
       );
+      transactionOptions = {
+        isScheduled: true,
+        timestamp,
+      };
     }
+
     const transactionData = {
       ...data,
-      sourceAccountId: data.sourceAccountId,
-      targetAccountId: data.targetAccountId,
+      sourceAccountId: data.sourceAccountId.toString(),
+      targetAccountId: data.targetAccountId.toString(),
       amount: parseFloat(data.amount.toFixed(2)),
-      timestamp,
     };
-    console.log('transactionData', transactionData);
+    dispatch(
+      transactAction({ request: transactionData, options: transactionOptions })
+    );
   };
 
   const labelClasses = `flex flex-col items-center justify-between transition-all

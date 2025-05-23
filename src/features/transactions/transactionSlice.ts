@@ -8,7 +8,7 @@ import {
   NewTransactionResponse,
   transact,
   TransactionRequest,
-  TransactionRequestOptions,
+  TransactionSchedulingOptions,
 } from './transactionApi';
 
 interface TransactionsState {
@@ -40,7 +40,7 @@ export const transactAction = createAsyncThunk(
     options,
   }: {
     request: TransactionRequest;
-    options: TransactionRequestOptions;
+    options: TransactionSchedulingOptions;
   }): Promise<NewTransactionResponse> => {
     return await transact(request, options);
   }
