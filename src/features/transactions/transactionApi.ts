@@ -52,7 +52,9 @@ export const transact = async (
 ): Promise<NewTransactionResponse> => {
   if (options.isScheduled) {
     return await nextfinRequest('/transactions/schedule', 'POST', {
-      request,
+      transactionDetails: {
+        ...request,
+      },
       timestamp: options.timestamp,
     });
   }

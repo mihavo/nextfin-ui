@@ -3,7 +3,9 @@ import { z } from 'zod';
 export const newTransactionSchema = z.object({
   sourceAccountId: z.number(),
   targetAccountId: z.number(),
-  amount: z.number().positive({ message: 'Amount must be positive' }),
+  amount: z.string().regex(/^\d+(\.\d{2})$/, {
+    message: 'Must be a decimal with exactly 2 digits after the dot',
+  }),
   currency: z
     .string()
     .length(3, { message: 'Currency code must be 3 characters' }),

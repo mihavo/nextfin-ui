@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import dayjs from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -13,8 +14,10 @@ export function formatEnumKey(key: string): string {
     .join(' ');
 }
 
-export function convertTimeAndDateToTimestamp(date: string, time: string): string {
-  const dateTimeString = `${date}T${time}`;
-  const dateTime = new Date(dateTimeString);
-  return Math.floor(dateTime.getTime() / 1000).toString();
+export function convertTimeAndDateToTimestamp(
+  date: string,
+  time: string
+): string {
+  const dateTime = dayjs(`${date}T${time}`);
+  return dateTime.format('DD-MM-YYYYTHH:mm:ss');
 }

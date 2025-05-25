@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react';
 
+import { useTheme } from '@/components/theme/theme-provider';
 import { Button } from '@/components/ui/button';
 import {
   CardContent,
@@ -18,17 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-import { useTheme } from '@/components/theme/theme-provider';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Command,
@@ -55,11 +45,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { currencies } from '@/components/utils/currency';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
@@ -79,6 +78,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { friendlyFormatIBAN } from 'ibantools';
+import omit from 'lodash/omit';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -137,6 +137,7 @@ export default function NewTransactionModal({
       scheduledDate: new Date(),
       scheduledTime: '00:00',
     },
+    mode: 'onChange',
   });
 
   const transactionType = form.watch('transactionType');
@@ -214,12 +215,11 @@ export default function NewTransactionModal({
         timestamp,
       };
     }
-
     const transactionData = {
-      ...data,
+      ...omit(data, ['isScheduled', 'scheduledDate', 'scheduledTime']),
       sourceAccountId: data.sourceAccountId.toString(),
       targetAccountId: data.targetAccountId.toString(),
-      amount: parseFloat(data.amount.toFixed(2)),
+      amount: parseFloat(data.amount),
     };
     dispatch(
       transactAction({ request: transactionData, options: transactionOptions })
@@ -651,24 +651,27 @@ export default function NewTransactionModal({
                     name="amount"
                     render={({ field }) => (
                       <FormItem className="space-y-2 flex-1">
-                        <FormLabel>Amount ({currency})</FormLabel>
+                        <FormLabel>
+                          Amount {currency && `(${currency})`}
+                        </FormLabel>
                         <FormControl>
                           <Input
-                            type="number"
-                            min="0.01"
-                            step="0.01"
-                            placeholder="0.00"
-                            {...field}
-                            value={field.value.toFixed(2)}
-                            onChange={(e) =>
-                              field.onChange(parseFloat(e.target.value))
-                            }
-                            disabled={status === 'pending'}
+                            type="text"
+                            inputMode="decimal"
+                            pattern="^\d+(\.\d{0,2})?$"
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={(e) => {
+                              return field.onChange(
+                                parseFloat(e.target.value).toFixed(2)
+                              );
+                            }}
                           />
                         </FormControl>
                         <FormDescription>
                           Enter the transaction amount
                         </FormDescription>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -774,7 +777,7 @@ export default function NewTransactionModal({
                   <Button
                     type="submit"
                     className="dark:text-white"
-                    disabled={status === 'pending'}
+                    disabled={status === 'pending' || !form.formState.isValid}
                   >
                     {status === 'pending'
                       ? 'Processing...'

@@ -90,7 +90,9 @@ export const accountSlice = createSlice({
   extraReducers: (builder) => {
     //Fetch User Acounts
     builder.addCase(fetchUserAccountsAction.fulfilled, (state, action) => {
-      state.entities = action.payload.accounts;
+      state.entities = action.payload.accounts.sort(
+        (a, b) => b.balance - a.balance
+      );
       state.getUserAccountsStatus = 'succeeded';
     });
     builder.addCase(fetchUserAccountsAction.pending, (state) => {
