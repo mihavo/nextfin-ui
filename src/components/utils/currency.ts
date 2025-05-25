@@ -5,3 +5,8 @@ export const currencies = [
   { code: 'JPY', name: 'Japanese Yen (¥)', symbol: '¥', flag: '🇯🇵' },
   { code: 'CAD', name: 'Canadian Dollar (C$)', symbol: 'C$', flag: '🇨🇦' },
 ];
+
+
+export const mapCurrencySymbolToObject = (currencyCode: string) => {
+  return currencies.find((curr) => curr.code === currencyCode);
+};

@@ -2,6 +2,9 @@ import { TransactionDirection } from '@/features/transactions/transactionApi';
 
 export type TransactionStatus = 'CREATED' | 'PENDING' | 'COMPLETED' | 'FAILED';
 export type TransactionType = 'INSTANT' | 'SCHEDULED';
+
+export enum TransactionMethod { 'CARD' , 'ACCOUNT' , 'EXTERNAL'};
+
 export type TransactionCategory =
   | 'TRANSFERS'
   | 'GENERAL'

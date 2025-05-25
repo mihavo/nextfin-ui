@@ -1,24 +1,15 @@
 import { Calendar } from '@/components/ui/calendar';
 import {
   CalendarIcon,
-  Check,
   CreditCard,
   ExternalLink,
   Search,
-  Send,
   Wallet,
   X,
 } from 'lucide-react';
 
 import { useTheme } from '@/components/theme/theme-provider';
 import { Button } from '@/components/ui/button';
-import {
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Command,
@@ -69,14 +60,13 @@ import {
 } from '@/features/account/accountSlice';
 import { newTransactionSchema } from '@/features/transactions/schemas/transactionSchema';
 import { TransactionSchedulingOptions } from '@/features/transactions/transactionApi';
-import {
-  resetStatus,
-  transactAction,
-} from '@/features/transactions/transactionSlice';
+import { transactAction } from '@/features/transactions/transactionSlice';
 import { convertTimeAndDateToTimestamp } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
+import { TransactionMethod } from '@/types/Transaction';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Portal } from '@radix-ui/react-dialog';
 import { friendlyFormatIBAN } from 'ibantools';
 import omit from 'lodash/omit';
 import { useEffect, useState } from 'react';
@@ -84,6 +74,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
 import { z } from 'zod';
+import CompletedTransactionModal from './CompletedTransactionModal';
+import { PendingTransactionModal } from './PendingTransactionModal';
 
 type NewTransactionModalProps = {
   isModalOpen: boolean;
@@ -95,8 +87,6 @@ export default function NewTransactionModal({
   isModalOpen,
   onOpenChange,
 }: NewTransactionModalProps) {
-  const handleNewTransaction = () => {};
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { theme } = useTheme();
@@ -115,11 +105,11 @@ export default function NewTransactionModal({
 
   const getRecipientLabel = () => {
     switch (transactionType) {
-      case 'ACCOUNT':
+      case TransactionMethod.ACCOUNT:
         return 'To Account';
-      case 'CARD':
+      case TransactionMethod.CARD:
         return 'To Card';
-      case 'EXTERNAL':
+      case TransactionMethod.EXTERNAL:
         return 'External Recipient';
       default:
         return 'Recipient';
@@ -129,13 +119,14 @@ export default function NewTransactionModal({
   const form = useForm<z.infer<typeof newTransactionSchema>>({
     resolver: zodResolver(newTransactionSchema),
     defaultValues: {
-      amount: 0,
-      sourceAccountId: 0,
-      targetAccountId: 0,
-      transactionType: 'ACCOUNT',
+      amount: '0',
+      sourceAccountId: null,
+      targetAccountId: null,
+      transactionType: TransactionMethod.ACCOUNT,
       isScheduled: false,
       scheduledDate: new Date(),
       scheduledTime: '00:00',
+      currency: 'EUR',
     },
     mode: 'onChange',
   });
@@ -158,14 +149,6 @@ export default function NewTransactionModal({
     const account = accounts.find((account) => account.id === sourceAccountId);
     if (account) setSelectedSourceAccount(account);
   }, [sourceAccountId, accounts]);
-
-  useEffect(() => {
-    if (status === 'succeeded') {
-      setTimeout(() => {
-        dispatch(resetStatus('newTransactionStatus'));
-      }, 2000);
-    }
-  }, [dispatch, status]);
 
   useEffect(() => {
     if (accounts.length === 0) {
@@ -234,115 +217,17 @@ export default function NewTransactionModal({
   return (
     <Dialog open={isModalOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:max-w-lg lg:max-w-3xl">
-        {status === 'succeeded' && transaction ? (
-          <div className="success-message">
-            <CardHeader>
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                  <Check className="h-8 w-8 text-green-600 dark:text-green-400" />
-                </div>
-                <CardTitle className="text-2xl">
-                  Transaction Submitted!
-                </CardTitle>
-                <CardDescription className="mt-2 text-center">
-                  Your transaction has been submitted for processing and will be
-                  completed shortly.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="rounded-lg border bg-card p-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Transaction ID
-                    </h4>
-                    <p className="font-mono text-sm">
-                      {transaction.transactionId}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Status
-                    </h4>
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-2 w-2 rounded-full bg-amber-500"></div>
-                      <span>Processing</span>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Type
-                    </h4>
-                    <p className="capitalize">
-                      {form.getValues('transactionType')}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      Amount
-                    </h4>
-                    <p className="font-semibold">
-                      {currencyFormatter(
-                        transaction.currency,
-                        transaction.amount
-                      )}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-medium text-muted-foreground">
-                      From Account
-                    </h4>
-                    <p>{form.getValues('sourceAccountId')})</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p>{form.getValues('targetAccountId')}</p>
-                  </div>
-                  {form.getValues('isScheduled') && (
-                    <div className="col-span-2 space-y-1">
-                      <h4 className="text-sm font-medium text-muted-foreground">
-                        Scheduled For
-                      </h4>
-                      <p className="text-sm">
-                        {form.getValues('scheduledDate')!.toString()} at{' '}
-                        {form.getValues('scheduledTime')}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="rounded-lg border bg-muted/50 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                    <Send className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium">What happens next?</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Your transaction is being processed and will be completed
-                      shortly. You'll receive a notification when it's done.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4 sm:flex-row">
-              <Button
-                variant="outline"
-                className="w-full sm:w-auto"
-                onClick={() => navigate('/')}
-              >
-                Return to Dashboard
-              </Button>
-              <Button
-                className="w-full sm:w-auto"
-                onClick={handleNewTransaction}
-              >
-                Create Another Transaction
-              </Button>
-            </CardFooter>
-          </div>
+        {status === 'pending' ? (
+          <Portal>
+            <PendingTransactionModal />
+          </Portal>
+        ) : status === 'succeeded' ? (
+          <CompletedTransactionModal
+            onClose={() => {
+              form.reset();
+              onOpenChange(false);
+            }}
+          />
         ) : (
           <Form {...form}>
             <form
@@ -368,9 +253,8 @@ export default function NewTransactionModal({
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          defaultValue={field.value.toString()}
                           className="grid grid-cols-3 gap-4"
-                          disabled={status === 'pending'}
                         >
                           <div>
                             <RadioGroupItem
@@ -420,9 +304,9 @@ export default function NewTransactionModal({
                         </RadioGroup>
                       </FormControl>
                       <FormDescription>
-                        {transactionType === 'ACCOUNT'
+                        {transactionType === TransactionMethod.ACCOUNT
                           ? 'Transfer money between your accounts'
-                          : transactionType === 'CARD'
+                          : transactionType === TransactionMethod.CARD
                           ? 'Make a payment to your credit card'
                           : 'Send money to an external account or service'}
                       </FormDescription>
@@ -445,7 +329,6 @@ export default function NewTransactionModal({
                             <Select
                               defaultValue={selectedSourceAccount.toString()}
                               onValueChange={handleUpdateSourceAccount}
-                              disabled={status === 'pending'}
                             >
                               <SelectTrigger
                                 id="soure-account"
@@ -499,7 +382,8 @@ export default function NewTransactionModal({
                                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                   placeholder={`Search by name or ${
-                                    transactionType === 'EXTERNAL'
+                                    transactionType ===
+                                    TransactionMethod.EXTERNAL
                                       ? 'details'
                                       : 'account ID'
                                   }`}
@@ -509,7 +393,6 @@ export default function NewTransactionModal({
                                     setSearchQuery(e.target.value);
                                     setOpenCombobox(true);
                                   }}
-                                  disabled={status === 'pending'}
                                 />
                                 {searchQuery != null && (
                                   <Button
@@ -523,7 +406,6 @@ export default function NewTransactionModal({
                                       form.setValue('targetAccountId', 0);
                                     }}
                                     type="button"
-                                    disabled={status === 'pending'}
                                   >
                                     <X className="h-4 w-4" />
                                     <span className="sr-only">Clear</span>
@@ -593,9 +475,9 @@ export default function NewTransactionModal({
                         </div>
                       )}
                       <FormDescription>
-                        {transactionType === 'ACCOUNT'
+                        {transactionType === TransactionMethod.ACCOUNT
                           ? 'Search for one of your accounts to transfer to'
-                          : transactionType === 'CARD'
+                          : transactionType === TransactionMethod.CARD
                           ? 'Search for a card to pay'
                           : 'Search for an external recipient'}
                       </FormDescription>
@@ -615,7 +497,7 @@ export default function NewTransactionModal({
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
-                          disabled={status === 'pending'}
+                          defaultValue="EUR"
                         >
                           <FormControl className=" w-full">
                             <SelectTrigger className="account-type-grain">
@@ -686,7 +568,6 @@ export default function NewTransactionModal({
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          disabled={status === 'pending'}
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
@@ -756,7 +637,6 @@ export default function NewTransactionModal({
                               value={field.value}
                               onChange={field.onChange}
                               className="border px-2 py-1 rounded"
-                              disabled={status === 'pending'}
                             />
                           </FormControl>
                           <FormMessage />
@@ -777,11 +657,9 @@ export default function NewTransactionModal({
                   <Button
                     type="submit"
                     className="dark:text-white"
-                    disabled={status === 'pending' || !form.formState.isValid}
+                    disabled={!form.formState.isValid}
                   >
-                    {status === 'pending'
-                      ? 'Processing...'
-                      : 'Submit Transaction'}
+                    Submit Transaction
                   </Button>
                 </div>
               </DialogFooter>

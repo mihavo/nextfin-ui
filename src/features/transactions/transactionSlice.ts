@@ -15,13 +15,18 @@ interface TransactionsState {
   entities: Transaction[];
 
   newTransaction: NewTransactionResponse | null;
+
+  pendingTransaction: TransactionRequest | null;
   fetchUserTransactionsStatus: Status;
+  newTransactionOptions: TransactionSchedulingOptions | null;
   newTransactionStatus: Status;
 }
 
 const initialState: TransactionsState = {
   entities: [],
   newTransaction: null,
+  pendingTransaction: null,
+  newTransactionOptions: null,
   fetchUserTransactionsStatus: 'idle',
   newTransactionStatus: 'idle',
 };
@@ -68,13 +73,18 @@ export const transactionSlice = createSlice({
     });
     builder.addCase(transactAction.fulfilled, (state, action) => {
       state.newTransaction = action.payload;
-      state.fetchUserTransactionsStatus = 'succeeded';
+      state.newTransactionStatus = 'succeeded';
     });
-    builder.addCase(transactAction.pending, (state) => {
-      state.fetchUserTransactionsStatus = 'pending';
+    builder.addCase(transactAction.pending, (state, action) => {
+      state.newTransactionStatus = 'pending';
+      state.pendingTransaction = action.meta.arg.request;
+      state.newTransactionOptions = action.meta.arg.options;
     });
     builder.addCase(transactAction.rejected, (state) => {
-      state.fetchUserTransactionsStatus = 'failed';
+      state.newTransactionStatus = 'failed';
+      state.pendingTransaction = null;
+      state.newTransactionOptions = null;
+      state.newTransaction = null;
     });
   },
 });

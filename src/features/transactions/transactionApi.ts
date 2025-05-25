@@ -1,6 +1,6 @@
 import { nextfinRequest } from '@/api/apiClient';
 import { PageRequest } from '@/types/PageRequest';
-import { Transaction } from '@/types/Transaction';
+import { Transaction, TransactionMethod } from '@/types/Transaction';
 import * as qs from 'qs';
 
 export interface GetTransactionsResponse {
@@ -13,7 +13,7 @@ export interface TransactionRequest {
   targetAccountId: string;
   amount: number;
   currency: string;
-  transactionType: string;
+  transactionType: TransactionMethod;
 }
 
 export interface TransactionSchedulingOptions {

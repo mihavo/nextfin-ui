@@ -21,3 +21,15 @@ export function convertTimeAndDateToTimestamp(
   const dateTime = dayjs(`${date}T${time}`);
   return dateTime.format('DD-MM-YYYYTHH:mm:ss');
 }
+
+export function convertTimestampToDateAndTime(timestamp: string): {
+  date: string;
+  time: string;
+} {
+  const dt = dayjs(timestamp, 'DD-MM-YYYYTHH:mm:ss');
+  return {
+    date: dt.format('YYYY-MM-DD'),
+    time: dt.format('HH:mm'),
+  };
+}
+
