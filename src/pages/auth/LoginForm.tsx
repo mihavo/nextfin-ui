@@ -19,8 +19,7 @@ import { z } from 'zod';
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
-  const authStatus = useAppSelector((state) => state.auth.status);
-  const status = authStatus === 'loading';
+  const status = useAppSelector((state) => state.auth.loginStatus);
   const [showPassword, setShowPassword] = useState(false);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -97,7 +96,7 @@ export default function LoginForm() {
           <Button
             type="submit"
             className="w-full dark:text-white"
-            disabled={status}
+            disabled={status === 'pending'}
           >
             {status ? (
               <>

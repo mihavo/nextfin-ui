@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { registerAction } from '@/features/auth/authSlice';
 import { signupSchema } from '@/features/auth/schemas/authSchemas';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,8 +19,7 @@ import { z } from 'zod';
 
 export default function RegisterForm() {
   const dispatch = useAppDispatch();
-  const authStatus = useAppSelector((state) => state.auth.status);
-  const status = authStatus === 'loading';
+  const status = useAppSelector((state) => state.auth.registerStatus);
   const [showPassword, setShowPassword] = useState(false);
 
   const signupForm = useForm<z.infer<typeof signupSchema>>({
@@ -34,8 +34,8 @@ export default function RegisterForm() {
     },
   });
 
-  async function onSignupSubmit(values: z.infer<typeof signupSchema>) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  async function onSignupSubmit(data: z.infer<typeof signupSchema>) {
+    dispatch(registerAction(data));
   }
 
   return (
@@ -158,7 +158,7 @@ export default function RegisterForm() {
           <Button
             type="submit"
             className="w-full dark:text-white"
-            disabled={status}
+            disabled={status === 'pending'}
           >
             {status ? (
               <>

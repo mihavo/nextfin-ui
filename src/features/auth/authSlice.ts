@@ -18,6 +18,7 @@ interface AuthState {
   isAuthenticated: boolean;
   loginStatus: Status;
   registerStatus: Status;
+  logoutStatus: Status;
   user?: User;
 }
 
@@ -26,6 +27,7 @@ const initialState: AuthState = {
   user: undefined,
   loginStatus: 'idle',
   registerStatus: 'idle',
+  logoutStatus: 'idle',
 };
 
 export const loginAction = createAsyncThunk(
@@ -91,7 +93,11 @@ export const authSlice = createSlice({
     });
 
     //Logout Action
+    builder.addCase(logoutAction.pending, (state) => {
+      state.logoutStatus = 'pending';
+    });
     builder.addCase(logoutAction.fulfilled, (state) => {
+      state.logoutStatus = 'succeeded';
       Object.assign(state, initialState);
     });
 

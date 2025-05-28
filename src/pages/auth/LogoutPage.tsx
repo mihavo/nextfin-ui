@@ -16,10 +16,10 @@ import { CSSTransition } from 'react-transition-group';
 export default function LogoutPage() {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(3);
-  const authStatus = useAppSelector((state) => state.auth.status);
+  const status = useAppSelector((state) => state.auth.logoutStatus);
 
   useEffect(() => {
-    if (authStatus === 'idle' && countdown > 0) {
+    if (status === 'idle' && countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown((prev) => prev - 1);
       }, 1000);
@@ -27,7 +27,7 @@ export default function LogoutPage() {
     } else if (countdown == 0) {
       navigate('/');
     }
-  }, [navigate, countdown, authStatus]);
+  }, [navigate, countdown, status]);
 
   return (
     <div>
@@ -37,11 +37,12 @@ export default function LogoutPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Sign Out</CardTitle>
               <CardDescription>
-                {authStatus === 'loading' && 'Signing you out...'}
-                {authStatus === 'idle' && "You've been successfully signed out"}
+                {status === 'pending' && 'Signing you out...'}
+                {status === 'succeeded' &&
+                  "You've been successfully signed out"}
               </CardDescription>
             </CardHeader>
-            {authStatus === 'loading' && (
+            {status === 'pending' && (
               <CardContent className="flex flex-col items-center justify-center py-8">
                 <div className="flex flex-col items-center gap-4">
                   <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -52,7 +53,7 @@ export default function LogoutPage() {
               </CardContent>
             )}
 
-            {authStatus === 'idle' && (
+            {status === 'idle' && (
               <div className="flex flex-col items-center gap-4">
                 <CheckCircle className="h-16 w-16 text-green-500" />
                 <div className="text-sm text-muted-foreground">
@@ -64,7 +65,7 @@ export default function LogoutPage() {
                 </div>
               </div>
             )}
-            {authStatus === 'idle' && (
+            {status === 'idle' && (
               <CardFooter className="flex justify-center">
                 <Button
                   onClick={() => navigate('/')}
