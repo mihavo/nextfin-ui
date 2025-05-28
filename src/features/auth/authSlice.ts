@@ -1,33 +1,44 @@
+import { Status } from '@/types/Status';
 import { User } from '@/types/User';
-import { createAsyncThunk, createSlice, isPending } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {
   fetchCurrentUser,
   GetUserResponse,
   login,
   logout,
+  register,
   UserLoginRequest,
   UserLoginResponse,
   UserLogoutResponse,
+  UserRegisterRequest,
+  UserRegisterResponse,
 } from './authApi';
 
 interface AuthState {
   isAuthenticated: boolean;
-  status: AuthStatus;
+  loginStatus: Status;
+  registerStatus: Status;
   user?: User;
 }
-
-type AuthStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
 
 const initialState: AuthState = {
   isAuthenticated: false,
   user: undefined,
-  status: 'idle',
+  loginStatus: 'idle',
+  registerStatus: 'idle',
 };
 
 export const loginAction = createAsyncThunk(
   'auth/login',
   async (requestBody: UserLoginRequest): Promise<UserLoginResponse> => {
     return await login(requestBody);
+  }
+);
+
+export const registerAction = createAsyncThunk(
+  'auth/register',
+  async (requestBody: UserRegisterRequest): Promise<UserRegisterResponse> => {
+    return await register(requestBody);
   }
 );
 
@@ -57,25 +68,37 @@ export const authSlice = createSlice({
     //Login
     builder.addCase(loginAction.fulfilled, (state) => {
       state.isAuthenticated = true;
-      state.status = 'succeeded';
-      //TODO: Save user data to local storage
+      state.loginStatus = 'succeeded';
+    });
+    builder.addCase(loginAction.pending, (state) => {
+      state.loginStatus = 'pending';
     });
     builder.addCase(loginAction.rejected, (state) => {
       state.isAuthenticated = false;
-      state.status = 'failed';
+      state.loginStatus = 'failed';
     });
+
+    //Register Action
+    builder.addCase(registerAction.fulfilled, (state, action) => {
+      state.registerStatus = 'succeeded';
+      state.user = action.payload.user;
+    });
+    builder.addCase(registerAction.pending, (state) => {
+      state.registerStatus = 'pending';
+    });
+    builder.addCase(registerAction.rejected, (state) => {
+      state.registerStatus = 'failed';
+    });
+
+    //Logout Action
     builder.addCase(logoutAction.fulfilled, (state) => {
       Object.assign(state, initialState);
     });
+
+    //FetchUser Action
     builder.addCase(fetchUserAction.fulfilled, (state, action) => {
       state.user = action.payload;
     });
-    builder.addMatcher(
-      (action) => isPending(loginAction, logoutAction)(action),
-      (state) => {
-        state.status = 'loading';
-      }
-    );
   },
 });
 
