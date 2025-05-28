@@ -2,18 +2,8 @@ import { TransactionMethod } from '@/types/Transaction';
 import { z } from 'zod';
 
 export const newTransactionSchema = z.object({
-  sourceAccountId: z
-    .number()
-    .nullable()
-    .refine((val) => val !== null, {
-      message: 'Source account is required',
-    }),
-  targetAccountId: z
-    .number()
-    .nullable()
-    .refine((val) => val !== null, {
-      message: 'Target account is required',
-    }),
+  sourceAccountId: z.number().nullable(),
+  targetAccountId: z.number().nullable(),
   amount: z.string().regex(/^\d+(\.\d{2})$/, {
     message: 'Must be a decimal with exactly 2 digits after the dot',
   }),

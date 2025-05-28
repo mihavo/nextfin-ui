@@ -188,6 +188,15 @@ export default function NewTransactionModal({
     let transactionOptions: TransactionSchedulingOptions = {
       isScheduled: data.isScheduled,
     };
+
+    if (data.sourceAccountId == null || data.targetAccountId == null) {
+      form.setError('sourceAccountId', {
+        type: 'manual',
+        message: 'Source and target accounts are required.',
+      });
+      return;
+    }
+
     if (isScheduled) {
       timestamp = convertTimeAndDateToTimestamp(
         data.scheduledDate!.toISOString().split('T')[0],
