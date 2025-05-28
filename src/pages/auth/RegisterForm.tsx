@@ -39,7 +39,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <div>
+    <div className="">
       <Form {...signupForm}>
         <form
           onSubmit={signupForm.handleSubmit(onSignupSubmit)}
@@ -160,7 +160,7 @@ export default function RegisterForm() {
             className="w-full dark:text-white"
             disabled={status === 'pending'}
           >
-            {status ? (
+            {status === 'pending' ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creating account...

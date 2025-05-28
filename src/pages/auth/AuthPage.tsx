@@ -1,6 +1,5 @@
 ('');
 
-import { Github } from 'lucide-react';
 import { useState } from 'react';
 
 import { ModeToggle } from '@/components/theme/mode-toggle';
@@ -68,11 +67,19 @@ export default function AuthPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Button variant="outline">
-              <Github className="mr-2 h-4 w-4" />
+              <img
+                height="16"
+                width="16"
+                src="https://cdn.simpleicons.org/Github/white"
+              />
               GitHub
             </Button>
             <Button variant="outline">
-              {/* <Google className="mr-2 h-4 w-4" /> */}
+              <img
+                height="16"
+                width="16"
+                src="https://cdn.simpleicons.org/Google/white"
+              />
               Google
             </Button>
           </div>

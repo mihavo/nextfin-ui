@@ -65,12 +65,17 @@ export const authSlice = createSlice({
     reset: () => {
       return initialState;
     },
+    resetStatus(state, action: { payload: keyof AuthState }) {
+      if (action.payload in state && action.payload.endsWith('Status')) {
+        (state[action.payload] as Status) = 'idle';
+      }
+    },
   },
   extraReducers: (builder) => {
     //Login
     builder.addCase(loginAction.fulfilled, (state) => {
       state.isAuthenticated = true;
-      state.loginStatus = 'succeeded';
+      state.loginStatus = 'idle';
     });
     builder.addCase(loginAction.pending, (state) => {
       state.loginStatus = 'pending';

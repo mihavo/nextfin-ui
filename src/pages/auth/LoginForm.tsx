@@ -98,7 +98,7 @@ export default function LoginForm() {
             className="w-full dark:text-white"
             disabled={status === 'pending'}
           >
-            {status ? (
+            {status === 'pending' ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Signing in...
