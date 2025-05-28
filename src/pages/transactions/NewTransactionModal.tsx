@@ -225,6 +225,7 @@ export default function NewTransactionModal({
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onOpenChange}>
+      <DialogTitle className="sr-only">New Transaction</DialogTitle>
       <DialogContent className="sm:max-w-md md:max-w-lg lg:max-w-3xl">
         {status === 'pending' ? (
           <Portal>
@@ -483,15 +484,16 @@ export default function NewTransactionModal({
                           </div>
                         </div>
                       )}
-                      <FormDescription>
-                        {transactionType === TransactionMethod.ACCOUNT
-                          ? 'Search for one of your accounts to transfer to'
-                          : transactionType === TransactionMethod.CARD
-                          ? 'Search for a card to pay'
-                          : 'Search for an external recipient'}
-                      </FormDescription>
+                      {!selectedRecipient && (
+                        <FormDescription>
+                          {transactionType === TransactionMethod.ACCOUNT
+                            ? 'Search for one of your accounts to transfer to'
+                            : transactionType === TransactionMethod.CARD
+                            ? 'Search for a card to pay'
+                            : 'Search for an external recipient'}
+                        </FormDescription>
+                      )}
                       <FormMessage />
-                      <input type="hidden" {...field} />
                     </FormItem>
                   )}
                 />

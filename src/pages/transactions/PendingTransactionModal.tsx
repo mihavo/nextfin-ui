@@ -65,7 +65,7 @@ export function PendingTransactionModal() {
                   {isComplete ? (
                     <Check className="h-12 w-12 bg-green-100 text-green-600 rounded-full p-1 dark:bg-green-900/30 dark:text-green-400" />
                   ) : (
-                    <ArrowRight className="h-12 w-12 bg-blue-100 text-blue-100 rounded-full p-1 dark:bg-blue-900/30 dark:text-blue-400" />
+                    <ArrowRight className="h-12 w-12 bg-blue-100 text-blue-400 rounded-full p-1 dark:bg-blue-900/30 dark:text-blue-400" />
                   )}
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">

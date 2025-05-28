@@ -1,6 +1,9 @@
 import { clsx, type ClassValue } from 'clsx';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { twMerge } from 'tailwind-merge';
+
+dayjs.extend(customParseFormat);
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -26,6 +29,7 @@ export function convertTimestampToDateAndTime(timestamp: string): {
   date: string;
   time: string;
 } {
+  console.log(timestamp);
   const dt = dayjs(timestamp, 'DD-MM-YYYYTHH:mm:ss');
   return {
     date: dt.format('YYYY-MM-DD'),

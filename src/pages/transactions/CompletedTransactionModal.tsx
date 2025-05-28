@@ -35,7 +35,6 @@ export default function CompletedTransactionModal({
 
   const handleNewTransaction = () => {
     dispatch(resetStatus('newTransactionStatus'));
-    navigate('/transactions/new');
   };
 
   const handleReturn = () => {
