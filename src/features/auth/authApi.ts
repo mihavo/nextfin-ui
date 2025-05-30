@@ -35,7 +35,7 @@ export const login = async (
 export const register = async (
   requestBody: UserRegisterRequest
 ): Promise<UserRegisterResponse> => {
-  return await nextfinRequest('/auth.register', 'POST', requestBody);
+  return await nextfinRequest('/auth/register', 'POST', requestBody);
 };
 
 export const logout = async (): Promise<UserLogoutResponse> => {
