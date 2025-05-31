@@ -34,3 +34,24 @@ export const signupSchema = z
     message: "Passwords don't match",
     path: ['confirmPassword'],
   });
+
+  
+export const addressSchema = z.object({
+  street: z.string(),
+  number: z.string().or(z.number()),
+  city: z.string(),
+  state: z.string(),
+  zipCode: z.string().regex(/^\d+$/, 'Zip code must be numeric'),
+  addressType: z.enum(['BILLING', 'SHIPPING']),
+});
+
+export const holderSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{2}-\d{2}-\d{4}$/, 'Invalid date format (DD-MM-YYYY)'),
+  phoneNumber: z.string(),
+  address: addressSchema,
+});
+

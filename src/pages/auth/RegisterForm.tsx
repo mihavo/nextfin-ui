@@ -22,7 +22,7 @@ export default function RegisterForm() {
   const status = useAppSelector((state) => state.auth.registerStatus);
   const [showPassword, setShowPassword] = useState(false);
 
-  const signupForm = useForm<z.infer<typeof signupSchema>>({
+  const holderForm = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       username: '',
@@ -40,13 +40,13 @@ export default function RegisterForm() {
 
   return (
     <div className="">
-      <Form {...signupForm}>
+      <Form {...holderForm}>
         <form
-          onSubmit={signupForm.handleSubmit(onSignupSubmit)}
+          onSubmit={holderForm.handleSubmit(onSignupSubmit)}
           className="space-y-4"
         >
           <FormField
-            control={signupForm.control}
+            control={holderForm.control}
             name="username"
             render={({ field }) => (
               <FormItem>
@@ -59,7 +59,7 @@ export default function RegisterForm() {
             )}
           />
           <FormField
-            control={signupForm.control}
+            control={holderForm.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -76,7 +76,7 @@ export default function RegisterForm() {
             )}
           />
           <FormField
-            control={signupForm.control}
+            control={holderForm.control}
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
@@ -89,7 +89,7 @@ export default function RegisterForm() {
             )}
           />
           <FormField
-            control={signupForm.control}
+            control={holderForm.control}
             name="socialSecurityNumber"
             render={({ field }) => (
               <FormItem>
@@ -102,7 +102,7 @@ export default function RegisterForm() {
             )}
           />
           <FormField
-            control={signupForm.control}
+            control={holderForm.control}
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -137,7 +137,7 @@ export default function RegisterForm() {
             )}
           />
           <FormField
-            control={signupForm.control}
+            control={holderForm.control}
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>

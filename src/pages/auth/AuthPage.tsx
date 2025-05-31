@@ -1,6 +1,6 @@
 ('');
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { useTheme } from '@/components/theme/theme-provider';
@@ -15,11 +15,28 @@ import {
 } from '@/components/ui/card';
 import { Toaster } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { resetStatus } from '@/features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { toast } from 'sonner';
+import CreateHolderForm from './CreateHolderForm';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 
 export default function AuthPage() {
+  const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState('login');
+  const [activeSignupStage, setActiveSignupStage] = useState<'USER' | 'HOLDER'>(
+    'USER'
+  );
+  const registerStatus = useAppSelector((state) => state.auth.registerStatus);
+
+  useEffect(() => {
+    if (registerStatus === 'succeeded') {
+      dispatch(resetStatus('registerStatus'));
+      setActiveSignupStage('HOLDER');
+      toast.success('Registration successful!');
+    }
+  }, [registerStatus, dispatch]);
   const { theme } = useTheme();
 
   return (
@@ -37,7 +54,7 @@ export default function AuthPage() {
           </CardTitle>
           <CardDescription className="text-center">
             Enter your details to
-            {activeTab === 'login' ? 'sign in to' : 'create'} your account
+            {activeTab === 'login' ? ' sign in to' : ' create'} your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -50,7 +67,11 @@ export default function AuthPage() {
               <LoginForm />
             </TabsContent>
             <TabsContent value="signup">
-              <RegisterForm />
+              {activeSignupStage === 'HOLDER' ? (
+                <CreateHolderForm />
+              ) : (
+                <RegisterForm />
+              )}
             </TabsContent>
           </Tabs>
         </CardContent>
