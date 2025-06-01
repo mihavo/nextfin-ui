@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Form,
   FormControl,
@@ -10,6 +11,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -17,21 +23,24 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { holderSchema } from '@/features/auth/schemas/authSchemas';
+import { AddressType } from '@/lib/coreSchemas';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle, Info, Loader2 } from 'lucide-react';
+import { CalendarIcon, CheckCircle, Info, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function CreateHolderForm() {
   const [showPreview, setShowPreview] = useState(true);
+  const [openCalendar, setOpenCalendar] = useState(false);
   const holderForm = useForm<z.infer<typeof holderSchema>>({
     resolver: zodResolver(holderSchema),
     defaultValues: {
       firstName: 'John',
       lastName: 'Doe',
-      dateOfBirth: '09-05-2002',
+      dateOfBirth: new Date('1995-01-01'),
       phoneNumber: '+1234567890',
       address: {
         street: 'Main Street',
@@ -39,7 +48,7 @@ export default function CreateHolderForm() {
         city: 'Metropolis',
         state: 'Freedonia',
         zipCode: '55392',
-        addressType: 'BILLING',
+        type: AddressType.BILLING,
       },
     },
   });
@@ -94,7 +103,7 @@ export default function CreateHolderForm() {
                 className="space-y-4"
               >
                 <FormDescription className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Info className="w-5 h-5 text-primary animate-pulse" />
+                  <Info className="w-5 h-5 text-primary" />
                   <span>
                     Enter the details for the main holder of the account.
                   </span>
@@ -133,7 +142,43 @@ export default function CreateHolderForm() {
                     <FormItem>
                       <FormLabel>Date Of Birth</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Popover
+                          open={openCalendar}
+                          onOpenChange={setOpenCalendar}
+                        >
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={'outline'}
+                                className={cn(
+                                  'w-full pl-3 text-left font-normal',
+                                  !field.value && 'text-muted-foreground'
+                                )}
+                              >
+                                {field.value ? (
+                                  field.value.toLocaleDateString()
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={(date) => {
+                                field.onChange(date);
+                                setOpenCalendar(false);
+                              }}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date('1900-01-01')
+                              }
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -204,7 +249,7 @@ export default function CreateHolderForm() {
                       <FormItem>
                         <FormLabel>State</FormLabel>
                         <FormControl>
-                          <Input placeholder="Freedonia" {...field} />
+                          <Input placeholder="Illinois" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -217,7 +262,7 @@ export default function CreateHolderForm() {
                       <FormItem>
                         <FormLabel>ZIP Code</FormLabel>
                         <FormControl>
-                          <Input placeholder="55392" {...field} />
+                          <Input placeholder="5532" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -226,30 +271,26 @@ export default function CreateHolderForm() {
 
                   <FormField
                     control={holderForm.control}
-                    name="address.addressType"
+                    name="address.type"
                     render={({ field }) => (
-                      <div className="col-span-2">
-                        <FormItem>
-                          <FormLabel>Address Type</FormLabel>
-                          <FormControl>
-                            <Select
-                              onValueChange={field.onChange}
-                              value={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="BILLING">Billing</SelectItem>
-                                <SelectItem value="SHIPPING">
-                                  Shipping
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      </div>
+                      <FormItem>
+                        <FormLabel>Address Type</FormLabel>
+                        <FormControl className="">
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="BILLING">Billing</SelectItem>
+                              <SelectItem value="SHIPPING">Shipping</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
                   />
                 </div>

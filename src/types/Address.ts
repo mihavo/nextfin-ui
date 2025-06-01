@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { AddressType } from '@/lib/coreSchemas';
 
 export enum Floor {
   BASEMENT = 'BASEMENT',
@@ -81,11 +81,6 @@ export enum Floor {
   SE = 'SE',
 }
 
-export enum AddressType {
-  BILLING = 'BILLING',
-  SHIPPING = 'SHIPPING',
-}
-
 export interface Address {
   id: number;
   street: string;
@@ -96,14 +91,3 @@ export interface Address {
   zipCode: string;
   type: AddressType;
 }
-
-export const addressSchema = z.object({
-  id: z.number(),
-  street: z.string(),
-  number: z.number(),
-  floor: z.nativeEnum(Floor),
-  city: z.string(),
-  state: z.string(),
-  zipCode: z.string(),
-  type: z.nativeEnum(AddressType),
-});

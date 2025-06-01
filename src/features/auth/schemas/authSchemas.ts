@@ -1,3 +1,4 @@
+import { addressSchema, phoneNumberSchema } from '@/lib/coreSchemas';
 import { z } from 'zod';
 
 export const loginSchema = z.object({
@@ -24,34 +25,21 @@ export const signupSchema = z
     phoneNumber: z
       .string()
       .length(10, { message: 'Phone number must be exactly 10 digits' }),
-    socialSecurityNumber: z
-      .string()
-      .length(9, {
-        message: 'Social Security Number must be exactly 9 digits',
-      }),
+    socialSecurityNumber: z.string().length(9, {
+      message: 'Social Security Number must be exactly 9 digits',
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword'],
   });
 
-  
-export const addressSchema = z.object({
-  street: z.string(),
-  number: z.string().or(z.number()),
-  city: z.string(),
-  state: z.string(),
-  zipCode: z.string().regex(/^\d+$/, 'Zip code must be numeric'),
-  addressType: z.enum(['BILLING', 'SHIPPING']),
-});
-
 export const holderSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  dateOfBirth: z
-    .string()
-    .regex(/^\d{2}-\d{2}-\d{4}$/, 'Invalid date format (DD-MM-YYYY)'),
-  phoneNumber: z.string(),
+  dateOfBirth: z.date().refine((date) => date <= new Date(), {
+    message: 'Date of birth must be in the past',
+  }),
+  phoneNumber: phoneNumberSchema,
   address: addressSchema,
 });
-
