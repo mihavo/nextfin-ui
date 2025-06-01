@@ -23,7 +23,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { holderSchema } from '@/features/auth/schemas/authSchemas';
-import { registerHolderAction } from '@/features/holders/holderSlice';
+import {
+  registerHolderAction,
+  resetStatus,
+} from '@/features/holders/holderSlice';
 import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -74,8 +77,10 @@ export default function CreateHolderForm() {
   useEffect(() => {
     if (status === 'succeeded') {
       toast.success('Holder registration successful!');
+      dispatch(resetStatus('holderCreatedStatus'));
     }
   }, [dispatch, status]);
+
   return (
     <AnimatePresence mode="wait">
       {showPreview ? (
