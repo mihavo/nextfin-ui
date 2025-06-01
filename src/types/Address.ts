@@ -82,10 +82,10 @@ export enum Floor {
 }
 
 export interface Address {
-  id: number;
+  id?: number;
   street: string;
-  number: number;
-  floor: Floor;
+  number: number | string;
+  floor?: Floor;
   city: string;
   state: string;
   zipCode: string;

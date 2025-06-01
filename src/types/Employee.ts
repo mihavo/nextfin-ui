@@ -1,4 +1,5 @@
-import { Address, addressSchema } from './Address';
+import { addressSchema } from '@/lib/coreSchemas';
+import { Address } from './Address';
 
 import { z } from 'zod';
 
