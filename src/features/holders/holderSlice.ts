@@ -24,8 +24,8 @@ export const registerHolderAction = createAsyncThunk(
   }
 );
 
-export const authSlice = createSlice({
-  name: 'auth',
+export const holderSlice = createSlice({
+  name: 'holders',
   initialState,
   reducers: {
     reset: () => {
@@ -52,5 +52,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { reset: authReset, resetStatus } = authSlice.actions;
-export default authSlice.reducer;
+export const { resetStatus } = holderSlice.actions;
+export default holderSlice.reducer;

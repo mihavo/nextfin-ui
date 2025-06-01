@@ -23,18 +23,25 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { holderSchema } from '@/features/auth/schemas/authSchemas';
+import { registerHolderAction } from '@/features/holders/holderSlice';
 import { cn } from '@/lib/utils';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
+import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarIcon, CheckCircle, Info, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 export default function CreateHolderForm() {
+  const dispatch = useAppDispatch();
   const [showPreview, setShowPreview] = useState(true);
   const [dateOpen, setDateOpen] = useState(false);
+  const username = useAppSelector((state) => state.auth.user!.username);
+  const status = useAppSelector((state) => state.holders.holderCreatedStatus);
   const holderForm = useForm<z.infer<typeof holderSchema>>({
     resolver: zodResolver(holderSchema),
     defaultValues: {
@@ -53,8 +60,22 @@ export default function CreateHolderForm() {
 
   const handleSubmit = (data: z.infer<typeof holderSchema>) => {
     console.log(data);
+    dispatch(
+      registerHolderAction({
+        username,
+        request: {
+          ...data,
+          dateOfBirth: dayjs(data.dateOfBirth).format('DD-MM-YYYY'),
+        },
+      })
+    );
   };
 
+  useEffect(() => {
+    if (status === 'succeeded') {
+      toast.success('Holder registration successful!');
+    }
+  }, [dispatch, status]);
   return (
     <AnimatePresence mode="wait">
       {showPreview ? (
