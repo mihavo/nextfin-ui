@@ -23,10 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { holderSchema } from '@/features/auth/schemas/authSchemas';
-import {
-  registerHolderAction,
-  resetStatus,
-} from '@/features/holders/holderSlice';
+import { registerHolderAction } from '@/features/holders/holderSlice';
 import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,7 +33,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarIcon, CheckCircle, Info, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 export default function CreateHolderForm() {
@@ -73,13 +69,6 @@ export default function CreateHolderForm() {
       })
     );
   };
-
-  useEffect(() => {
-    if (status === 'succeeded') {
-      toast.success('Holder registration successful!');
-      dispatch(resetStatus('holderCreatedStatus'));
-    }
-  }, [dispatch, status]);
 
   return (
     <AnimatePresence mode="wait">

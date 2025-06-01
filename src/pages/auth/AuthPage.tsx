@@ -15,7 +15,8 @@ import {
 } from '@/components/ui/card';
 import { Toaster } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { resetStatus } from '@/features/auth/authSlice';
+import { resetStatus as authResetStatus } from '@/features/auth/authSlice';
+import { resetStatus as holderResetStatus } from '@/features/holders/holderSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toast } from 'sonner';
 import CreateHolderForm from './CreateHolderForm';
@@ -29,14 +30,25 @@ export default function AuthPage() {
     'USER'
   );
   const registerStatus = useAppSelector((state) => state.auth.registerStatus);
+  const holderRegistrationStatus = useAppSelector(
+    (state) => state.holders.holderCreatedStatus
+  );
 
   useEffect(() => {
     if (registerStatus === 'succeeded') {
-      dispatch(resetStatus('registerStatus'));
+      dispatch(authResetStatus('registerStatus'));
       setActiveSignupStage('HOLDER');
       toast.success('Registration successful!');
     }
   }, [registerStatus, dispatch]);
+
+  useEffect(() => {
+    if (holderRegistrationStatus === 'succeeded') {
+      toast.success('Holder registration successful!');
+      dispatch(holderResetStatus('holderCreatedStatus'));
+    }
+  }, [dispatch, holderRegistrationStatus]);
+
   const { theme } = useTheme();
 
   return (
