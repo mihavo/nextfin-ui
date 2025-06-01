@@ -23,9 +23,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { holderSchema } from '@/features/auth/schemas/authSchemas';
-import { AddressType } from '@/lib/coreSchemas';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarIcon, CheckCircle, Info, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -34,22 +34,15 @@ import { z } from 'zod';
 
 export default function CreateHolderForm() {
   const [showPreview, setShowPreview] = useState(true);
-  const [openCalendar, setOpenCalendar] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
   const holderForm = useForm<z.infer<typeof holderSchema>>({
     resolver: zodResolver(holderSchema),
     defaultValues: {
-      firstName: 'John',
-      lastName: 'Doe',
+      firstName: '',
+      lastName: '',
       dateOfBirth: new Date('1995-01-01'),
       phoneNumber: '+1234567890',
-      address: {
-        street: 'Main Street',
-        number: '123',
-        city: 'Metropolis',
-        state: 'Freedonia',
-        zipCode: '55392',
-        type: AddressType.BILLING,
-      },
+      address: {},
     },
   });
 
@@ -66,12 +59,12 @@ export default function CreateHolderForm() {
     <AnimatePresence mode="wait">
       {showPreview ? (
         <motion.div
-          key="preview"
-          initial={{ opacity: 0, scale: 0.5 }}
+          initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5 }}
-          transition={{ duration: 0.6 }}
-          className="flex items-center justify-center h-full"
+          transition={{
+            duration: 0.4,
+            scale: { type: 'keyframes', visualDuration: 0.8 },
+          }}
         >
           <motion.div
             initial={{ pathLength: 0, opacity: 0 }}
@@ -142,35 +135,34 @@ export default function CreateHolderForm() {
                     <FormItem>
                       <FormLabel>Date Of Birth</FormLabel>
                       <FormControl>
-                        <Popover
-                          open={openCalendar}
-                          onOpenChange={setOpenCalendar}
-                        >
+                        <Popover open={dateOpen} onOpenChange={setDateOpen}>
                           <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={'outline'}
-                                className={cn(
-                                  'w-full pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
-                                )}
-                              >
-                                {field.value ? (
-                                  field.value.toLocaleDateString()
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
+                            <Button
+                              variant="outline"
+                              onClick={() => setDateOpen(true)}
+                              className={cn(
+                                'w-full pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              {field.value
+                                ? format(new Date(field.value), 'PPP')
+                                : 'Pick a date'}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
-                              selected={field.value}
+                              selected={
+                                field.value ? new Date(field.value) : undefined
+                              }
                               onSelect={(date) => {
-                                field.onChange(date);
-                                setOpenCalendar(false);
+                                const formatted = date
+                                  ? format(date, 'yyyy-MM-dd')
+                                  : '';
+                                field.onChange(formatted);
+                                setDateOpen(false);
                               }}
                               disabled={(date) =>
                                 date > new Date() ||

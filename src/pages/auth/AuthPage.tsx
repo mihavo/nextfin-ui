@@ -41,7 +41,7 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-primary-gray dark:bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md justify-center">
+      <Card className="w-full max-w-[550px] justify-center">
         <CardHeader className="space-y-1">
           <ModeToggle />
           <img
