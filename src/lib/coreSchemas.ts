@@ -10,7 +10,9 @@ export const addressSchema = z.object({
   number: z.string().or(z.number()),
   city: z.string(),
   state: z.string(),
-  zipCode: z.string().regex(/^\d+$/, 'Zip code must be numeric'),
+  zipCode: z.string().regex(/^\d+$/, 'Zip code must be numeric').length(5, {
+    message: 'Zip code must be exactly 5 digits',
+  }),
   type: z.nativeEnum(AddressType),
 });
 

@@ -69,7 +69,7 @@ export default function CreateHolderForm() {
     dispatch(
       registerHolderAction({
         username: username ?? '',
-        request: {
+        data: {
           ...data,
           dateOfBirth: dayjs(data.dateOfBirth).format('DD-MM-YYYY'),
         },

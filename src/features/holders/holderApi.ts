@@ -18,7 +18,7 @@ export type HolderRequest = {
 
 export interface RegisterHolderRequest {
   username: string;
-  request: HolderRequest;
+  data: HolderRequest;
 }
 
 export const registerHolder = async (
@@ -31,6 +31,6 @@ export const registerHolder = async (
   return await nextfinRequest(
     '/holders/register-holder' + params,
     'POST',
-    request
+    request.data
   );
 };

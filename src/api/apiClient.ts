@@ -51,9 +51,20 @@ export const nextfinRequest = async <T>(
   } catch (error) {
     if ((error as HandledError)?._handled) return Promise.reject(error);
     if (axios.isAxiosError(error)) {
-      const message = error.response?.data?.message || 'An error occurred';
-      toast.error(message);
-      throw new Error(message);
+      if (
+        error.response?.data.errors &&
+        Array.isArray(error.response.data.errors)
+      ) {
+        const messages = error.response.data.errors.map(
+          (err: { defaultMessage: string }) => err.defaultMessage
+        );
+        toast.error(messages.join(', '));
+        throw new Error(messages.join(', '));
+      } else {
+        const message = error.response?.data?.message || 'An error occurred';
+        toast.error(message);
+        throw new Error(message);
+      }
     } else {
       const message = 'An unexpected error occurred';
       toast.error(message);
