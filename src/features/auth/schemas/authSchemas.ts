@@ -1,4 +1,4 @@
-import { addressSchema, phoneNumberSchema } from '@/lib/coreSchemas';
+import { addressSchema, phoneNumberSchema, ssnSchema } from '@/lib/coreSchemas';
 import { z } from 'zod';
 
 export const loginSchema = z.object({
@@ -22,12 +22,8 @@ export const signupSchema = z
     confirmPassword: z
       .string()
       .min(6, { message: 'Password must be at least 6 characters' }),
-    phoneNumber: z
-      .string()
-      .length(10, { message: 'Phone number must be exactly 10 digits' }),
-    socialSecurityNumber: z.string().length(9, {
-      message: 'Social Security Number must be exactly 9 digits',
-    }),
+    phoneNumber: phoneNumberSchema,
+    socialSecurityNumber: ssnSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",

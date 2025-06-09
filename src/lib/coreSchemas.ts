@@ -16,6 +16,10 @@ export const addressSchema = z.object({
 
 export const phoneNumberSchema = z
   .string()
-  .min(7)
+  .min(10)
   .max(15)
-  .regex(/^\+?[0-9]{7,15}$/, 'Invalid phone number');
+  .regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number');
+
+export const ssnSchema = z.string().length(9, {
+  message: 'Social Security Number must be exactly 9 digits',
+});

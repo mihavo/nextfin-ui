@@ -19,6 +19,7 @@ import { resetStatus as authResetStatus } from '@/features/auth/authSlice';
 import { resetStatus as holderResetStatus } from '@/features/holders/holderSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toast } from 'sonner';
+import CompleteRegistration from './CompleteRegistration';
 import CreateHolderForm from './CreateHolderForm';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
@@ -26,9 +27,9 @@ import RegisterForm from './RegisterForm';
 export default function AuthPage() {
   const dispatch = useAppDispatch();
   const [activeTab, setActiveTab] = useState('login');
-  const [activeSignupStage, setActiveSignupStage] = useState<'USER' | 'HOLDER'>(
-    'USER'
-  );
+  const [activeSignupStage, setActiveSignupStage] = useState<
+    'USER' | 'HOLDER' | 'COMPLETED'
+  >('USER');
   const registerStatus = useAppSelector((state) => state.auth.registerStatus);
   const holderRegistrationStatus = useAppSelector(
     (state) => state.holders.holderCreatedStatus
@@ -81,42 +82,46 @@ export default function AuthPage() {
             <TabsContent value="signup">
               {activeSignupStage === 'HOLDER' ? (
                 <CreateHolderForm />
-              ) : (
+              ) : activeSignupStage === 'USER' ? (
                 <RegisterForm />
+              ) : (
+                <CompleteRegistration />
               )}
             </TabsContent>
           </Tabs>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+        {activeSignupStage === 'USER' && (
+          <CardFooter className="flex flex-col space-y-4">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="px-2 text-muted-foreground">
-                Or continue with
-              </span>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="outline">
+                <img
+                  height="16"
+                  width="16"
+                  src="https://cdn.simpleicons.org/Github/white"
+                />
+                GitHub
+              </Button>
+              <Button variant="outline">
+                <img
+                  height="16"
+                  width="16"
+                  src="https://cdn.simpleicons.org/Google/white"
+                />
+                Google
+              </Button>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline">
-              <img
-                height="16"
-                width="16"
-                src="https://cdn.simpleicons.org/Github/white"
-              />
-              GitHub
-            </Button>
-            <Button variant="outline">
-              <img
-                height="16"
-                width="16"
-                src="https://cdn.simpleicons.org/Google/white"
-              />
-              Google
-            </Button>
-          </div>
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
       <Toaster richColors closeButton theme={theme} />
     </div>

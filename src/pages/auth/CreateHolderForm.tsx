@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { fetchUserAction } from '@/features/auth/authSlice';
 import { holderSchema } from '@/features/auth/schemas/authSchemas';
 import { registerHolderAction } from '@/features/holders/holderSlice';
 import { cn } from '@/lib/utils';
@@ -39,7 +40,7 @@ export default function CreateHolderForm() {
   const dispatch = useAppDispatch();
   const [showPreview, setShowPreview] = useState(true);
   const [dateOpen, setDateOpen] = useState(false);
-  const username = useAppSelector((state) => state.auth.user!.username);
+  const username = useAppSelector((state) => state.auth.user?.username);
   const status = useAppSelector((state) => state.holders.holderCreatedStatus);
   const holderForm = useForm<z.infer<typeof holderSchema>>({
     resolver: zodResolver(holderSchema),
@@ -57,11 +58,17 @@ export default function CreateHolderForm() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (username == null || username === '') {
+      dispatch(fetchUserAction());
+    }
+  }, [username, dispatch]);
+
   const handleSubmit = (data: z.infer<typeof holderSchema>) => {
     console.log(data);
     dispatch(
       registerHolderAction({
-        username,
+        username: username ?? '',
         request: {
           ...data,
           dateOfBirth: dayjs(data.dateOfBirth).format('DD-MM-YYYY'),
