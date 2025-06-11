@@ -1,9 +1,11 @@
-import { useAppSelector } from '@/store/hooks';
+import { setAuthenticated } from '@/features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const CompleteRegistration = () => {
+  const dispatch = useAppDispatch();
   const [showConfetti, setShowConfetti] = useState(false);
   const fullName = useAppSelector(
     (state) => state.holders.holder?.fullName ?? ''
@@ -16,6 +18,14 @@ const CompleteRegistration = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handleRedirect = () => {
+    dispatch(
+      setAuthenticated({
+        isAuthenticated: true,
+      })
+    );
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -165,6 +175,7 @@ const CompleteRegistration = () => {
             initial="initial"
             whileHover="hover"
             whileTap="tap"
+            onClick={handleRedirect}
             className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300"
           >
             Continue to Dashboard

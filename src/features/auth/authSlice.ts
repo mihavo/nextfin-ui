@@ -70,6 +70,9 @@ export const authSlice = createSlice({
         (state[action.payload] as Status) = 'idle';
       }
     },
+    setAuthenticated(state, action: { payload: { isAuthenticated: boolean } }) {
+      state.isAuthenticated = action.payload.isAuthenticated;
+    },
   },
   extraReducers: (builder) => {
     //Login
@@ -113,5 +116,9 @@ export const authSlice = createSlice({
   },
 });
 
-export const { reset: authReset, resetStatus } = authSlice.actions;
+export const {
+  reset: authReset,
+  resetStatus,
+  setAuthenticated,
+} = authSlice.actions;
 export default authSlice.reducer;

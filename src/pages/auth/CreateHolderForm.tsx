@@ -276,7 +276,7 @@ export default function CreateHolderForm() {
                       <FormItem>
                         <FormLabel>ZIP Code</FormLabel>
                         <FormControl>
-                          <Input placeholder="5532" {...field} />
+                          <Input placeholder="55326" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

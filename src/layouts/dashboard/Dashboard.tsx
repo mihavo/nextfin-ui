@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getDefaultCurrency } from '@/components/utils/currency';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { fetchUserAccountsAction } from '@/features/account/accountSlice';
 import { fetchUserAction } from '@/features/auth/authSlice';
@@ -57,7 +58,12 @@ export default function Dashboard() {
             ) : (
               <>
                 <div className="text-2xl font-bold">
-                  {currencyFormatter(accounts[0].currency, totalBalance)}
+                  {currencyFormatter(
+                    accounts[0] != null
+                      ? accounts[0].currency
+                      : getDefaultCurrency().code,
+                    totalBalance
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   +20.1% from last month

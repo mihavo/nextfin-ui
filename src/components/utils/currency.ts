@@ -10,3 +10,7 @@ export const currencies = [
 export const mapCurrencySymbolToObject = (currencyCode: string) => {
   return currencies.find((curr) => curr.code === currencyCode);
 };
+
+export const getDefaultCurrency = () => {
+  return currencies.find((curr) => curr.code === 'EUR') || currencies[0];
+};

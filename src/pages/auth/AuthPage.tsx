@@ -46,6 +46,7 @@ export default function AuthPage() {
   useEffect(() => {
     if (holderRegistrationStatus === 'succeeded') {
       toast.success('Holder registration successful!');
+      setActiveSignupStage('COMPLETED');
       dispatch(holderResetStatus('holderCreatedStatus'));
     }
   }, [dispatch, holderRegistrationStatus]);
