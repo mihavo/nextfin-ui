@@ -31,6 +31,10 @@ export default function Transactions({ items }: { items: Transaction[] }) {
       <CardContent className="grid gap-6">
         {status === 'pending' ? (
           <Skeleton className="p-2 h-5 w-1/2" />
+        ) : items.length == 0 ? (
+          <div className="text-center text-muted-foreground">
+            No transactions found.
+          </div>
         ) : (
           items.map((item) => (
             <div key={item.id} className="flex items-center gap-4">

@@ -13,10 +13,58 @@ import { resetStatus } from '@/features/account/accountSlice';
 import NewTransactionModal from '@/pages/transactions/NewTransactionModal';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
-import { Download, Plus, Send } from 'lucide-react';
+import {
+  CreditCard,
+  Download,
+  Handshake,
+  PiggyBank,
+  Plus,
+  Send,
+  UserX,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AccountItem from './AccountItem';
+
+export function EmptyCategory({ category }: { category: string }) {
+  const navigate = useNavigate();
+  const formatted =
+    category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+  const iconProps = 'mx-auto h-12 w-12 text-gray-400 dark:text-gray-500';
+  const renderAccountIcon = (type: string) => {
+    switch (type) {
+      case 'CHECKING':
+        return <CreditCard className={iconProps} />;
+      case 'SAVINGS':
+        return <PiggyBank className={iconProps} />;
+      case 'TRUST':
+        return <Handshake className={iconProps} />;
+      default:
+        return <UserX className={iconProps} />;
+    }
+  };
+
+  return (
+    <div className="w-full max-w-sm mx-auto p-6 bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg text-center">
+      {renderAccountIcon(category)}
+      <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        No {formatted} Accounts
+      </h3>
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        You have no {category.toLowerCase()} accounts yet.
+      </p>
+      <Button
+        variant="outline"
+        size={'lg'}
+        className="mt-6 inline-flex items-center gap-2"
+        onClick={() => navigate('/accounts/new')}
+      >
+        <Plus className="h-5 w-5" />
+        Add {formatted} Account
+      </Button>
+    </div>
+  );
+}
 
 export default function Accounts({ items }: { items: Account[] }) {
   const status = useAppSelector(
@@ -34,6 +82,18 @@ export default function Accounts({ items }: { items: Account[] }) {
 
   const toggleTransferModal = () => {
     setTransferModalOpen(true);
+  };
+
+  const renderByCategory = (category: string) => {
+    const list = items
+      .filter((item) => item.accountType === category)
+      .sort((a, b) => b.balance - a.balance);
+
+    if (list.length === 0) {
+      return <EmptyCategory category={category} />;
+    }
+
+    return list.map((item) => <AccountItem item={item} key={item.id} />);
   };
 
   return (
@@ -67,10 +127,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             {status === 'pending' ? (
               <Skeleton className="h-6 w-2/3 rounded" />
             ) : (
-              items
-                .filter((item) => item.accountType === 'CHECKING')
-                .sort((a, b) => b.balance - a.balance)
-                .map((item) => <AccountItem item={item} key={item.id} />)
+              renderByCategory('CHECKING')
             )}
           </TabsContent>
           <TabsContent value="savings" className="pt-4">
@@ -78,10 +135,7 @@ export default function Accounts({ items }: { items: Account[] }) {
               {status === 'pending' ? (
                 <Skeleton className="h-6 w-2/3 rounded" />
               ) : (
-                items
-                  .filter((item) => item.accountType === 'SAVINGS')
-                  .sort((a, b) => b.balance - a.balance)
-                  .map((item) => <AccountItem item={item} key={item.id} />)
+                renderByCategory('SAVINGS')
               )}
             </div>
           </TabsContent>
@@ -89,10 +143,7 @@ export default function Accounts({ items }: { items: Account[] }) {
             {status === 'pending' ? (
               <Skeleton className="h-6 w-2/3 rounded" />
             ) : (
-              items
-                .filter((item) => item.accountType === 'TRUST')
-                .sort((a, b) => b.balance - a.balance)
-                .map((item) => <AccountItem item={item} key={item.id} />)
+              renderByCategory('TRUST')
             )}
           </TabsContent>
         </Tabs>
