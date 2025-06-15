@@ -7,13 +7,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { logoutAction } from '@/features/auth/authSlice';
+import NewTransactionModal from '@/pages/transactions/NewTransactionModal';
 import { useAppDispatch } from '@/store/hooks';
 import { CreditCard, LogOut, Plus, Send, Settings } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function QuickActions() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const [transferModalOpen, setTransferModalOpen] = useState(false);
 
   const handleSignOut = () => {
     console.log('Signing out...');
@@ -26,7 +30,10 @@ export default function QuickActions() {
         <CardTitle>Quick Actions</CardTitle>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-4">
-        <Button className="h-20 flex-col gap-1 rounded-xl bg-blue-600 hover:bg-blue-700 dark:text-white dark:bg-blue-700 dark:hover:bg-blue-600">
+        <Button
+          className="h-20 flex-col gap-1 rounded-xl bg-blue-600 hover:bg-blue-700 dark:text-white dark:bg-blue-700 dark:hover:bg-blue-600"
+          onClick={setTransferModalOpen.bind(null, true)}
+        >
           <Send className="h-5 w-5" />
           <div className="text-xs">Send Money</div>
         </Button>
@@ -53,6 +60,10 @@ export default function QuickActions() {
           Sign Out
         </Button>
       </CardFooter>
+      <NewTransactionModal
+        isModalOpen={transferModalOpen}
+        onOpenChange={setTransferModalOpen}
+      />
     </Card>
   );
 }
