@@ -11,9 +11,11 @@ import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { useAppSelector } from '@/store/hooks';
 import { Transaction, TransactionCategoryLabels } from '@/types/Transaction';
 import dayjs from 'dayjs';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, History } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Transactions({ items }: { items: Transaction[] }) {
+  const navigate = useNavigate();
   const status = useAppSelector(
     (state) => state.transactions.newTransactionStatus
   );
@@ -67,8 +69,12 @@ export default function Transactions({ items }: { items: Transaction[] }) {
         )}
       </CardContent>
       <CardFooter className="border-t px-6 py-4">
-        <Button variant="outline" className="w-full gap-1">
-          {/* <History className="h-3.5 w-3.5" /> */}
+        <Button
+          variant="outline"
+          className="w-full gap-1"
+          onClick={() => navigate('/transactions')}
+        >
+          <History className="h-3.5 w-3.5" />
           View All Transactions
         </Button>
       </CardFooter>

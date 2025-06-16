@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Layout from './components/navigation/Layout';
 import { ThemeProvider } from './components/theme/theme-provider';
@@ -8,13 +8,15 @@ import AddAccount from './pages/account/AddAccount';
 import AuthPage from './pages/auth/AuthPage';
 import LogoutPage from './pages/auth/LogoutPage';
 import NotFound from './pages/misc/NotFound';
+import { TransactionsPage } from './pages/transactions/TransactionsPage';
 import { useAppSelector } from './store/hooks';
 
 function App() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  console.log(isAuthenticated);
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/logout" element={<LogoutPage />} />
           {isAuthenticated ? (
@@ -25,13 +27,16 @@ function App() {
                 <Route path="new" element={<AddAccount />} />
                 <Route path=":id" element={<AccountPage />} />
               </Route>
+              <Route path="transactions">
+                <Route index element={<TransactionsPage />} />
+              </Route>
             </Route>
           ) : (
             <Route path="/" element={<AuthPage />} />
           )}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </ThemeProvider>
   );
 }

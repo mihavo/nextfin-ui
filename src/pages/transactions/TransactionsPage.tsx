@@ -9,13 +9,11 @@ import {
   CreditCard,
   DollarSign,
   Download,
-  Filter,
   Search,
   Send,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -46,100 +44,68 @@ import {
   Select,
   SelectContent,
   SelectGroup,
-  SelectItem,
   SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAppSelector } from '@/store/hooks';
-import { useNavigate } from 'react-router-dom';
+import { fetchUserTransactionsAction } from '@/features/transactions/transactionSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { Link, useNavigate } from 'react-router-dom';
+import { TransactionItem } from './TransactionItem';
 
 export function TransactionsPage() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const transactions = useAppSelector((state) => state.transactions.entities);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    dispatch(fetchUserTransactionsAction());
+  }, [dispatch]);
+
   const [searchInput, setSearchInput] = useState('');
+  const [page, setPage] = useState(1);
+
+  const [account, setAccount] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const updateFilters = (
+    filters: Partial<{
+      account: string;
+      category: string;
+      sortBy: string;
+      sortOrder: 'asc' | 'desc';
+      page: string;
+    }>
+  ) => {
+    if (filters.account !== undefined) {
+      setAccount(filters.account);
+      setPage(1);
+    }
+    if (filters.category !== undefined) {
+      setCategory(filters.category);
+      setPage(1);
+    }
+    if (filters.sortBy !== undefined) {
+      setSortBy(filters.sortBy);
+    }
+    if (filters.sortOrder !== undefined) {
+      setSortOrder(filters.sortOrder);
+    }
+    if (filters.page !== undefined) {
+      setPage(Number(filters.page));
+    }
+  };
 
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(mockTransactions.length / itemsPerPage);
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+  const paginatedTransactions = transactions
+    // ← apply your filters/sorting here if needed
+    .slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  const filteredTransactions = mockTransactions
-    .filter((tx) => {
-      if (
-        search &&
-        !tx.description.toLowerCase().includes(search.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Filter by tab
-      if (tab === 'income' && tx.amount <= 0) return false;
-      if (tab === 'expenses' && tx.amount > 0) return false;
-
-      // Filter by category
-      if (category !== 'All Categories' && tx.category !== category)
-        return false;
-
-      // Filter by account
-      if (account !== 'All Accounts' && tx.account !== account) return false;
-
-      return true;
-    })
-    .sort((a, b) => {
-      // Sort by selected field
-      if (sortBy === 'date') {
-        return sortOrder === 'asc'
-          ? new Date(a.date).getTime() - new Date(b.date).getTime()
-          : new Date(b.date).getTime() - new Date(a.date).getTime();
-      }
-
-      if (sortBy === 'amount') {
-        return sortOrder === 'asc' ? a.amount - b.amount : b.amount - a.amount;
-      }
-
-      if (sortBy === 'description') {
-        return sortOrder === 'asc'
-          ? a.description.localeCompare(b.description)
-          : b.description.localeCompare(a.description);
-      }
-
-      return 0;
-    });
-
-  // Paginate transactions
-  const paginatedTransactions = filteredTransactions.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
-
-  // Update URL with new filters
-  const updateFilters = (newFilters: Record<string, string>) => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    // Update params with new filters
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (value) {
-        params.set(key, value);
-      } else {
-        params.delete(key);
-      }
-    });
-
-    // Reset to page 1 when filters change
-    if (!newFilters.hasOwnProperty('page')) {
-      params.set('page', '1');
-    }
-
-    router.push(`/transactions?${params.toString()}`);
-  };
-
-  // Handle search submission
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateFilters({ search: searchInput });
-  };
+  const handleSearch = (e: React.FormEvent) => {};
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40 p-4 md:p-8">
@@ -147,15 +113,15 @@ export function TransactionsPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" asChild>
-              <Link href="/">
+              <Link to="/">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="sr-only">Back to Dashboard</span>
               </Link>
             </Button>
             <h1 className="text-2xl font-bold">Transactions</h1>
           </div>
-          <Button asChild>
-            <Link href="/transactions/new">
+          <Button asChild variant="default" className="dark:text-white">
+            <Link to="/transactions/new">
               <Send className="mr-2 h-4 w-4" />
               New Transaction
             </Link>
@@ -171,9 +137,7 @@ export function TransactionsPage() {
                   <p className="text-sm font-medium text-muted-foreground">
                     Total Transactions
                   </p>
-                  <p className="text-2xl font-bold">
-                    {filteredTransactions.length}
-                  </p>
+                  <p className="text-2xl font-bold">{transactions.length}</p>
                 </div>
                 <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                   <ArrowDownUp className="h-4 w-4 text-blue-600" />
@@ -190,7 +154,7 @@ export function TransactionsPage() {
                   </p>
                   <p className="text-2xl font-bold text-green-600">
                     +$
-                    {filteredTransactions
+                    {transactions
                       .filter((tx) => tx.amount > 0)
                       .reduce((sum, tx) => sum + tx.amount, 0)
                       .toFixed(2)}
@@ -212,7 +176,7 @@ export function TransactionsPage() {
                   <p className="text-2xl font-bold text-red-500">
                     -$
                     {Math.abs(
-                      filteredTransactions
+                      transactions
                         .filter((tx) => tx.amount < 0)
                         .reduce((sum, tx) => sum + tx.amount, 0)
                     ).toFixed(2)}
@@ -231,10 +195,7 @@ export function TransactionsPage() {
             <CardTitle>Transaction History</CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs
-              defaultValue={tab}
-              onValueChange={(value) => updateFilters({ tab: value })}
-            >
+            <Tabs defaultValue="all">
               <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="all">All Transactions</TabsTrigger>
                 <TabsTrigger value="income">Income</TabsTrigger>
@@ -253,11 +214,11 @@ export function TransactionsPage() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Accounts</SelectLabel>
-                        {accounts.map((acc) => (
+                        {/* {accounts.map((acc) => (
                           <SelectItem key={acc} value={acc}>
                             {acc}
                           </SelectItem>
-                        ))}
+                        ))} */}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -274,11 +235,11 @@ export function TransactionsPage() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Categories</SelectLabel>
-                        {categories.map((cat) => (
+                        {/* {categories.map((cat) => (
                           <SelectItem key={cat} value={cat}>
                             {cat}
                           </SelectItem>
-                        ))}
+                        ))} */}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -328,95 +289,76 @@ export function TransactionsPage() {
                   </Button>
                 </form>
               </div>
+              <div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-8">
+                      <ArrowDownUp className="mr-2 h-3.5 w-3.5" />
+                      Sort
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem
+                      checked={sortBy === 'date' && sortOrder === 'desc'}
+                      onClick={() =>
+                        updateFilters({ sortBy: 'date', sortOrder: 'desc' })
+                      }
+                    >
+                      Date (newest first)
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={sortBy === 'date' && sortOrder === 'asc'}
+                      onClick={() =>
+                        updateFilters({ sortBy: 'date', sortOrder: 'asc' })
+                      }
+                    >
+                      Date (oldest first)
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={sortBy === 'amount' && sortOrder === 'desc'}
+                      onClick={() =>
+                        updateFilters({ sortBy: 'amount', sortOrder: 'desc' })
+                      }
+                    >
+                      Amount (highest first)
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={sortBy === 'amount' && sortOrder === 'asc'}
+                      onClick={() =>
+                        updateFilters({ sortBy: 'amount', sortOrder: 'asc' })
+                      }
+                    >
+                      Amount (lowest first)
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={sortBy === 'description' && sortOrder === 'asc'}
+                      onClick={() =>
+                        updateFilters({
+                          sortBy: 'description',
+                          sortOrder: 'asc',
+                        })
+                      }
+                    >
+                      Description (A-Z)
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={sortBy === 'description' && sortOrder === 'desc'}
+                      onClick={() =>
+                        updateFilters({
+                          sortBy: 'description',
+                          sortOrder: 'desc',
+                        })
+                      }
+                    >
+                      Description (Z-A)
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="h-8">
-                    <Filter className="mr-2 h-3.5 w-3.5" />
-                    Filters
-                    {(category !== 'All Categories' ||
-                      account !== 'All Accounts' ||
-                      search) && (
-                      <Badge variant="secondary" className="ml-2">
-                        {(category !== 'All Categories' ? 1 : 0) +
-                          (account !== 'All Accounts' ? 1 : 0) +
-                          (search ? 1 : 0)}
-                      </Badge>
-                    )}
-                  </Button>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8">
-                        <ArrowDownUp className="mr-2 h-3.5 w-3.5" />
-                        Sort
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuCheckboxItem
-                        checked={sortBy === 'date' && sortOrder === 'desc'}
-                        onClick={() =>
-                          updateFilters({ sortBy: 'date', sortOrder: 'desc' })
-                        }
-                      >
-                        Date (newest first)
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem
-                        checked={sortBy === 'date' && sortOrder === 'asc'}
-                        onClick={() =>
-                          updateFilters({ sortBy: 'date', sortOrder: 'asc' })
-                        }
-                      >
-                        Date (oldest first)
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem
-                        checked={sortBy === 'amount' && sortOrder === 'desc'}
-                        onClick={() =>
-                          updateFilters({ sortBy: 'amount', sortOrder: 'desc' })
-                        }
-                      >
-                        Amount (highest first)
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem
-                        checked={sortBy === 'amount' && sortOrder === 'asc'}
-                        onClick={() =>
-                          updateFilters({ sortBy: 'amount', sortOrder: 'asc' })
-                        }
-                      >
-                        Amount (lowest first)
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem
-                        checked={
-                          sortBy === 'description' && sortOrder === 'asc'
-                        }
-                        onClick={() =>
-                          updateFilters({
-                            sortBy: 'description',
-                            sortOrder: 'asc',
-                          })
-                        }
-                      >
-                        Description (A-Z)
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem
-                        checked={
-                          sortBy === 'description' && sortOrder === 'desc'
-                        }
-                        onClick={() =>
-                          updateFilters({
-                            sortBy: 'description',
-                            sortOrder: 'desc',
-                          })
-                        }
-                      >
-                        Description (Z-A)
-                      </DropdownMenuCheckboxItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
+              <div>
                 <Button variant="outline" size="sm" className="h-8">
                   <Download className="mr-2 h-3.5 w-3.5" />
                   Export
@@ -495,15 +437,15 @@ export function TransactionsPage() {
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row items-center justify-between border-t px-6 py-4">
             <div className="text-sm text-muted-foreground mb-4 sm:mb-0">
-              Showing {paginatedTransactions.length} of{' '}
-              {filteredTransactions.length} transactions
+              Showing {paginatedTransactions.length} of {transactions.length}{' '}
+              transactions
             </div>
 
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    href="#"
+                    to="#"
                     onClick={(e) => {
                       e.preventDefault();
                       if (page > 1) {
@@ -519,10 +461,7 @@ export function TransactionsPage() {
                 {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
                   let pageNum: number;
 
-                  // Logic to show relevant page numbers
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (page <= 3) {
+                  if (totalPages <= 5 || totalPages <= 3) {
                     pageNum = i + 1;
                   } else if (page >= totalPages - 2) {
                     pageNum = totalPages - 4 + i;
@@ -533,7 +472,7 @@ export function TransactionsPage() {
                   return (
                     <PaginationItem key={i}>
                       <PaginationLink
-                        href="#"
+                        to="#"
                         onClick={(e) => {
                           e.preventDefault();
                           updateFilters({ page: pageNum.toString() });
@@ -554,7 +493,7 @@ export function TransactionsPage() {
 
                 <PaginationItem>
                   <PaginationNext
-                    href="#"
+                    to="#"
                     onClick={(e) => {
                       e.preventDefault();
                       if (page < totalPages) {
