@@ -141,22 +141,18 @@ export default function AccountDetailsPage() {
   }, [getAccountTransactionsStatus, transactions]);
 
   useEffect(() => {
+    let filtered = transactions;
+    // Apply date filter
+    filtered = filterTransactionsByDate(filtered, transactionPeriod);
+    // Apply search filter
     if (searchQuery) {
-      setFilteredTransactions(
-        transactions.filter(
-          (tx) =>
-            tx.category?.toLowerCase().includes(searchQuery.toLowerCase()) ??
-            true
-        )
+      filtered = filtered.filter(
+        (tx) =>
+          tx.category?.toLowerCase().includes(searchQuery.toLowerCase()) ?? true
       );
-    } else setFilteredTransactions(transactions);
-  }, [searchQuery, transactions]);
-
-  useEffect(() => {
-    setFilteredTransactions(
-      filterTransactionsByDate(transactions, transactionPeriod)
-    );
-  }, [transactionPeriod, transactions]);
+    }
+    setFilteredTransactions(filtered);
+  }, [searchQuery, transactionPeriod, transactions]);
 
   const handleIbanCopy = async () => {
     await navigator.clipboard.writeText(account.iban);
