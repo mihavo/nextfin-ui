@@ -13,7 +13,6 @@ import { useAppSelector } from './store/hooks';
 
 function App() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-  console.log(isAuthenticated);
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <HashRouter>

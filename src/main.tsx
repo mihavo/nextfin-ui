@@ -8,7 +8,7 @@ import store, { persistor } from './store/store.ts';
 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
+    <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
       <App />
     </PersistGate>
   </Provider>

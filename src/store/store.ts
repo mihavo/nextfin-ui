@@ -4,6 +4,7 @@ import employeeReducer from '@/features/employees/employeeSlice';
 import holdersReducer from '@/features/holders/holderSlice';
 import transactionReducer from '@/features/transactions/transactionSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import localForage from 'localforage';
 import {
   FLUSH,
   PAUSE,
@@ -14,7 +15,6 @@ import {
   REHYDRATE,
 } from 'redux-persist';
 import persistStore from 'redux-persist/es/persistStore';
-import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -24,7 +24,7 @@ const rootReducer = combineReducers({
   holders: holdersReducer,
 });
 
-const persistConfig = { key: 'root', storage };
+const persistConfig = { key: 'root', storage: localForage };
 
 export type RootReducerType = ReturnType<typeof rootReducer>;
 const store = configureStore({

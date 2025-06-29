@@ -19,17 +19,18 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      error.response === undefined ||
-      error.code === 'ERR_NETWORK' ||
-      error.response.status === 401
-    ) {
+    // Only reset auth on 401 Unauthorized (not network errors or other issues)
+    if (error.response?.status === 401) {
       import('../store/store').then(({ default: store, persistor }) => {
         store.dispatch(authReset());
         persistor.purge();
       });
-      if (error.response === undefined || error.response == 'ERR_NETWORK')
-        toast.error('Connection Error');
+      return Promise.reject({ _handled: true });
+    }
+
+    // For network errors, just show a toast but don't reset auth
+    if (error.response === undefined || error.code === 'ERR_NETWORK') {
+      toast.error('Connection Error');
       return Promise.reject({ _handled: true });
     }
     return Promise.reject(error); // Pass the error to the next handler
