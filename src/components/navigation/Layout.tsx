@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useTheme } from '../theme/theme-provider';
 import AppSidebar from '../ui/NextfinSidebar';
@@ -6,17 +5,14 @@ import { SidebarProvider, SidebarTrigger } from '../ui/sidebar';
 import { Toaster } from '../ui/sonner';
 import TopNav from './TopNav';
 
-interface LayoutProps {
-  children?: ReactNode;
-}
-export default function Layout({ children }: LayoutProps) {
+export default function Layout() {
   const { theme } = useTheme();
 
   return (
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <main
-        className={`w-full  ${
+        className={`w-full ${
           theme === 'dark' ? ' main-grain-dark' : 'main-grain'
         }`}
       >
