@@ -45,6 +45,19 @@ export default function AuthPage() {
 
   const { theme } = useTheme();
 
+  const handleGoogleOAuth = async () => {
+    try {
+      // Direct redirect to the backend OAuth endpoint
+      // The backend should handle the redirect to Google
+      window.location.href = `${
+        import.meta.env.VITE_NEXTFIN_API_URL || 'http://localhost:3000'
+      }/oauth2/authorization/google`;
+    } catch (error) {
+      console.error('Google OAuth error:', error);
+      toast.error('Failed to initiate Google OAuth');
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen bg-gradient-to-br from-blue-400/30 to-purple-400/30 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 overflow-hidden">
       <div className="absolute inset-0">
@@ -72,10 +85,15 @@ export default function AuthPage() {
 
           {/* Hero Content */}
           <div className="space-y-6">
-            <h1 className="text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-gray-100 leading-tight">
-              Your Financial
-              <span className="block bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                Future Starts Here
+            <h1 className="text-4xl lg:text-6xl font-semibold text-gray-900 dark:text-gray-100 leading-tight">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent font-bold">
+                Nextfin
+              </span>
+              <span className="block text-2xl lg:text-3xl mt-2">
+                Your Financial
+                <span className="block bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                  Future Starts Here
+                </span>
               </span>
             </h1>
             <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-normal">
@@ -85,11 +103,11 @@ export default function AuthPage() {
           </div>
 
           {/* Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40">
-              <div className="w-12 h-12 bg-blue-500/20 dark:bg-blue-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/40 dark:hover:bg-gray-800/40 cursor-pointer group">
+              <div className="w-12 h-12 bg-blue-500/20 dark:bg-blue-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto transition-all duration-300 group-hover:scale-110 group-hover:bg-blue-500/30 dark:group-hover:bg-blue-400/30">
                 <svg
-                  className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                  className="w-6 h-6 text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:scale-110"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -110,10 +128,10 @@ export default function AuthPage() {
               </p>
             </div>
 
-            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40">
-              <div className="w-12 h-12 bg-purple-500/20 dark:bg-purple-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/40 dark:hover:bg-gray-800/40 cursor-pointer group">
+              <div className="w-12 h-12 bg-purple-500/20 dark:bg-purple-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-500/30 dark:group-hover:bg-purple-400/30">
                 <svg
-                  className="w-6 h-6 text-purple-600 dark:text-purple-400"
+                  className="w-6 h-6 text-purple-600 dark:text-purple-400 transition-all duration-300 group-hover:scale-110"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -134,10 +152,10 @@ export default function AuthPage() {
               </p>
             </div>
 
-            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40">
-              <div className="w-12 h-12 bg-indigo-500/20 dark:bg-indigo-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/40 dark:hover:bg-gray-800/40 cursor-pointer group">
+              <div className="w-12 h-12 bg-indigo-500/20 dark:bg-indigo-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto transition-all duration-300 group-hover:scale-110 group-hover:bg-indigo-500/30 dark:group-hover:bg-indigo-400/30">
                 <svg
-                  className="w-6 h-6 text-indigo-600 dark:text-indigo-400"
+                  className="w-6 h-6 text-indigo-600 dark:text-indigo-400 transition-all duration-300 group-hover:scale-110"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -155,6 +173,78 @@ export default function AuthPage() {
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
                 Manage your finances anywhere, anytime
+              </p>
+            </div>
+
+            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/40 dark:hover:bg-gray-800/40 cursor-pointer group">
+              <div className="w-12 h-12 bg-green-500/20 dark:bg-green-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto transition-all duration-300 group-hover:scale-110 group-hover:bg-green-500/30 dark:group-hover:bg-green-400/30">
+                <svg
+                  className="w-6 h-6 text-green-600 dark:text-green-400 transition-all duration-300 group-hover:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
+                Instant Transfers
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Fast and secure money transfers with real-time confirmation
+              </p>
+            </div>
+
+            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/40 dark:hover:bg-gray-800/40 cursor-pointer group">
+              <div className="w-12 h-12 bg-orange-500/20 dark:bg-orange-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto transition-all duration-300 group-hover:scale-110 group-hover:bg-orange-500/30 dark:group-hover:bg-orange-400/30">
+                <svg
+                  className="w-6 h-6 text-orange-600 dark:text-orange-400 transition-all duration-300 group-hover:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
+                Digital Wallet
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Contactless payments and virtual card management
+              </p>
+            </div>
+
+            <div className="backdrop-blur-sm bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-white/40 dark:border-gray-600/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-white/40 dark:hover:bg-gray-800/40 cursor-pointer group">
+              <div className="w-12 h-12 bg-rose-500/20 dark:bg-rose-400/20 rounded-lg flex items-center justify-center mb-4 mx-auto transition-all duration-300 group-hover:scale-110 group-hover:bg-rose-500/30 dark:group-hover:bg-rose-400/30">
+                <svg
+                  className="w-6 h-6 text-rose-600 dark:text-rose-400 transition-all duration-300 group-hover:scale-110"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-base font-medium text-gray-900 dark:text-gray-100 mb-2">
+                Budget Tracking
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Automated expense categorization and spending analysis
               </p>
             </div>
           </div>
@@ -230,15 +320,16 @@ export default function AuthPage() {
                   <img
                     height="16"
                     width="16"
-                    src="https://cdn.simpleicons.org/Github/white"
+                    src="https://cdn.simpleicons.org/Apple/white"
                     className="mr-2"
                   />
-                  GitHub
+                  Apple
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
                   className="backdrop-blur-sm bg-white/80 dark:bg-gray-700/50 border-gray-300/60 dark:border-gray-600/40 hover:bg-white dark:hover:bg-gray-700/70 transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                  onClick={handleGoogleOAuth}
                 >
                   <img
                     height="16"

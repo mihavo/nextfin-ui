@@ -13,7 +13,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ModeToggle } from '../theme/mode-toggle';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -292,8 +292,18 @@ function SearchBar() {
 }
 
 export default function TopNav() {
+  const location = useLocation();
+  
+  const getLinkClasses = (path: string) => {
+    const isActive = location.pathname === path || 
+                    (path !== '/' && location.pathname.startsWith(path));
+    return isActive 
+      ? "text-blue-600 font-semibold" 
+      : "text-muted-foreground hover:text-foreground transition-colors";
+  };
+
   return (
-    <nav className="px-3 sm:px-6 w-full font-medium flex items-center justify-between bg-white/20 dark:bg-gray-900/20 backdrop-blur-lg backdrop-saturate-200 border-b border-white/30 dark:border-gray-700/30 shadow-xl shadow-black/10 supports-[backdrop-filter]:bg-white/10 supports-[backdrop-filter]:dark:bg-gray-900/10">
+    <nav className="px-3 sm:px-6 w-full font-medium flex items-center justify-between bg-background shadow-sm">
       <div className="left-items flex items-center gap-6  h-full">
         <Link to="/" className="flex items-center gap-3 text-xl font-semibold">
           <img
@@ -304,19 +314,16 @@ export default function TopNav() {
           <span className="tracking-tight">Nextfin</span>
         </Link>
 
-        <Link to={{ pathname: '/' }} className="text-primary  ">
+        <Link to="/" className={getLinkClasses('/')}>
           Dashboard
         </Link>
-        <Link to={{ pathname: '/accounts' }} className="text-muted-foreground">
+        <Link to="/accounts" className={getLinkClasses('/accounts')}>
           Accounts
         </Link>
-        <Link
-          to={{ pathname: '/transactions' }}
-          className="text-muted-foreground"
-        >
+        <Link to="/transactions" className={getLinkClasses('/transactions')}>
           Transactions
         </Link>
-        <Link to={{ pathname: '/cards' }} className="text-muted-foreground">
+        <Link to="/cards" className={getLinkClasses('/cards')}>
           Cards
         </Link>
       </div>
