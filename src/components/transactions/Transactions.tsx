@@ -26,7 +26,7 @@ export default function Transactions({ items }: { items: Transaction[] }) {
   };
 
   return (
-    <Card>
+    <Card className=" dark:bg-inherit">
       <CardHeader>
         <CardTitle>Recent Transactions</CardTitle>
       </CardHeader>

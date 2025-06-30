@@ -12,7 +12,6 @@ import {
   PieChart,
   Search,
   Settings,
-  Shield,
   Wallet,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -122,13 +121,11 @@ export default function AppSidebar() {
       title: 'Settings',
       url: '/settings',
       icon: Settings,
-      disabled: true,
     },
     {
       title: 'Help & Support',
       url: '/help',
       icon: HelpCircle,
-      disabled: true,
     },
   ];
 
@@ -136,15 +133,12 @@ export default function AppSidebar() {
     <Sidebar className="border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <SidebarHeader className="border-b px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Shield className="h-6 w-6" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold tracking-tight">
-              Nextfin
-            </span>
-            <span className="text-xs text-muted-foreground">Financial Hub</span>
-          </div>
+          <img
+            src="/assets/logo.png"
+            alt="nextfin-logo"
+            className="h-14 w-14 object-contain"
+          />
+          <span className="text-lg font-semibold tracking-tight">Nextfin</span>
         </div>
 
         {/* Search Bar */}

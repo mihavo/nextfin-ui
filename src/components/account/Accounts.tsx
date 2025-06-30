@@ -96,7 +96,7 @@ export default function Accounts({ items }: { items: Account[] }) {
   };
 
   return (
-    <Card className="lg:col-span-2">
+    <Card className="lg:col-span-2  dark:bg-transparent">
       <CardHeader className="flex flex-row items-center">
         <div className="grid gap-2">
           <CardTitle>Accounts</CardTitle>

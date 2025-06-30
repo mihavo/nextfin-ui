@@ -270,7 +270,13 @@ export function TransactionItem({ transaction }: TransactionItemProps) {
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-border/50 animate-in fade-in-0 slide-in-from-bottom-2 duration-800 ease-out">
+            <div
+              className={`mt-6 pt-4 border-t border-border/50 transition-all duration-350 ease-out ${
+                isClosing
+                  ? 'animate-out slide-out-to-bottom-2 fade-out-0'
+                  : 'animate-in fade-in-0 slide-in-from-bottom-2'
+              }`}
+            >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="text-xs text-muted-foreground">
                   Last updated:{' '}

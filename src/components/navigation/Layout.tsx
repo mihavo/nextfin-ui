@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useTheme } from '../theme/theme-provider';
-import AppSidebar from '../ui/app-sidebar';
+import AppSidebar from '../ui/NextfinSidebar';
 import { SidebarProvider, SidebarTrigger } from '../ui/sidebar';
 import { Toaster } from '../ui/sonner';
 import TopNav from './TopNav';
