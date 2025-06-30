@@ -71,7 +71,6 @@ export default function Accounts({ items }: { items: Account[] }) {
     (state) => state.accounts.getUserAccountsStatus
   );
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const [transferModalOpen, setTransferModalOpen] = useState(false);
 
   useEffect(() => {

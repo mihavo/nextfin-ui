@@ -1,6 +1,5 @@
 'use client';
 
-import type React from 'react';
 
 import {
   ArrowDownUp,
@@ -51,11 +50,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { fetchUserTransactionsAction } from '@/features/transactions/transactionSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import NewTransactionModal from './NewTransactionModal';
 import { TransactionItem } from './TransactionItem';
 
 export function TransactionsPage() {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const transactions = useAppSelector((state) => state.transactions.entities);
 
@@ -70,6 +69,8 @@ export function TransactionsPage() {
   const [category, setCategory] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const updateFilters = (
     filters: Partial<{
@@ -101,15 +102,14 @@ export function TransactionsPage() {
 
   const itemsPerPage = 10;
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
-  const paginatedTransactions = transactions
-    // ← apply your filters/sorting here if needed
-    .slice((page - 1) * itemsPerPage, page * itemsPerPage);
-
-  const handleSearch = (e: React.FormEvent) => {};
+  const paginatedTransactions = transactions.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40 p-4 md:p-8">
-      <div className="flex flex-col gap-4">
+    <div className="flex min-h-screen w-full flex-col bg-muted/40 px-4 md:px-16 py-4 md:py-8">
+      <div className="flex flex-col gap-4 max-w-[1600px] mx-auto w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" asChild>
@@ -120,15 +120,19 @@ export function TransactionsPage() {
             </Button>
             <h1 className="text-2xl font-bold">Transactions</h1>
           </div>
-          <Button asChild variant="default" className="dark:text-white">
-            <Link to="/transactions/new">
+          <Button
+            asChild
+            variant="default"
+            className="dark:text-white"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <div>
               <Send className="mr-2 h-4 w-4" />
               New Transaction
-            </Link>
+            </div>
           </Button>
         </div>
 
-        {/* Transaction Summary */}
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardContent className="p-4">
@@ -139,8 +143,8 @@ export function TransactionsPage() {
                   </p>
                   <p className="text-2xl font-bold">{transactions.length}</p>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <ArrowDownUp className="h-4 w-4 text-blue-600" />
+                <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                  <ArrowDownUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </CardContent>
@@ -152,7 +156,7 @@ export function TransactionsPage() {
                   <p className="text-sm font-medium text-muted-foreground">
                     Total Income
                   </p>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                     +$
                     {transactions
                       .filter((tx) => tx.amount > 0)
@@ -160,8 +164,8 @@ export function TransactionsPage() {
                       .toFixed(2)}
                   </p>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                  <DollarSign className="h-4 w-4 text-green-600" />
+                <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </CardContent>
@@ -173,7 +177,7 @@ export function TransactionsPage() {
                   <p className="text-sm font-medium text-muted-foreground">
                     Total Expenses
                   </p>
-                  <p className="text-2xl font-bold text-red-500">
+                  <p className="text-2xl font-bold text-red-500 dark:text-red-400">
                     -$
                     {Math.abs(
                       transactions
@@ -182,8 +186,8 @@ export function TransactionsPage() {
                     ).toFixed(2)}
                   </p>
                 </div>
-                <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center">
-                  <CreditCard className="h-4 w-4 text-red-500" />
+                <div className="h-8 w-8 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                  <CreditCard className="h-4 w-4 text-red-500 dark:text-red-400" />
                 </div>
               </div>
             </CardContent>
@@ -192,109 +196,95 @@ export function TransactionsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Transaction History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="all">
-              <TabsList className="grid w-full grid-cols-3 mb-4">
-                <TabsTrigger value="all">All Transactions</TabsTrigger>
-                <TabsTrigger value="income">Income</TabsTrigger>
-                <TabsTrigger value="expenses">Expenses</TabsTrigger>
-              </TabsList>
-
-              <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
-                <div className="flex flex-col md:flex-row gap-2">
-                  <Select
-                    value={account}
-                    onValueChange={(value) => updateFilters({ account: value })}
-                  >
-                    <SelectTrigger className="w-full md:w-[200px]">
-                      <SelectValue placeholder="Select Account" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Accounts</SelectLabel>
-                        {/* {accounts.map((acc) => (
-                          <SelectItem key={acc} value={acc}>
-                            {acc}
-                          </SelectItem>
-                        ))} */}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={category}
-                    onValueChange={(value) =>
-                      updateFilters({ category: value })
-                    }
-                  >
-                    <SelectTrigger className="w-full md:w-[200px]">
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Categories</SelectLabel>
-                        {/* {categories.map((cat) => (
-                          <SelectItem key={cat} value={cat}>
-                            {cat}
-                          </SelectItem>
-                        ))} */}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-full md:w-auto">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        Date Range
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[200px]">
-                      <DropdownMenuLabel>Select Period</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuCheckboxItem checked>
-                        Last 30 days
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem>
-                        Last 90 days
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem>
-                        This year
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem>
-                        Last year
-                      </DropdownMenuCheckboxItem>
-                      <DropdownMenuCheckboxItem>
-                        Custom range
-                      </DropdownMenuCheckboxItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between flex-wrap">
+              <CardTitle className="text-lg md:text-2xl">
+                Transaction History
+              </CardTitle>
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 w-full md:w-auto">
+                <div className="relative w-full sm:w-auto">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    type="search"
+                    placeholder="Search transactions..."
+                    className="pl-8 w-full sm:w-[200px]"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                  />
                 </div>
-
-                <form onSubmit={handleSearch} className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search transactions..."
-                      className="w-full pl-8"
-                      value={searchInput}
-                      onChange={(e) => setSearchInput(e.target.value)}
-                    />
-                  </div>
-                  <Button type="submit" variant="secondary">
-                    Search
-                  </Button>
-                </form>
-              </div>
-              <div>
+                <Select
+                  value={account}
+                  onValueChange={(value) => updateFilters({ account: value })}
+                >
+                  <SelectTrigger className="h-8 w-full sm:w-[180px]">
+                    <SelectValue placeholder="Select Account" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Accounts</SelectLabel>
+                      {/* {accounts.map((acc) => (
+                        <SelectItem key={acc} value={acc}>
+                          {acc}
+                        </SelectItem>
+                      ))} */}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={category}
+                  onValueChange={(value) => updateFilters({ category: value })}
+                >
+                  <SelectTrigger className="h-8 w-full sm:w-[180px]">
+                    <SelectValue placeholder="Select Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Categories</SelectLabel>
+                      {/* {categories.map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {cat}
+                        </SelectItem>
+                      ))} */}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8">
-                      <ArrowDownUp className="mr-2 h-3.5 w-3.5" />
-                      Sort
+                    <Button
+                      variant="outline"
+                      className=" gap-1 w-full sm:w-auto"
+                    >
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Date Range</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[200px]">
+                    <DropdownMenuLabel>Select Period</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuCheckboxItem checked>
+                      Last 30 days
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem>
+                      Last 90 days
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem>
+                      This year
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem>
+                      Last year
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem>
+                      Custom range
+                    </DropdownMenuCheckboxItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className=" gap-1 w-full sm:w-auto"
+                    >
+                      <ArrowDownUp className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">Sort</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -356,14 +346,20 @@ export function TransactionsPage() {
                     </DropdownMenuCheckboxItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
-
-              <div>
-                <Button variant="outline" size="sm" className="h-8">
-                  <Download className="mr-2 h-3.5 w-3.5" />
-                  Export
+                <Button variant="outline" className=" gap-1 w-full sm:w-auto">
+                  <Download className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Export</span>
                 </Button>
               </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="all">
+              <TabsList className="grid w-full grid-cols-3 mb-4">
+                <TabsTrigger value="all">All Transactions</TabsTrigger>
+                <TabsTrigger value="income">Income</TabsTrigger>
+                <TabsTrigger value="expenses">Expenses</TabsTrigger>
+              </TabsList>
 
               <TabsContent value="all" className="mt-0">
                 <div className="space-y-1">
@@ -445,7 +441,6 @@ export function TransactionsPage() {
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    to="#"
                     onClick={(e) => {
                       e.preventDefault();
                       if (page > 1) {
@@ -472,7 +467,6 @@ export function TransactionsPage() {
                   return (
                     <PaginationItem key={i}>
                       <PaginationLink
-                        to="#"
                         onClick={(e) => {
                           e.preventDefault();
                           updateFilters({ page: pageNum.toString() });
@@ -493,7 +487,6 @@ export function TransactionsPage() {
 
                 <PaginationItem>
                   <PaginationNext
-                    to="#"
                     onClick={(e) => {
                       e.preventDefault();
                       if (page < totalPages) {
@@ -508,6 +501,10 @@ export function TransactionsPage() {
               </PaginationContent>
             </Pagination>
           </CardFooter>
+          <NewTransactionModal
+            isModalOpen={isModalOpen}
+            onOpenChange={setIsModalOpen}
+          />
         </Card>
       </div>
     </div>

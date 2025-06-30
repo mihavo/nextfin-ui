@@ -427,6 +427,14 @@ export default function AccountDetailsPage() {
                   <Calendar className="h-3.5 w-3.5" />
                   Date Range
                 </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 gap-1 w-full sm:w-auto"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Export
+                </Button>
               </div>
             </div>
           </CardHeader>
@@ -505,14 +513,10 @@ export default function AccountDetailsPage() {
               </TabsContent>
             </Tabs>
           </CardContent>
-          <CardFooter className="flex justify-between border-t px-6 py-4">
+          <CardFooter className="flex justify-center border-t px-6 py-4">
             <div className="text-xs text-muted-foreground">
               Showing {filteredTransactions.length} transactions
             </div>
-            <Button variant="outline" className="gap-1">
-              <Download className="h-3.5 w-3.5" />
-              Export Transactions
-            </Button>
           </CardFooter>
         </Card>
         <NewTransactionModal
