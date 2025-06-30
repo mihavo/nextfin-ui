@@ -67,7 +67,6 @@ import { Transaction } from '@/types/Transaction';
 import { friendlyFormatIBAN } from 'ibantools';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';
-import { toast } from 'sonner';
 import NewTransactionModal from '../transactions/NewTransactionModal';
 
 export default function AccountDetailsPage() {
@@ -103,9 +102,10 @@ export default function AccountDetailsPage() {
     if (accountId) {
       dispatch(getAccountByIdAction(accountId));
     } else {
-      toast.error('Account ID is missing');
+      // Redirect to accounts list if no ID is provided
+      navigate('/accounts');
     }
-  }, [accountId, dispatch]);
+  }, [accountId, dispatch, navigate]);
 
   useEffect(() => {
     if (account?.id && getAccountByIdStatus === 'succeeded') {
@@ -232,7 +232,7 @@ export default function AccountDetailsPage() {
         return (
           <Badge
             variant="outline"
-            className="text-orange-500 border-orange-500 rounded border-orange-500"
+            className="text-orange-500 border-orange-500 rounded"
           >
             Pending
           </Badge>

@@ -1,4 +1,5 @@
 import { logoutAction } from '@/features/auth/authSlice';
+import NewTransactionModal from '@/pages/transactions/NewTransactionModal';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   ArrowUpDown,
@@ -38,6 +39,7 @@ export default function AppSidebar() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
 
   const user = useAppSelector((state) => state.auth.user);
   const accounts = useAppSelector((state) => state.accounts.entities);
@@ -78,8 +80,6 @@ export default function AppSidebar() {
       url: '/cards',
       icon: CreditCard,
       isActive: isActive('/cards'),
-      badge: 'Soon',
-      disabled: true,
     },
     {
       title: 'Analytics',
@@ -95,7 +95,7 @@ export default function AppSidebar() {
     {
       title: 'Transfer Money',
       icon: DollarSign,
-      action: () => navigate('/transactions'),
+      action: () => setIsTransactionModalOpen(true),
       className:
         'text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20',
     },
@@ -157,7 +157,10 @@ export default function AppSidebar() {
         {/* User Profile Section */}
         <SidebarGroup>
           <SidebarGroupContent>
-            <div className="flex items-center gap-3 rounded-lg bg-muted/30 p-3 m-2">
+            <div
+              className="flex items-center gap-3 rounded-lg bg-muted/30 p-3 m-2 cursor-pointer hover:bg-muted/50 transition-colors duration-200"
+              onClick={() => navigate('/user-details')}
+            >
               <Avatar className="h-10 w-10">
                 <AvatarFallback className="bg-primary text-primary-foreground">
                   {user?.username?.[0]?.toUpperCase() || 'U'}
@@ -212,7 +215,10 @@ export default function AppSidebar() {
                         )}
                       </div>
                     ) : (
-                      <a href={item.url}>
+                      <div
+                        className="flex items-center gap-2 cursor-pointer"
+                        onClick={() => navigate(item.url)}
+                      >
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                         {item.badge && (
@@ -227,7 +233,7 @@ export default function AppSidebar() {
                             {item.badge}
                           </Badge>
                         )}
-                      </a>
+                      </div>
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -340,7 +346,10 @@ export default function AppSidebar() {
                     )}
                   </div>
                 ) : (
-                  <a href={item.url}>
+                  <div
+                    className="flex items-center gap-2 cursor-pointer"
+                    onClick={() => navigate(item.url)}
+                  >
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
                     {item.badge && (
@@ -351,7 +360,7 @@ export default function AppSidebar() {
                         {item.badge}
                       </Badge>
                     )}
-                  </a>
+                  </div>
                 )}
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -369,6 +378,11 @@ export default function AppSidebar() {
           <span>Sign Out</span>
         </SidebarMenuButton>
       </SidebarFooter>
+
+      <NewTransactionModal
+        isModalOpen={isTransactionModalOpen}
+        onOpenChange={setIsTransactionModalOpen}
+      />
     </Sidebar>
   );
 }

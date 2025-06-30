@@ -92,29 +92,29 @@ export default function QuickActions() {
   ];
 
   return (
-    <Card className="overflow-hidden  dark:bg-transparent">
-      <CardHeader className="pb-4">
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Zap className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Zap className="h-4 w-4 text-primary" />
               Quick Actions
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Perform common tasks instantly
             </p>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 pb-3">
         {quickActions.map((action) => (
           <Button
             key={action.title}
             onClick={action.disabled ? undefined : action.onClick}
             disabled={action.disabled}
             className={`
-              relative w-full h-auto p-4 justify-start text-left
+              relative w-full h-auto p-3 justify-start text-left
               bg-gradient-to-r ${action.gradient} ${action.hoverGradient}
               ${action.darkGradient} ${action.darkHoverGradient}
               border-0 text-white
@@ -129,24 +129,26 @@ export default function QuickActions() {
               }
             `}
           >
-            <div className="flex items-center gap-4 w-full">
+            <div className="flex items-center gap-3 w-full">
               <div
                 className={`
-                p-2 rounded-lg ${action.iconBg}
+                p-1.5 rounded-lg ${action.iconBg}
                 transition-transform duration-200
                 group-hover:scale-110
               `}
               >
-                <action.icon className={`h-5 w-5 ${action.iconColor}`} />
+                <action.icon className={`h-4 w-4 ${action.iconColor}`} />
               </div>
 
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-white">{action.title}</span>
+                  <span className="font-medium text-white text-sm">
+                    {action.title}
+                  </span>
                   {action.badge && (
                     <Badge
                       variant="secondary"
-                      className="text-xs bg-white/20 text-white border-white/30"
+                      className="text-xs bg-white/20 text-white border-white/30 py-0 px-1.5"
                     >
                       {action.badge}
                     </Badge>
@@ -158,23 +160,23 @@ export default function QuickActions() {
               </div>
 
               {!action.disabled && (
-                <ArrowUpRight className="h-4 w-4 text-white/60 transition-all duration-200 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                <ArrowUpRight className="h-3.5 w-3.5 text-white/60 transition-all duration-200 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               )}
             </div>
           </Button>
         ))}
       </CardContent>
 
-      <Separator className="mx-6" />
+      <Separator className="mx-4" />
 
-      <CardFooter className="pt-4">
+      <CardFooter className="pt-3 pb-4">
         <Button
           variant="outline"
           onClick={handleSignOut}
-          className="w-full gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950 border-red-200 dark:border-red-800 transition-all duration-200 hover:scale-[1.02]"
+          className="w-full gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950 border-red-200 dark:border-red-800 transition-all duration-200 hover:scale-[1.02] h-9"
         >
           <LogOut className="h-4 w-4" />
-          <span>Sign Out</span>
+          <span className="text-sm">Sign Out</span>
         </Button>
       </CardFooter>
 
