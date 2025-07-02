@@ -3,13 +3,16 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CompleteRegistration = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [showConfetti, setShowConfetti] = useState(false);
   const fullName = useAppSelector(
     (state) => state.holders.holder?.fullName ?? ''
   );
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -18,6 +21,13 @@ const CompleteRegistration = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Redirect to dashboard when authentication is set
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleRedirect = () => {
     dispatch(

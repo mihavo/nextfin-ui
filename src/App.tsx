@@ -9,6 +9,8 @@ import AddAccount from './pages/account/AddAccount';
 import AuthPage from './pages/auth/AuthPage';
 import LogoutPage from './pages/auth/LogoutPage';
 import CardsPage from './pages/cards/CardsPage';
+import FeaturesPage from './pages/features/FeaturesPage';
+import LandingPage from './pages/landing/LandingPage';
 import NotFound from './pages/misc/NotFound';
 import SettingsPage from './pages/settings/SettingsPage';
 import FinancialStatisticsPage from './pages/statistics/FinancialStatisticsPage';
@@ -44,7 +46,11 @@ function App() {
               <Route path="user-details" element={<UserDetailsPage />} />
             </Route>
           ) : (
-            <Route path="/" element={<AuthPage />} />
+            <>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/features" element={<FeaturesPage />} />
+            </>
           )}
           <Route path="*" element={<NotFound />} />
         </Routes>

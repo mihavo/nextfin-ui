@@ -13,13 +13,16 @@ import { loginSchema } from '@/features/auth/schemas/authSchemas';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const status = useAppSelector((state) => state.auth.loginStatus);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [showPassword, setShowPassword] = useState(false);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -29,6 +32,13 @@ export default function LoginForm() {
       password: '',
     },
   });
+
+  // Redirect to dashboard when login is successful
+  useEffect(() => {
+    if (isAuthenticated && status === 'idle') {
+      navigate('/');
+    }
+  }, [isAuthenticated, status, navigate]);
 
   async function onLoginSubmit(values: z.infer<typeof loginSchema>) {
     dispatch(loginAction(values));
