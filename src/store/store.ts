@@ -2,6 +2,7 @@ import accountsReducer from '@/features/account/accountSlice';
 import authReducer from '@/features/auth/authSlice';
 import employeeReducer from '@/features/employees/employeeSlice';
 import holdersReducer from '@/features/holders/holderSlice';
+import statsReducer from '@/features/stats/statsSlice';
 import transactionReducer from '@/features/transactions/transactionSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import localForage from 'localforage';
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   transactions: transactionReducer,
   employees: employeeReducer,
   holders: holdersReducer,
+  stats: statsReducer,
 });
 
 const persistConfig = { key: 'root', storage: localForage };

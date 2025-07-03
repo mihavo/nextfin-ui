@@ -5,6 +5,10 @@ import { getDefaultCurrency } from '@/components/utils/currency';
 import { currencyFormatter } from '@/components/utils/currency-formatter';
 import { fetchUserAccountsAction } from '@/features/account/accountSlice';
 import { fetchUserAction } from '@/features/auth/authSlice';
+import {
+  getExpensesStatsAction,
+  getIncomeStatsAction,
+} from '@/features/stats/statsSlice';
 import { fetchUserTransactionsAction } from '@/features/transactions/transactionSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
@@ -31,6 +35,8 @@ export default function Dashboard() {
   const hasLoaded =
     useAppSelector((state) => state.accounts.getUserAccountsStatus) ===
     'succeeded';
+  const incomeStats = useAppSelector((state) => state.stats.incomeStats);
+  const expensesStats = useAppSelector((state) => state.stats.expensesStats);
 
   useEffect(() => {
     if (hasLoaded) {
@@ -47,6 +53,8 @@ export default function Dashboard() {
     dispatch(fetchUserAction());
     dispatch(fetchUserAccountsAction());
     dispatch(fetchUserTransactionsAction());
+    dispatch(getIncomeStatsAction({ range: 'MONTHLY' }));
+    dispatch(getExpensesStatsAction({ range: 'MONTHLY' }));
   }, [dispatch]);
 
   const navigateToStatistics = (
@@ -109,15 +117,24 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="relative pt-0">
-            <div className="text-2xl font-bold leading-tight mb-2 text-blue-900 dark:text-gray-100 group-hover:text-blue-800 dark:group-hover:text-gray-200 transition-colors duration-500">
-              $6,350.00
-            </div>
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-3 w-3 text-blue-700 dark:text-blue-300 flex-shrink-0" />
-              <p className="text-xs text-blue-700 dark:text-blue-300 leading-tight">
-                +4.3% from last month
-              </p>
-            </div>
+            {incomeStats == null ? (
+              <Skeleton className="h-8 w-32 bg-white/20 dark:bg-slate-700" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold leading-tight mb-2 text-blue-900 dark:text-gray-100 group-hover:text-blue-800 dark:group-hover:text-gray-200 transition-colors duration-500">
+                  {currencyFormatter(
+                    getDefaultCurrency().code,
+                    incomeStats.totalIncome
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <TrendingUp className="h-3 w-3 text-blue-700 dark:text-blue-300 flex-shrink-0" />
+                  <p className="text-xs text-blue-700 dark:text-blue-300 leading-tight">
+                    +4.3% from last month
+                  </p>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -135,15 +152,24 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="relative pt-0">
-            <div className="text-2xl font-bold leading-tight mb-2 text-orange-900 dark:text-gray-100 group-hover:text-orange-800 dark:group-hover:text-gray-200 transition-colors duration-500">
-              $2,980.45
-            </div>
-            <div className="flex items-center gap-1.5">
-              <TrendingUp className="h-3 w-3 text-orange-700 dark:text-orange-300 flex-shrink-0" />
-              <p className="text-xs text-orange-700 dark:text-orange-300 leading-tight">
-                +10.1% from last month
-              </p>
-            </div>
+            {expensesStats == null ? (
+              <Skeleton className="h-8 w-32 bg-white/20 dark:bg-slate-700" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold leading-tight mb-2 text-orange-900 dark:text-gray-100 group-hover:text-orange-800 dark:group-hover:text-gray-200 transition-colors duration-500">
+                  {currencyFormatter(
+                    getDefaultCurrency().code,
+                    expensesStats.totalExpenses
+                  )}{' '}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <TrendingUp className="h-3 w-3 text-orange-700 dark:text-orange-300 flex-shrink-0" />
+                  <p className="text-xs text-orange-700 dark:text-orange-300 leading-tight">
+                    +10.1% from last month
+                  </p>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
