@@ -47,7 +47,7 @@ export default function AuthPage() {
   const handleGoogleOAuth = async () => {
     try {
       window.location.href = `${
-        import.meta.env.VITE_NEXTFIN_API_URL || 'http://localhost:3000'
+        import.meta.env.VITE_NEXTFIN_API_URL
       }/oauth2/authorization/google`;
     } catch (error) {
       console.error('Google OAuth error:', error);

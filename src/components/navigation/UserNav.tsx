@@ -18,7 +18,6 @@ export default function UserNav() {
   const dispatch = useAppDispatch();
 
   const handleSignOut = () => {
-    console.log('Signing out...');
     dispatch(logoutAction());
     navigate('/logout');
   };

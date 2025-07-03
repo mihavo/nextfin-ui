@@ -33,8 +33,8 @@ export default function LoginForm() {
     },
   });
 
-  // Redirect to dashboard when login is successful
   useEffect(() => {
+    console.log('LoginForm mounted, isAuthenticated:', isAuthenticated);
     if (isAuthenticated && status === 'idle') {
       navigate('/');
     }

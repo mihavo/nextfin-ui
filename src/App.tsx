@@ -48,10 +48,10 @@ function App() {
           ) : (
             <>
               <Route path="/" element={<LandingPage />} />
-              <Route path="/auth" element={<AuthPage />} />
               <Route path="/features" element={<FeaturesPage />} />
             </>
           )}
+          <Route path="/auth" element={<AuthPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </HashRouter>

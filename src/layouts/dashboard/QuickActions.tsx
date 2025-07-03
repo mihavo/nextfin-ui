@@ -30,7 +30,6 @@ export default function QuickActions() {
   const [transferModalOpen, setTransferModalOpen] = useState(false);
 
   const handleSignOut = () => {
-    console.log('Signing out...');
     dispatch(logoutAction());
     navigate('/logout');
   };
