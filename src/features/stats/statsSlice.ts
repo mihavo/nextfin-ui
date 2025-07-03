@@ -1,6 +1,6 @@
-import { ExpensesStats, IncomeStats } from '@/types/Stats';
+import { ExpensesStats, IncomeStats, StatsRange } from '@/types/Stats';
 import { Status } from '@/types/Status';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { getExpensesStats, getIncomeStats, StatsRequest } from './statsApi';
 
 interface StatsState {
@@ -8,6 +8,8 @@ interface StatsState {
   expensesStats: ExpensesStats | null;
   incomeStatus: Status;
   expensesStatus: Status;
+  incomeRange: StatsRange;
+  expensesRange: StatsRange;
 }
 
 const initialState: StatsState = {
@@ -15,6 +17,8 @@ const initialState: StatsState = {
   expensesStats: null,
   incomeStatus: 'idle',
   expensesStatus: 'idle',
+  incomeRange: 'MONTHLY',
+  expensesRange: 'MONTHLY',
 };
 
 export const getIncomeStatsAction = createAsyncThunk(
@@ -34,7 +38,14 @@ export const getExpensesStatsAction = createAsyncThunk(
 export const statsSlice = createSlice({
   name: 'stats',
   initialState,
-  reducers: {},
+  reducers: {
+    setIncomeRange: (state, action: PayloadAction<StatsRange>) => {
+      state.incomeRange = action.payload;
+    },
+    setExpensesRange: (state, action: PayloadAction<StatsRange>) => {
+      state.expensesRange = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getIncomeStatsAction.fulfilled, (state, action) => {
@@ -61,5 +72,7 @@ export const statsSlice = createSlice({
       });
   },
 });
+
+export const { setIncomeRange, setExpensesRange } = statsSlice.actions;
 
 export default statsSlice.reducer;

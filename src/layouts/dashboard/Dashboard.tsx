@@ -8,15 +8,19 @@ import { fetchUserAction } from '@/features/auth/authSlice';
 import {
   getExpensesStatsAction,
   getIncomeStatsAction,
+  setExpensesRange,
+  setIncomeRange,
 } from '@/features/stats/statsSlice';
 import { fetchUserTransactionsAction } from '@/features/transactions/transactionSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Account } from '@/types/Account';
+import { StatsRange } from '@/types/Stats';
 import { Transaction } from '@/types/Transaction';
 import { PiggyBank, TrendingDown, TrendingUp, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Accounts from '../../components/account/Accounts';
+import TimerangeSelector from '../../components/dashboard/TimerangeSelector';
 import Transactions from '../../components/transactions/Transactions';
 import AccountPerformanceChart from './AccountPerformanceChart';
 import Notifications from './Notifications';
@@ -24,6 +28,7 @@ import QuickActions from './QuickActions';
 
 export default function Dashboard() {
   const [totalBalance, setTotalBalance] = useState<number | null>(null);
+  const [savingsRange, setSavingsRange] = useState<StatsRange>('MONTHLY');
   const navigate = useNavigate();
 
   const accounts: Account[] = useAppSelector(
@@ -36,7 +41,11 @@ export default function Dashboard() {
     useAppSelector((state) => state.accounts.getUserAccountsStatus) ===
     'succeeded';
   const incomeStats = useAppSelector((state) => state.stats.incomeStats);
+  const incomeStatus = useAppSelector((state) => state.stats.incomeStatus);
   const expensesStats = useAppSelector((state) => state.stats.expensesStats);
+  const expensesStatus = useAppSelector((state) => state.stats.expensesStatus);
+  const incomeRange = useAppSelector((state) => state.stats.incomeRange);
+  const expensesRange = useAppSelector((state) => state.stats.expensesRange);
 
   useEffect(() => {
     if (hasLoaded) {
@@ -49,13 +58,27 @@ export default function Dashboard() {
 
   const dispatch = useAppDispatch();
 
+  const handleIncomeRangeChange = (range: StatsRange) => {
+    dispatch(setIncomeRange(range));
+    dispatch(getIncomeStatsAction({ range }));
+  };
+
+  const handleExpensesRangeChange = (range: StatsRange) => {
+    dispatch(setExpensesRange(range));
+    dispatch(getExpensesStatsAction({ range }));
+  };
+
+  const handleSavingsRangeChange = (range: StatsRange) => {
+    setSavingsRange(range);
+  };
+
   useEffect(() => {
     dispatch(fetchUserAction());
     dispatch(fetchUserAccountsAction());
     dispatch(fetchUserTransactionsAction());
-    dispatch(getIncomeStatsAction({ range: 'MONTHLY' }));
-    dispatch(getExpensesStatsAction({ range: 'MONTHLY' }));
-  }, [dispatch]);
+    dispatch(getIncomeStatsAction({ range: incomeRange }));
+    dispatch(getExpensesStatsAction({ range: expensesRange }));
+  }, [dispatch, incomeRange, expensesRange]);
 
   const navigateToStatistics = (
     tab: 'balance' | 'income' | 'expenses' | 'savings'
@@ -117,9 +140,9 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="relative pt-0">
-            {incomeStats == null ? (
+            {incomeStatus == 'pending' ? (
               <Skeleton className="h-8 w-32 bg-white/20 dark:bg-slate-700" />
-            ) : (
+            ) : incomeStats != null ? (
               <>
                 <div className="text-2xl font-bold leading-tight mb-2 text-blue-900 dark:text-gray-100 group-hover:text-blue-800 dark:group-hover:text-gray-200 transition-colors duration-500">
                   {currencyFormatter(
@@ -134,7 +157,15 @@ export default function Dashboard() {
                   </p>
                 </div>
               </>
+            ) : (
+              <div className="text-2xl font-bold leading-tight mb-2 text-blue-900 dark:text-gray-100 group-hover:text-blue-800 dark:group-hover:text-gray-200 transition-colors duration-500">
+                {currencyFormatter(getDefaultCurrency().code, 0)}
+              </div>
             )}
+            <TimerangeSelector
+              currentRange={incomeRange}
+              onRangeChange={handleIncomeRangeChange}
+            />
           </CardContent>
         </Card>
 
@@ -152,15 +183,15 @@ export default function Dashboard() {
             </div>
           </CardHeader>
           <CardContent className="relative pt-0">
-            {expensesStats == null ? (
+            {expensesStatus == 'pending' ? (
               <Skeleton className="h-8 w-32 bg-white/20 dark:bg-slate-700" />
-            ) : (
+            ) : expensesStats != null ? (
               <>
                 <div className="text-2xl font-bold leading-tight mb-2 text-orange-900 dark:text-gray-100 group-hover:text-orange-800 dark:group-hover:text-gray-200 transition-colors duration-500">
                   {currencyFormatter(
                     getDefaultCurrency().code,
                     expensesStats.totalExpenses
-                  )}{' '}
+                  )}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <TrendingUp className="h-3 w-3 text-orange-700 dark:text-orange-300 flex-shrink-0" />
@@ -169,7 +200,15 @@ export default function Dashboard() {
                   </p>
                 </div>
               </>
+            ) : (
+              <div className="text-2xl font-bold leading-tight mb-2 text-orange-900 dark:text-gray-100 group-hover:text-orange-800 dark:group-hover:text-gray-200 transition-colors duration-500">
+                {currencyFormatter(getDefaultCurrency().code, 0)}
+              </div>
             )}
+            <TimerangeSelector
+              currentRange={expensesRange}
+              onRangeChange={handleExpensesRangeChange}
+            />
           </CardContent>
         </Card>
 
@@ -188,7 +227,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="relative pt-0">
             <div className="text-2xl font-bold leading-tight mb-2 text-purple-900 dark:text-gray-100 group-hover:text-purple-800 dark:group-hover:text-gray-200 transition-colors duration-500">
-              $12,234.00
+              €1,234.00
             </div>
             <div className="flex items-center gap-1.5">
               <TrendingUp className="h-3 w-3 text-purple-700 dark:text-purple-300 flex-shrink-0" />
@@ -196,6 +235,10 @@ export default function Dashboard() {
                 +18.7% from last month
               </p>
             </div>
+            <TimerangeSelector
+              currentRange={savingsRange}
+              onRangeChange={handleSavingsRangeChange}
+            />
           </CardContent>
         </Card>
       </div>
