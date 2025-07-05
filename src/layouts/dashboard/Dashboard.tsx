@@ -78,7 +78,7 @@ export default function Dashboard() {
     dispatch(fetchUserTransactionsAction());
     dispatch(getIncomeStatsAction({ range: incomeRange }));
     dispatch(getExpensesStatsAction({ range: expensesRange }));
-  }, [dispatch, incomeRange, expensesRange]);
+  }, [dispatch]);
 
   const navigateToStatistics = (
     tab: 'balance' | 'income' | 'expenses' | 'savings'
@@ -118,7 +118,13 @@ export default function Dashboard() {
                 <div className="flex items-center gap-1.5">
                   <TrendingUp className="h-3 w-3 text-emerald-700 dark:text-emerald-300 flex-shrink-0" />
                   <p className="text-xs text-emerald-700 dark:text-emerald-300 leading-tight">
-                    +20.1% from last month
+                    Avg:{' '}
+                    {currencyFormatter(
+                      accounts[0] != null
+                        ? accounts[0].currency
+                        : getDefaultCurrency().code,
+                      totalBalance / 30
+                    )}
                   </p>
                 </div>
               </>
@@ -153,7 +159,11 @@ export default function Dashboard() {
                 <div className="flex items-center gap-1.5">
                   <TrendingUp className="h-3 w-3 text-blue-700 dark:text-blue-300 flex-shrink-0" />
                   <p className="text-xs text-blue-700 dark:text-blue-300 leading-tight">
-                    +4.3% from last month
+                    Avg:{' '}
+                    {currencyFormatter(
+                      getDefaultCurrency().code,
+                      incomeStats.averageIncome
+                    )}
                   </p>
                 </div>
               </>
@@ -196,7 +206,11 @@ export default function Dashboard() {
                 <div className="flex items-center gap-1.5">
                   <TrendingUp className="h-3 w-3 text-orange-700 dark:text-orange-300 flex-shrink-0" />
                   <p className="text-xs text-orange-700 dark:text-orange-300 leading-tight">
-                    +10.1% from last month
+                    Avg:{' '}
+                    {currencyFormatter(
+                      getDefaultCurrency().code,
+                      expensesStats.averageExpense
+                    )}
                   </p>
                 </div>
               </>
