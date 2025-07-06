@@ -1,59 +1,71 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import './App.css';
 import Layout from './components/navigation/Layout';
 import { ThemeProvider } from './components/theme/theme-provider';
-import Dashboard from './layouts/dashboard/Dashboard';
-import AccountPage from './pages/account/AccountPage';
-import AccountsListPage from './pages/account/AccountsListPage';
-import AddAccount from './pages/account/AddAccount';
-import AuthPage from './pages/auth/AuthPage';
-import LogoutPage from './pages/auth/LogoutPage';
-import CardsPage from './pages/cards/CardsPage';
-import FeaturesPage from './pages/features/FeaturesPage';
-import LandingPage from './pages/landing/LandingPage';
-import NotFound from './pages/misc/NotFound';
-import SettingsPage from './pages/settings/SettingsPage';
-import FinancialStatisticsPage from './pages/statistics/FinancialStatisticsPage';
-import { TransactionsPage } from './pages/transactions/TransactionsPage';
-import UserDetailsPage from './pages/user/UserDetailsPage';
 import { useAppSelector } from './store/hooks';
+
+// Lazy load components for better code splitting
+const Dashboard = lazy(() => import('./layouts/dashboard/Dashboard'));
+const AccountPage = lazy(() => import('./pages/account/AccountPage'));
+const AccountsListPage = lazy(() => import('./pages/account/AccountsListPage'));
+const AddAccount = lazy(() => import('./pages/account/AddAccount'));
+const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
+const LogoutPage = lazy(() => import('./pages/auth/LogoutPage'));
+const CardsPage = lazy(() => import('./pages/cards/CardsPage'));
+const FeaturesPage = lazy(() => import('./pages/features/FeaturesPage'));
+const LandingPage = lazy(() => import('./pages/landing/LandingPage'));
+const NotFound = lazy(() => import('./pages/misc/NotFound'));
+const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'));
+const FinancialStatisticsPage = lazy(() => import('./pages/statistics/FinancialStatisticsPage'));
+const TransactionsPage = lazy(() => import('./pages/transactions/TransactionsPage').then(module => ({ default: module.TransactionsPage })));
+const UserDetailsPage = lazy(() => import('./pages/user/UserDetailsPage'));
+
+// Loading component
+const PageLoading = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>
+);
 
 function App() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <HashRouter>
-        <Routes>
-          <Route path="/logout" element={<LogoutPage />} />
-          {isAuthenticated ? (
-            <Route element={<Layout />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="accounts">
-                <Route index element={<AccountsListPage />} />
-                <Route path="new" element={<AddAccount />} />
-                <Route path=":id" element={<AccountPage />} />
+        <Suspense fallback={<PageLoading />}>
+          <Routes>
+            <Route path="/logout" element={<LogoutPage />} />
+            {isAuthenticated ? (
+              <Route element={<Layout />}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="accounts">
+                  <Route index element={<AccountsListPage />} />
+                  <Route path="new" element={<AddAccount />} />
+                  <Route path=":id" element={<AccountPage />} />
+                </Route>
+                <Route path="transactions">
+                  <Route index element={<TransactionsPage />} />
+                </Route>
+                <Route path="cards">
+                  <Route index element={<CardsPage />} />
+                </Route>
+                <Route path="settings">
+                  <Route index element={<SettingsPage />} />
+                </Route>
+                <Route path="statistics" element={<FinancialStatisticsPage />} />
+                <Route path="user-details" element={<UserDetailsPage />} />
               </Route>
-              <Route path="transactions">
-                <Route index element={<TransactionsPage />} />
-              </Route>
-              <Route path="cards">
-                <Route index element={<CardsPage />} />
-              </Route>
-              <Route path="settings">
-                <Route index element={<SettingsPage />} />
-              </Route>
-              <Route path="statistics" element={<FinancialStatisticsPage />} />
-              <Route path="user-details" element={<UserDetailsPage />} />
-            </Route>
-          ) : (
-            <>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/features" element={<FeaturesPage />} />
-            </>
-          )}
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            ) : (
+              <>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/features" element={<FeaturesPage />} />
+              </>
+            )}
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </HashRouter>
     </ThemeProvider>
   );
