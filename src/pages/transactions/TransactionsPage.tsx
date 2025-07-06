@@ -123,7 +123,6 @@ export function TransactionsPage() {
           <Button
             asChild
             variant="default"
-            className="dark:text-white"
             onClick={() => setIsModalOpen(true)}
           >
             <div>

@@ -294,7 +294,7 @@ export function TransactionItem({ transaction }: TransactionItemProps) {
                   </Button>
                   <Button
                     size="sm"
-                    className="dark:text-white text-xs bg-primary hover:bg-primary/90 transition-all duration-200 hover:scale-105"
+                    className="text-xs bg-primary hover:bg-primary/90 transition-all duration-200 hover:scale-105"
                   >
                     Download Receipt
                   </Button>

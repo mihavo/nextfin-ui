@@ -105,7 +105,7 @@ export default function Accounts({ items }: { items: Account[] }) {
         <Link to="/accounts/new" className="ml-auto">
           <Button
             size="sm"
-            className=" gap-1 dark:text-white hover:bg-blue-500"
+            className="gap-1 hover:bg-blue-500"
           >
             <Plus className="h-3.5 w-3.5" />
             Add Account

@@ -667,7 +667,6 @@ export default function NewTransactionModal({
                 <div className="flex gap-2">
                   <Button
                     type="submit"
-                    className="dark:text-white"
                     disabled={!form.formState.isValid}
                   >
                     Submit Transaction

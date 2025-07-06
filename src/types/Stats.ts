@@ -7,7 +7,7 @@ export interface IncomeStats {
 
 export interface ExpensesStats {
   totalExpenses: number;
-  averageExpenses: number;
+  averageExpense: number;
   startDate: string;
   endDate: string;
 }

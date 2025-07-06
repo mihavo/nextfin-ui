@@ -105,7 +105,7 @@ export default function LoginForm() {
           />
           <Button
             type="submit"
-            className="w-full dark:text-white"
+            className="w-full"
             disabled={status === 'pending'}
           >
             {status === 'pending' ? (

@@ -149,7 +149,7 @@ export default function CompletedTransactionModal({
               Return to Dashboard
             </Button>
             <Button
-              className="w-full sm:w-auto dark:text-white"
+              className="w-full sm:w-auto"
               onClick={handleNewTransaction}
             >
               Create Another Transaction
