@@ -2,13 +2,18 @@
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    { "path": "./tsconfig.node.json" },
+    { "path": "./src/components/ui/tsconfig.json" }
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "noEmit": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
     },
-    "noUnusedLocals": false
+    "noUnusedLocals": false,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   }
 }
