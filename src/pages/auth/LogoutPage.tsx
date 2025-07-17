@@ -25,7 +25,7 @@ export default function LogoutPage() {
       }, 1000);
       return () => clearTimeout(timer);
     } else if (countdown == 0) {
-      navigate('/');
+      navigate('/auth');
     }
   }, [navigate, countdown, status]);
 
@@ -68,7 +68,7 @@ export default function LogoutPage() {
             {status === 'idle' && (
               <CardFooter className="flex justify-center">
                 <Button
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/auth')}
                   variant="outline"
                   className="gap-2"
                 >

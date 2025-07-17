@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { useTheme } from '@/components/theme/theme-provider';
@@ -7,40 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { resetStatus as authResetStatus } from '@/features/auth/authSlice';
-import { resetStatus as holderResetStatus } from '@/features/holders/holderSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toast } from 'sonner';
-import CompleteRegistration from './CompleteRegistration';
-import CreateHolderForm from './CreateHolderForm';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 
 export default function AuthPage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('login');
-  const [activeSignupStage, setActiveSignupStage] = useState<
-    'USER' | 'HOLDER' | 'COMPLETED'
-  >('USER');
   const registerStatus = useAppSelector((state) => state.auth.registerStatus);
-  const holderRegistrationStatus = useAppSelector(
-    (state) => state.holders.holderCreatedStatus
-  );
 
   useEffect(() => {
     if (registerStatus === 'succeeded') {
       dispatch(authResetStatus('registerStatus'));
-      setActiveSignupStage('HOLDER');
-      toast.success('Registration successful!');
+      toast.success('Registration successful! Redirecting to onboarding...');
+      // Redirect to onboarding page after successful registration
+      navigate('/onboarding');
     }
-  }, [registerStatus, dispatch]);
-
-  useEffect(() => {
-    if (holderRegistrationStatus === 'succeeded') {
-      toast.success('Holder registration successful!');
-      setActiveSignupStage('COMPLETED');
-      dispatch(holderResetStatus('holderCreatedStatus'));
-    }
-  }, [dispatch, holderRegistrationStatus]);
+  }, [registerStatus, dispatch, navigate]);
 
   const { theme } = useTheme();
 
@@ -113,58 +98,54 @@ export default function AuthPage() {
                   <LoginForm />
                 </TabsContent>
                 <TabsContent value="signup">
-                  {activeSignupStage === 'HOLDER' ? (
-                    <CreateHolderForm />
-                  ) : activeSignupStage === 'USER' ? (
-                    <RegisterForm />
-                  ) : (
-                    <CompleteRegistration />
-                  )}
+                  <RegisterForm />
                 </TabsContent>
               </Tabs>
             </div>
 
-            {activeSignupStage === 'USER' && (
-              <div className="flex flex-col space-y-4 mt-6">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-gray-300/60 dark:border-gray-600/30" />
-                  </div>
-                  <div className="relative flex justify-center text-sm uppercase">
-                    <span className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white/90 dark:bg-gray-800/60 backdrop-blur-sm rounded-full border border-gray-300/60 dark:border-gray-600/40 shadow-sm">
-                      Or continue with
-                    </span>
-                  </div>
+            <div className="flex flex-col space-y-4 mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-gray-300/60 dark:border-gray-600/30" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    variant="outline"
-                    className="backdrop-blur-sm bg-white/80 dark:bg-gray-700/50 border-gray-300/60 dark:border-gray-600/40 hover:bg-white dark:hover:bg-gray-700/70 transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 h-10"
-                  >
-                    <img
-                      height="16"
-                      width="16"
-                      src="https://cdn.simpleicons.org/Apple/white"
-                      className="mr-2"
-                    />
-                    Apple
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="backdrop-blur-sm bg-white/80 dark:bg-gray-700/50 border-gray-300/60 dark:border-gray-600/40 hover:bg-white dark:hover:bg-gray-700/70 transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 h-10"
-                    onClick={handleGoogleOAuth}
-                  >
-                    <img
-                      height="16"
-                      width="16"
-                      src="https://cdn.simpleicons.org/Google/white"
-                      className="mr-2"
-                    />
-                    Google
-                  </Button>
+                <div className="relative flex justify-center text-sm uppercase">
+                  <span className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-white/90 dark:bg-gray-800/60 backdrop-blur-sm rounded-full border border-gray-300/60 dark:border-gray-600/40 shadow-sm">
+                    Or continue with
+                  </span>
                 </div>
               </div>
-            )}
+              <div className="grid grid-cols-2 gap-4">
+                <Button
+                  variant="outline"
+                  className="backdrop-blur-sm bg-white/80 dark:bg-gray-700/50 border-gray-300/60 dark:border-gray-600/40 hover:bg-white dark:hover:bg-gray-700/70 transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 h-10"
+                >
+                  <img
+                    height="16"
+                    width="16"
+                    src={`https://cdn.simpleicons.org/Apple/${
+                      theme !== 'light' ? 'white' : 'dark'
+                    }`}
+                    className="mr-2"
+                  />
+                  Apple
+                </Button>
+                <Button
+                  variant="outline"
+                  className="backdrop-blur-sm bg-white/80 dark:bg-gray-700/50 border-gray-300/60 dark:border-gray-600/40 hover:bg-white dark:hover:bg-gray-700/70 transition-all duration-300 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 h-10"
+                  onClick={handleGoogleOAuth}
+                >
+                  <img
+                    height="16"
+                    width="16"
+                    src={`https://cdn.simpleicons.org/Google/${
+                      theme !== 'light' ? 'white' : 'dark'
+                    }`}
+                    className="mr-2"
+                  />
+                  Google
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,8 +1,9 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Layout from './components/navigation/Layout';
 import { ThemeProvider } from './components/theme/theme-provider';
+import OAuthLoginSuccess from './pages/auth/OAuthLoginSuccess';
 import { useAppSelector } from './store/hooks';
 
 // Lazy load components for better code splitting
@@ -11,14 +12,22 @@ const AccountPage = lazy(() => import('./pages/account/AccountPage'));
 const AccountsListPage = lazy(() => import('./pages/account/AccountsListPage'));
 const AddAccount = lazy(() => import('./pages/account/AddAccount'));
 const AuthPage = lazy(() => import('./pages/auth/AuthPage'));
+const OAuthSuccess = lazy(() => import('./pages/auth/OAuthLoginSuccess'));
 const LogoutPage = lazy(() => import('./pages/auth/LogoutPage'));
 const CardsPage = lazy(() => import('./pages/cards/CardsPage'));
 const FeaturesPage = lazy(() => import('./pages/features/FeaturesPage'));
 const LandingPage = lazy(() => import('./pages/landing/LandingPage'));
 const NotFound = lazy(() => import('./pages/misc/NotFound'));
+const OnboardingPage = lazy(() => import('./pages/onboarding/OnboardingPage'));
 const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'));
-const FinancialStatisticsPage = lazy(() => import('./pages/statistics/FinancialStatisticsPage'));
-const TransactionsPage = lazy(() => import('./pages/transactions/TransactionsPage').then(module => ({ default: module.TransactionsPage })));
+const FinancialStatisticsPage = lazy(
+  () => import('./pages/statistics/FinancialStatisticsPage')
+);
+const TransactionsPage = lazy(() =>
+  import('./pages/transactions/TransactionsPage').then((module) => ({
+    default: module.TransactionsPage,
+  }))
+);
 const UserDetailsPage = lazy(() => import('./pages/user/UserDetailsPage'));
 
 // Loading component
@@ -53,7 +62,10 @@ function App() {
                 <Route path="settings">
                   <Route index element={<SettingsPage />} />
                 </Route>
-                <Route path="statistics" element={<FinancialStatisticsPage />} />
+                <Route
+                  path="statistics"
+                  element={<FinancialStatisticsPage />}
+                />
                 <Route path="user-details" element={<UserDetailsPage />} />
               </Route>
             ) : (
@@ -63,6 +75,11 @@ function App() {
               </>
             )}
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route
+              path="/oauth2/login/success"
+              element={<OAuthLoginSuccess />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
