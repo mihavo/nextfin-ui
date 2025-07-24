@@ -19,6 +19,12 @@ const FeaturesPage = lazy(() => import('./pages/features/FeaturesPage'));
 const LandingPage = lazy(() => import('./pages/landing/LandingPage'));
 const NotFound = lazy(() => import('./pages/misc/NotFound'));
 const OnboardingPage = lazy(() => import('./pages/onboarding/OnboardingPage'));
+const AcceptTermsPage = lazy(
+  () => import('./pages/onboarding/AcceptTermsPage')
+);
+const EmailVerificationPage = lazy(
+  () => import('./pages/onboarding/EmailVerificationPage')
+);
 const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'));
 const FinancialStatisticsPage = lazy(
   () => import('./pages/statistics/FinancialStatisticsPage')
@@ -76,6 +82,11 @@ function App() {
             )}
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/onboarding/terms" element={<AcceptTermsPage />} />
+            <Route
+              path="/onboarding/email-verification"
+              element={<EmailVerificationPage />}
+            />
             <Route
               path="/oauth2/login/success"
               element={<OAuthLoginSuccess />}

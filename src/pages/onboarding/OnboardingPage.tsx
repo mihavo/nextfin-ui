@@ -1,22 +1,43 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
+import ProgressSteps from '@/components/onboarding/ProgressSteps';
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { useTheme } from '@/components/theme/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { setAuthenticated } from '@/features/auth/authSlice';
 import { resetStatus as holderResetStatus } from '@/features/holders/holderSlice';
+import {
+  getStepDescription,
+  getStepTitle,
+} from '@/features/onboarding/onboardingUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { onboardingSteps } from '@/types/Onboarding';
 import { toast } from 'sonner';
+import AcceptTermsPage from './AcceptTermsPage';
 import CompleteRegistration from './CompleteRegistration';
-import CreateHolderForm from './CreateHolderForm';
+import CreateHolderPage from './CreateHolderPage';
+import EmailVerificationPage from './EmailVerificationPage';
 
 export default function OnboardingPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [onboardingStage, setOnboardingStage] = useState<
-    'HOLDER' | 'COMPLETED'
-  >('HOLDER');
+  const currentStep = useAppSelector(state => state.) 
+
+  const getCurrentStep = () => {
+    switch (stepParam) {
+      case 'terms':
+        return 2;
+      case 'email-verification':
+        return 3;
+      case 'success':
+        return 4;
+      default:
+        return 1; // holder creation
+    }
+  };
+
+  const [currentStep, setCurrentStep] = useState(getCurrentStep());
 
   const holderRegistrationStatus = useAppSelector(
     (state) => state.holders.holderCreatedStatus
@@ -27,14 +48,33 @@ export default function OnboardingPage() {
   }, [dispatch]);
 
   useEffect(() => {
+    setCurrentStep(getCurrentStep());
+  }, [stepParam]);
+
+  useEffect(() => {
     if (holderRegistrationStatus === 'succeeded') {
       toast.success('Holder registration successful!');
-      setOnboardingStage('COMPLETED');
       dispatch(holderResetStatus('holderCreatedStatus'));
+      navigate('/onboarding?step=terms');
     }
-  }, [dispatch, holderRegistrationStatus]);
+  }, [dispatch, holderRegistrationStatus, navigate]);
 
   const { theme } = useTheme();
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return <CreateHolderPage />;
+      case 2:
+        return <AcceptTermsPage />;
+      case 3:
+        return <EmailVerificationPage />;
+      case 4:
+        return <CompleteRegistration />;
+      default:
+        return <CreateHolderPage />;
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-blue-400/30 to-purple-400/30 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 overflow-hidden">
@@ -44,7 +84,6 @@ export default function OnboardingPage() {
         <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-indigo-300/20 dark:bg-indigo-600/20 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl" />
       </div>
 
-      {/* Header */}
       <div className="relative z-10 flex justify-between items-center p-4 sm:p-6 lg:p-8">
         <Link to="/" className="flex items-center space-x-2 group">
           <img
@@ -59,30 +98,21 @@ export default function OnboardingPage() {
         <ModeToggle />
       </div>
 
-      {/* Onboarding Content */}
       <div className="relative z-10 flex flex-col justify-center items-center px-4 py-8 sm:px-6 lg:px-8 min-h-[calc(100vh-120px)]">
         <div className="w-full max-w-2xl mx-auto">
           <div className="backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 rounded-2xl border border-white/30 dark:border-gray-700/40 p-6 sm:p-8 shadow-2xl">
+            <ProgressSteps currentStep={currentStep} steps={onboardingSteps} />
+
             <div className="mb-6 lg:mb-8 text-center">
               <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2 lg:mb-3">
-                {onboardingStage === 'HOLDER'
-                  ? 'Complete Your Profile'
-                  : 'Welcome to Nextfin!'}
+                {getStepTitle(currentStep)}
               </h2>
               <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
-                {onboardingStage === 'HOLDER'
-                  ? 'Please provide your personal information to complete your account setup'
-                  : 'Your account has been successfully created'}
+                {getStepDescription(currentStep)}
               </p>
             </div>
 
-            <div className="relative">
-              {onboardingStage === 'HOLDER' ? (
-                <CreateHolderForm />
-              ) : (
-                <CompleteRegistration />
-              )}
-            </div>
+            <div className="relative">{renderCurrentStep()}</div>
           </div>
         </div>
       </div>

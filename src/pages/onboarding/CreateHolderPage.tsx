@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { fetchUserAction } from '@/features/auth/authSlice';
 import { holderSchema } from '@/features/auth/schemas/authSchemas';
-import { registerHolderAction } from '@/features/holders/holderSlice';
+import { onboardingCreateHolderAction } from '@/features/onboarding/onboardingSlice';
 import { cn } from '@/lib/utils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,7 +36,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export default function CreateHolderForm() {
+export default function CreateHolderPage() {
   const dispatch = useAppDispatch();
   const [showPreview, setShowPreview] = useState(true);
   const [dateOpen, setDateOpen] = useState(false);
@@ -65,16 +65,11 @@ export default function CreateHolderForm() {
   }, [username, dispatch]);
 
   const handleSubmit = (data: z.infer<typeof holderSchema>) => {
-    console.log(data);
-    dispatch(
-      registerHolderAction({
-        username: username ?? '',
-        data: {
-          ...data,
-          dateOfBirth: dayjs(data.dateOfBirth).format('DD-MM-YYYY'),
-        },
-      })
-    );
+    const request = {
+      ...data,
+      dateOfBirth: dayjs(data.dateOfBirth).format('DD-MM-YYYY'),
+    };
+    dispatch(onboardingCreateHolderAction(request));
   };
 
   return (
