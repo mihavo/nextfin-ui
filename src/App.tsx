@@ -73,6 +73,7 @@ function App() {
                   element={<FinancialStatisticsPage />}
                 />
                 <Route path="user-details" element={<UserDetailsPage />} />
+                <Route path="/onboarding" element={<OnboardingPage />} />
               </Route>
             ) : (
               <>
@@ -81,7 +82,6 @@ function App() {
               </>
             )}
             <Route path="/auth" element={<AuthPage />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/onboarding/terms" element={<AcceptTermsPage />} />
             <Route
               path="/onboarding/email-verification"

@@ -1,6 +1,7 @@
 import { Status } from '@/types/Status';
 import { User } from '@/types/User';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 import {
   fetchCurrentUser,
   GetUserResponse,
@@ -23,7 +24,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  isAuthenticated: false,
+  isAuthenticated: Cookies.get('SESSION') !== null,
   user: undefined,
   loginStatus: 'idle',
   registerStatus: 'idle',

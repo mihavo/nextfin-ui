@@ -2,6 +2,7 @@ import accountsReducer from '@/features/account/accountSlice';
 import authReducer from '@/features/auth/authSlice';
 import employeeReducer from '@/features/employees/employeeSlice';
 import holdersReducer from '@/features/holders/holderSlice';
+import onboardingReducer from '@/features/onboarding/onboardingSlice';
 import statsReducer from '@/features/stats/statsSlice';
 import transactionReducer from '@/features/transactions/transactionSlice';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   employees: employeeReducer,
   holders: holdersReducer,
   stats: statsReducer,
+  onboarding: onboardingReducer,
 });
 
 const persistConfig = { key: 'root', storage: localForage };

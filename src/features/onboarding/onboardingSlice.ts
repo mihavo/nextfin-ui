@@ -1,22 +1,33 @@
 import { OnboardingStep } from '@/types/Onboarding';
 import { Status } from '@/types/Status';
+import { ToS } from '@/types/ToS';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RegisterHolderResponse } from '../holders/holderApi';
 import {
   CreateHolderOnboardingRequest,
+  getCurrentOnboardingStatus,
   onboardingAcceptTos,
+  onboardingGetTos,
   onboardingRegisterHolder,
   OnbooardingStepResponse,
 } from './onboardingApi';
 
 interface OnboardingState {
   currentStep: OnboardingStep;
-  status: Status;
+  onboardingComplete: boolean;
+  proceedStatus: Status;
+  loadStepStatus: Status;
+  getTermsStatus: Status;
+  terms: ToS | null;
 }
 
 const initialState: OnboardingState = {
   currentStep: OnboardingStep.HOLDER_CREATION,
-  status: 'idle',
+  onboardingComplete: false,
+  proceedStatus: 'idle',
+  loadStepStatus: 'idle',
+  getTermsStatus: 'idle',
+  terms: null,
 };
 
 export const onboardingCreateHolderAction = createAsyncThunk(
@@ -34,7 +45,18 @@ export const onboardingAcceptTosAction = createAsyncThunk(
     return await onboardingAcceptTos();
   }
 );
-
+export const onboardingGetTosAction = createAsyncThunk(
+  'onboarding/getTos',
+  async () => {
+    return await onboardingGetTos();
+  }
+);
+export const getCurrentOnboardingStatusAction = createAsyncThunk(
+  'onboarding/getCurrentStep',
+  async () => {
+    return await getCurrentOnboardingStatus();
+  }
+);
 export const onboardingSlice = createSlice({
   name: 'onboarding',
   initialState,
@@ -47,24 +69,52 @@ export const onboardingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(onboardingCreateHolderAction.fulfilled, (state) => {
-      state.status = 'succeeded';
+      state.proceedStatus = 'succeeded';
       state.currentStep = OnboardingStep.TOS_ACCEPTANCE;
     });
     builder.addCase(onboardingCreateHolderAction.pending, (state) => {
-      state.status = 'pending';
+      state.proceedStatus = 'pending';
     });
     builder.addCase(onboardingCreateHolderAction.rejected, (state) => {
-      state.status = 'failed';
+      state.proceedStatus = 'failed';
     });
     builder.addCase(onboardingAcceptTosAction.fulfilled, (state) => {
-      state.status = 'succeeded';
+      state.proceedStatus = 'succeeded';
       state.currentStep = OnboardingStep.COMPLETED;
     });
     builder.addCase(onboardingAcceptTosAction.pending, (state) => {
-      state.status = 'pending';
+      state.proceedStatus = 'pending';
     });
     builder.addCase(onboardingAcceptTosAction.rejected, (state) => {
-      state.status = 'failed';
+      state.proceedStatus = 'failed';
+    });
+    builder.addCase(onboardingGetTosAction.fulfilled, (state, action) => {
+      state.getTermsStatus = 'succeeded';
+      state.terms = action.payload;
+    });
+    builder.addCase(onboardingGetTosAction.pending, (state) => {
+      state.getTermsStatus = 'pending';
+    });
+    builder.addCase(onboardingGetTosAction.rejected, (state) => {
+      state.getTermsStatus = 'failed';
+    });
+    builder.addCase(
+      getCurrentOnboardingStatusAction.fulfilled,
+      (state, action) => {
+        state.currentStep = action.payload.step;
+        state.onboardingComplete = action.payload.onboardingComplete;
+        state.loadStepStatus = 'succeeded';
+      }
+    );
+    builder.addCase(getCurrentOnboardingStatusAction.pending, (state) => {
+      state.loadStepStatus = 'pending';
+    });
+    builder.addCase(getCurrentOnboardingStatusAction.rejected, (state) => {
+      state.loadStepStatus = 'failed';
     });
   },
 });
+
+export const { resetStatus } = onboardingSlice.actions;
+
+export default onboardingSlice.reducer;

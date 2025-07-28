@@ -1,5 +1,6 @@
 import { nextfinRequest } from '@/api/apiClient';
-import { OnboardingStatus } from '@/types/Onboarding';
+import { OnboardingStatus, OnboardingStep } from '@/types/Onboarding';
+import { ToS } from '@/types/ToS';
 import { HolderRequest, RegisterHolderResponse } from '../holders/holderApi';
 
 export type CreateHolderOnboardingRequest = HolderRequest;
@@ -19,6 +20,13 @@ export interface OnbooardingStepResponse<
   stepData: T;
 }
 
+export interface OnboardingStatusResponse {
+  onboardingComplete: boolean;
+  step: OnboardingStep;
+}
+
+export type GetTermsResponse = ToS;
+
 export const onboardingRegisterHolder = async (
   request: CreateHolderOnboardingRequest
 ): Promise<OnbooardingStepResponse<CreateHolderOnboardingResponse>> => {
@@ -30,3 +38,12 @@ export const onboardingAcceptTos = async (): Promise<
 > => {
   return await nextfinRequest('/onboarding/accept-terms', 'POST');
 };
+
+export const onboardingGetTos = async (): Promise<GetTermsResponse> => {
+  return await nextfinRequest('/onboarding/terms', 'GET');
+};
+
+export const getCurrentOnboardingStatus =
+  async (): Promise<OnboardingStatusResponse> => {
+    return await nextfinRequest('/onboarding/status', 'GET');
+  };

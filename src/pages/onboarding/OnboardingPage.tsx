@@ -1,75 +1,46 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import ProgressSteps from '@/components/onboarding/ProgressSteps';
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { useTheme } from '@/components/theme/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { setAuthenticated } from '@/features/auth/authSlice';
-import { resetStatus as holderResetStatus } from '@/features/holders/holderSlice';
+import { getCurrentOnboardingStatusAction } from '@/features/onboarding/onboardingSlice';
 import {
   getStepDescription,
   getStepTitle,
 } from '@/features/onboarding/onboardingUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { onboardingSteps } from '@/types/Onboarding';
-import { toast } from 'sonner';
+import { OnboardingStep, onboardingSteps } from '@/types/Onboarding';
+import { Loader2 } from 'lucide-react';
 import AcceptTermsPage from './AcceptTermsPage';
 import CompleteRegistration from './CompleteRegistration';
 import CreateHolderPage from './CreateHolderPage';
-import EmailVerificationPage from './EmailVerificationPage';
 
 export default function OnboardingPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const currentStep = useAppSelector(state => state.) 
-
-  const getCurrentStep = () => {
-    switch (stepParam) {
-      case 'terms':
-        return 2;
-      case 'email-verification':
-        return 3;
-      case 'success':
-        return 4;
-      default:
-        return 1; // holder creation
-    }
-  };
-
-  const [currentStep, setCurrentStep] = useState(getCurrentStep());
-
-  const holderRegistrationStatus = useAppSelector(
-    (state) => state.holders.holderCreatedStatus
+  const currentStep = useAppSelector((state) => state.onboarding.currentStep);
+  const loadStepStatus = useAppSelector(
+    (state) => state.onboarding.loadStepStatus
   );
 
   useEffect(() => {
     dispatch(setAuthenticated({ isAuthenticated: true }));
+    dispatch(getCurrentOnboardingStatusAction());
   }, [dispatch]);
-
-  useEffect(() => {
-    setCurrentStep(getCurrentStep());
-  }, [stepParam]);
-
-  useEffect(() => {
-    if (holderRegistrationStatus === 'succeeded') {
-      toast.success('Holder registration successful!');
-      dispatch(holderResetStatus('holderCreatedStatus'));
-      navigate('/onboarding?step=terms');
-    }
-  }, [dispatch, holderRegistrationStatus, navigate]);
 
   const { theme } = useTheme();
 
   const renderCurrentStep = () => {
+    console.log(currentStep);
     switch (currentStep) {
-      case 1:
+      case OnboardingStep.HOLDER_CREATION:
         return <CreateHolderPage />;
-      case 2:
+      case OnboardingStep.TOS_ACCEPTANCE:
         return <AcceptTermsPage />;
-      case 3:
-        return <EmailVerificationPage />;
-      case 4:
+      case OnboardingStep.COMPLETED:
         return <CompleteRegistration />;
       default:
         return <CreateHolderPage />;
@@ -112,7 +83,44 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <div className="relative">{renderCurrentStep()}</div>
+            {loadStepStatus === 'pending' ? (
+              <div className="relative flex flex-col items-center justify-center py-12">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
+                  <Loader2 className="mx-auto mb-4 h-12 w-12 text-blue-500 animate-spin" />
+                  <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                    Registration successful!
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Let's get started with your onboarding!
+                  </p>
+                </div>
+              </div>
+            ) : loadStepStatus === 'succeeded' ? (
+              <div className="relative">{renderCurrentStep()}</div>
+            ) : loadStepStatus === 'failed' ? (
+              <div className="relative flex flex-col items-center justify-center py-12">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
+                  <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                    Error Loading Onboarding Status
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Please try again later or contact support.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="relative flex flex-col items-center justify-center py-12">
+                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
+                  <Loader2 className="mx-auto mb-4 h-12 w-12 text-blue-500 animate-spin" />
+                  <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                    Loading Onboarding Status
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Please wait while we determine your current step...
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

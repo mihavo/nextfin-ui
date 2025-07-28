@@ -22,7 +22,6 @@ export default function AuthPage() {
     if (registerStatus === 'succeeded') {
       dispatch(authResetStatus('registerStatus'));
       toast.success('Registration successful! Redirecting to onboarding...');
-      // Redirect to onboarding page after successful registration
       navigate('/onboarding');
     }
   }, [registerStatus, dispatch, navigate]);
@@ -30,14 +29,10 @@ export default function AuthPage() {
   const { theme } = useTheme();
 
   const handleGoogleOAuth = async () => {
-    try {
-      window.location.href = `${
-        import.meta.env.VITE_NEXTFIN_API_URL
-      }/oauth2/authorization/google`;
-    } catch (error) {
-      console.error('Google OAuth error:', error);
-      toast.error('Failed to initiate Google OAuth');
-    }
+    const oauthUrl = `${
+      import.meta.env.VITE_NEXTFIN_API_URL
+    }/oauth2/authorization/google`;
+    navigate(oauthUrl);
   };
 
   return (

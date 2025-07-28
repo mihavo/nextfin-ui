@@ -31,8 +31,8 @@ export const signupSchema = z
   });
 
 export const holderSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+  firstName: z.string().nonempty({ message: 'First name is required' }),
+  lastName: z.string().nonempty({ message: 'Last name is required' }),
   dateOfBirth: z.date().refine((date) => date <= new Date(), {
     message: 'Date of birth must be in the past',
   }),
