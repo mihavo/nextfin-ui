@@ -29,10 +29,9 @@ export default function AuthPage() {
   const { theme } = useTheme();
 
   const handleGoogleOAuth = async () => {
-    const oauthUrl = `${
+    window.location.href = `${
       import.meta.env.VITE_NEXTFIN_API_URL
     }/oauth2/authorization/google`;
-    navigate(oauthUrl);
   };
 
   return (

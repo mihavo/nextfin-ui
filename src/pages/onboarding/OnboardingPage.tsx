@@ -13,6 +13,7 @@ import {
 } from '@/features/onboarding/onboardingUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { OnboardingStep, onboardingSteps } from '@/types/Onboarding';
+import Cookies from 'js-cookie';
 import { Loader2 } from 'lucide-react';
 import AcceptTermsPage from './AcceptTermsPage';
 import CompleteRegistration from './CompleteRegistration';
@@ -27,6 +28,10 @@ export default function OnboardingPage() {
   );
 
   useEffect(() => {
+    console.log(Cookies.get('SESSION'));
+    if (Cookies.get('SESSION') === null) {
+      navigate('/');
+    }
     dispatch(setAuthenticated({ isAuthenticated: true }));
     dispatch(getCurrentOnboardingStatusAction());
   }, [dispatch]);

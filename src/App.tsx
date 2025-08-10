@@ -3,7 +3,6 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Layout from './components/navigation/Layout';
 import { ThemeProvider } from './components/theme/theme-provider';
-import OAuthLoginSuccess from './pages/auth/OAuthLoginSuccess';
 import { useAppSelector } from './store/hooks';
 
 // Lazy load components for better code splitting
@@ -73,7 +72,6 @@ function App() {
                   element={<FinancialStatisticsPage />}
                 />
                 <Route path="user-details" element={<UserDetailsPage />} />
-                <Route path="/onboarding" element={<OnboardingPage />} />
               </Route>
             ) : (
               <>
@@ -81,16 +79,8 @@ function App() {
                 <Route path="/features" element={<FeaturesPage />} />
               </>
             )}
+            <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/auth" element={<AuthPage />} />
-            <Route path="/onboarding/terms" element={<AcceptTermsPage />} />
-            <Route
-              path="/onboarding/email-verification"
-              element={<EmailVerificationPage />}
-            />
-            <Route
-              path="/oauth2/login/success"
-              element={<OAuthLoginSuccess />}
-            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
