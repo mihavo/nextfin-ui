@@ -22,13 +22,21 @@ export const onboardingSteps = [
 ];
 
 export enum OnboardingStep {
-  HOLDER_CREATION = 1,
-  TOS_ACCEPTANCE = 2,
-  EMAIL_VERIFICATION = 3,
-  COMPLETED = 4,
+  HOLDER_CREATION = 'HOLDER_CREATION',
+  TOS_ACCEPTANCE = 'TOS_ACCEPTANCE',
+  EMAIL_VERIFICATION = 'EMAIL_VERIFICATION',
+  COMPLETED = 'COMPLETED',
 }
 
 export interface OnboardingStatus {
   onboardingComplete: boolean;
   step: OnboardingStep;
 }
+
+export const OnboardingStepOrder: Record<OnboardingStep, number> = {
+  [OnboardingStep.HOLDER_CREATION]: 1,
+  [OnboardingStep.TOS_ACCEPTANCE]: 2,
+  [OnboardingStep.EMAIL_VERIFICATION]: 3,
+  [OnboardingStep.COMPLETED]: 4,
+};
+

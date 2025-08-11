@@ -12,8 +12,11 @@ import {
   getStepTitle,
 } from '@/features/onboarding/onboardingUtils';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { OnboardingStep, onboardingSteps } from '@/types/Onboarding';
-import Cookies from 'js-cookie';
+import {
+  OnboardingStep,
+  OnboardingStepOrder,
+  onboardingSteps,
+} from '@/types/Onboarding';
 import { Loader2 } from 'lucide-react';
 import AcceptTermsPage from './AcceptTermsPage';
 import CompleteRegistration from './CompleteRegistration';
@@ -23,15 +26,13 @@ export default function OnboardingPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const currentStep = useAppSelector((state) => state.onboarding.currentStep);
+  const currentNumericalStep = currentStep && OnboardingStepOrder[currentStep];
+  console.log(currentStep, currentNumericalStep);
   const loadStepStatus = useAppSelector(
     (state) => state.onboarding.loadStepStatus
   );
 
   useEffect(() => {
-    console.log(Cookies.get('SESSION'));
-    if (Cookies.get('SESSION') === null) {
-      navigate('/');
-    }
     dispatch(setAuthenticated({ isAuthenticated: true }));
     dispatch(getCurrentOnboardingStatusAction());
   }, [dispatch]);
@@ -39,7 +40,7 @@ export default function OnboardingPage() {
   const { theme } = useTheme();
 
   const renderCurrentStep = () => {
-    console.log(currentStep);
+    console.log(currentStep, typeof currentStep);
     switch (currentStep) {
       case OnboardingStep.HOLDER_CREATION:
         return <CreateHolderPage />;
@@ -47,8 +48,6 @@ export default function OnboardingPage() {
         return <AcceptTermsPage />;
       case OnboardingStep.COMPLETED:
         return <CompleteRegistration />;
-      default:
-        return <CreateHolderPage />;
     }
   };
 
@@ -74,61 +73,66 @@ export default function OnboardingPage() {
         <ModeToggle />
       </div>
 
-      <div className="relative z-10 flex flex-col justify-center items-center px-4 py-8 sm:px-6 lg:px-8 min-h-[calc(100vh-120px)]">
-        <div className="w-full max-w-2xl mx-auto">
-          <div className="backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 rounded-2xl border border-white/30 dark:border-gray-700/40 p-6 sm:p-8 shadow-2xl">
-            <ProgressSteps currentStep={currentStep} steps={onboardingSteps} />
+      {currentNumericalStep && (
+        <div className="relative z-10 flex flex-col justify-center items-center px-4 py-8 sm:px-6 lg:px-8 min-h-[calc(100vh-120px)]">
+          <div className="w-full max-w-2xl mx-auto">
+            <div className="backdrop-blur-xl bg-white/70 dark:bg-gray-900/70 rounded-2xl border border-white/30 dark:border-gray-700/40 p-6 sm:p-8 shadow-2xl">
+              <ProgressSteps
+                currentStep={currentNumericalStep}
+                steps={onboardingSteps}
+              />
 
-            <div className="mb-6 lg:mb-8 text-center">
-              <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2 lg:mb-3">
-                {getStepTitle(currentStep)}
-              </h2>
-              <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
-                {getStepDescription(currentStep)}
-              </p>
+              <div className="mb-6 lg:mb-8 text-center">
+                <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-2 lg:mb-3">
+                  {getStepTitle(currentNumericalStep)}
+                </h2>
+                <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
+                  {getStepDescription(currentNumericalStep)}
+                </p>
+              </div>
+
+              {loadStepStatus === 'pending' ? (
+                <div className="relative flex flex-col items-center justify-center py-12">
+                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
+                    <Loader2 className="mx-auto mb-4 h-12 w-12 text-blue-500 animate-spin" />
+                    <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                      Registration successful!
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Let's get started with your onboarding!
+                    </p>
+                  </div>
+                </div>
+              ) : loadStepStatus === 'succeeded' ? (
+                <div className="relative">{renderCurrentStep()}</div>
+              ) : loadStepStatus === 'failed' ? (
+                <div className="relative flex flex-col items-center justify-center py-12">
+                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
+                    <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                      Error Loading Onboarding Status
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Please try again later or contact support.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative flex flex-col items-center justify-center py-12">
+                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
+                    <Loader2 className="mx-auto mb-4 h-12 w-12 text-blue-500 animate-spin" />
+                    <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+                      Loading Onboarding Status
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Please wait while we determine your current step...
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-
-            {loadStepStatus === 'pending' ? (
-              <div className="relative flex flex-col items-center justify-center py-12">
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
-                  <Loader2 className="mx-auto mb-4 h-12 w-12 text-blue-500 animate-spin" />
-                  <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                    Registration successful!
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Let's get started with your onboarding!
-                  </p>
-                </div>
-              </div>
-            ) : loadStepStatus === 'succeeded' ? (
-              <div className="relative">{renderCurrentStep()}</div>
-            ) : loadStepStatus === 'failed' ? (
-              <div className="relative flex flex-col items-center justify-center py-12">
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
-                  <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                    Error Loading Onboarding Status
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Please try again later or contact support.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="relative flex flex-col items-center justify-center py-12">
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-8 shadow-lg text-center">
-                  <Loader2 className="mx-auto mb-4 h-12 w-12 text-blue-500 animate-spin" />
-                  <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                    Loading Onboarding Status
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Please wait while we determine your current step...
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
-      </div>
+      )}
       <Toaster richColors closeButton theme={theme} />
     </div>
   );

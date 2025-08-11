@@ -1,5 +1,5 @@
 import { nextfinRequest } from '@/api/apiClient';
-import { OnboardingStatus, OnboardingStep } from '@/types/Onboarding';
+import { OnboardingStatus } from '@/types/Onboarding';
 import { ToS } from '@/types/ToS';
 import { HolderRequest, RegisterHolderResponse } from '../holders/holderApi';
 
@@ -22,7 +22,7 @@ export interface OnbooardingStepResponse<
 
 export interface OnboardingStatusResponse {
   onboardingComplete: boolean;
-  step: OnboardingStep;
+  step: string;
 }
 
 export type GetTermsResponse = ToS;

@@ -1,3 +1,5 @@
+import { OnboardingStep, OnboardingStepOrder } from '@/types/Onboarding';
+
 export const getStepTitle = (currentStep: number) => {
   switch (currentStep) {
     case 1:
@@ -27,3 +29,7 @@ export const getStepDescription = (currentStep: number) => {
       return 'Please provide your personal information to complete your account setup';
   }
 };
+
+export function isBefore(a: OnboardingStep, b: OnboardingStep): boolean {
+  return OnboardingStepOrder[a] < OnboardingStepOrder[b];
+}

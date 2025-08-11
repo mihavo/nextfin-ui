@@ -13,7 +13,7 @@ import {
 } from './onboardingApi';
 
 interface OnboardingState {
-  currentStep: OnboardingStep;
+  currentStep: OnboardingStep | null;
   onboardingComplete: boolean;
   proceedStatus: Status;
   loadStepStatus: Status;
@@ -22,7 +22,7 @@ interface OnboardingState {
 }
 
 const initialState: OnboardingState = {
-  currentStep: OnboardingStep.HOLDER_CREATION,
+  currentStep: null,
   onboardingComplete: false,
   proceedStatus: 'idle',
   loadStepStatus: 'idle',
@@ -101,7 +101,7 @@ export const onboardingSlice = createSlice({
     builder.addCase(
       getCurrentOnboardingStatusAction.fulfilled,
       (state, action) => {
-        state.currentStep = action.payload.step;
+        state.currentStep = action.payload.step as OnboardingStep;
         state.onboardingComplete = action.payload.onboardingComplete;
         state.loadStepStatus = 'succeeded';
       }
