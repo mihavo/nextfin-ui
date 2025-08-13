@@ -12,11 +12,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { fetchUserAction } from '@/features/auth/authSlice';
+import { onboardingVerifyEmailAction } from '@/features/onboarding/onboardingSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Clock, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 const FormSchema = z.object({
@@ -45,11 +46,11 @@ export default function EmailVerificationPage() {
 
   useEffect(() => {
     if (!userEmail) {
-      toast.error('No email found. Please complete your profile first.');
+      dispatch(fetchUserAction());
       return;
     }
-    dispatch();
-  }, [dispatch]);
+    dispatch(onboardingVerifyEmailAction(userEmail));
+  }, [userEmail, dispatch]);
 
   useEffect(() => {
     if (countdown > 0) {

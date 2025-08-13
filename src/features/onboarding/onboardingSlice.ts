@@ -20,6 +20,8 @@ interface OnboardingState {
   proceedStatus: Status;
   loadStepStatus: Status;
   getTermsStatus: Status;
+  verifyEmailStatus: Status;
+  validateEmailOtpStatus: Status;
   terms: ToS | null;
 }
 
@@ -29,6 +31,8 @@ const initialState: OnboardingState = {
   proceedStatus: 'idle',
   loadStepStatus: 'idle',
   getTermsStatus: 'idle',
+  verifyEmailStatus: 'idle',
+  validateEmailOtpStatus: 'idle',
   terms: null,
 };
 
@@ -96,7 +100,7 @@ export const onboardingSlice = createSlice({
     });
     builder.addCase(onboardingAcceptTosAction.fulfilled, (state) => {
       state.proceedStatus = 'succeeded';
-      state.currentStep = OnboardingStep.COMPLETED;
+      state.currentStep = OnboardingStep.EMAIL_VERIFICATION;
     });
     builder.addCase(onboardingAcceptTosAction.pending, (state) => {
       state.proceedStatus = 'pending';
@@ -127,6 +131,19 @@ export const onboardingSlice = createSlice({
     });
     builder.addCase(getCurrentOnboardingStatusAction.rejected, (state) => {
       state.loadStepStatus = 'failed';
+    });
+    builder.addCase(onboardingVerifyEmailAction.fulfilled, (state, action) => {
+      state.verifyEmailStatus = 'succeeded';
+    });
+    builder.addCase(onboardingVerifyEmailAction.pending, (state) => {
+      state.verifyEmailStatus = 'pending';
+    });
+    builder.addCase(onboardingVerifyEmailAction.rejected, (state) => {
+      state.verifyEmailStatus = 'failed';
+    });
+    builder.addCase(onboardingValidateEmailOtpAction.fulfilled, (state) => {
+      state.validateEmailOtpStatus = 'succeeded';
+      state.currentStep = OnboardingStep.COMPLETED;
     });
   },
 });
