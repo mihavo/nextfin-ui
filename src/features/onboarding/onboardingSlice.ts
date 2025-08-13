@@ -10,6 +10,8 @@ import {
   onboardingGetTos,
   onboardingRegisterHolder,
   OnbooardingStepResponse,
+  validateEmailOtp,
+  verifyEmail,
 } from './onboardingApi';
 
 interface OnboardingState {
@@ -57,6 +59,20 @@ export const getCurrentOnboardingStatusAction = createAsyncThunk(
     return await getCurrentOnboardingStatus();
   }
 );
+export const onboardingVerifyEmailAction = createAsyncThunk(
+  'onboarding/verifyEmail',
+  async (email: string) => {
+    return await verifyEmail(email);
+  }
+);
+
+export const onboardingValidateEmailOtpAction = createAsyncThunk(
+  'onboarding/validateEmailOtp',
+  async (request: { code: string }) => {
+    return await validateEmailOtp(request);
+  }
+);
+
 export const onboardingSlice = createSlice({
   name: 'onboarding',
   initialState,

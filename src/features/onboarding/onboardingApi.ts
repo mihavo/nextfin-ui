@@ -56,7 +56,9 @@ export const getCurrentOnboardingStatus =
     return await nextfinRequest('/onboarding/status', 'GET');
   };
 
-export const verifyEmail = async (): Promise<VerifyEmailResponse> => {
+export const verifyEmail = async (
+  email: string
+): Promise<VerifyEmailResponse> => {
   return await nextfinRequest('/onboarding/verify-email', 'POST');
 };
 
