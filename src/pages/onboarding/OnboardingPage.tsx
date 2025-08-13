@@ -21,13 +21,13 @@ import { Loader2 } from 'lucide-react';
 import AcceptTermsPage from './AcceptTermsPage';
 import CompleteRegistration from './CompleteRegistration';
 import CreateHolderPage from './CreateHolderPage';
+import EmailVerificationPage from './EmailVerificationPage';
 
 export default function OnboardingPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const currentStep = useAppSelector((state) => state.onboarding.currentStep);
   const currentNumericalStep = currentStep && OnboardingStepOrder[currentStep];
-  console.log(currentStep, currentNumericalStep);
   const loadStepStatus = useAppSelector(
     (state) => state.onboarding.loadStepStatus
   );
@@ -40,12 +40,13 @@ export default function OnboardingPage() {
   const { theme } = useTheme();
 
   const renderCurrentStep = () => {
-    console.log(currentStep, typeof currentStep);
     switch (currentStep) {
       case OnboardingStep.HOLDER_CREATION:
         return <CreateHolderPage />;
       case OnboardingStep.TOS_ACCEPTANCE:
         return <AcceptTermsPage />;
+      case OnboardingStep.EMAIL_VERIFICATION:
+        return <EmailVerificationPage />;
       case OnboardingStep.COMPLETED:
         return <CompleteRegistration />;
     }

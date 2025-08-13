@@ -9,12 +9,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { onboardingAcceptTosAction } from '@/features/onboarding/onboardingSlice';
+import {
+  onboardingAcceptTosAction,
+  onboardingGetTosAction,
+} from '@/features/onboarding/onboardingSlice';
 import { termsSchema } from '@/features/onboarding/schemas/onboardingSchemas';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Info, Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -29,6 +33,10 @@ export default function AcceptTermsPage() {
       acceptedTerms: false,
     },
   });
+
+  useEffect(() => {
+    if (!terms) dispatch(onboardingGetTosAction());
+  }, [dispatch]);
 
   const handleSubmit = async (data: z.infer<typeof termsSchema>) => {
     dispatch(onboardingAcceptTosAction());
@@ -76,8 +84,8 @@ export default function AcceptTermsPage() {
                     )}
                   </div>
                 </div>
-                <ScrollArea className="h-48 w-full border border-gray-300/60 dark:border-gray-600/40 rounded-lg p-4 bg-white/50 dark:bg-gray-800/50">
-                  <div className="text-sm text-gray-700 dark:text-gray-300 space-y-3">
+                <ScrollArea className="h-72 w-full border border-gray-300/60 dark:border-gray-600/40 rounded-lg p-4 bg-white/50 dark:bg-gray-800/50">
+                  <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line break-words">
                     {terms?.content || 'No terms available.'}
                   </div>
                 </ScrollArea>
@@ -106,7 +114,14 @@ export default function AcceptTermsPage() {
                 )}
               />
 
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                disabled={
+                  status === 'pending' ||
+                  termsForm.watch('acceptedTerms') === false
+                }
+                className="w-full"
+              >
                 {status === 'pending' ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
