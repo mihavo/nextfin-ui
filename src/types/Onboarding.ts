@@ -40,3 +40,5 @@ export const OnboardingStepOrder: Record<OnboardingStep, number> = {
   [OnboardingStep.COMPLETED]: 4,
 };
 
+
+export interface Verification {};

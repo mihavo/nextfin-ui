@@ -1,5 +1,5 @@
 import { nextfinRequest } from '@/api/apiClient';
-import { OnboardingStatus } from '@/types/Onboarding';
+import { OnboardingStatus, Verification } from '@/types/Onboarding';
 import { ToS } from '@/types/ToS';
 import { HolderRequest, RegisterHolderResponse } from '../holders/holderApi';
 
@@ -27,6 +27,14 @@ export interface OnboardingStatusResponse {
 
 export type GetTermsResponse = ToS;
 
+export type VerifyEmailResponse = Verification;
+
+export type ValidateEmailOtpRequest = {
+  code: string;
+};
+
+export type ValidateEmailOtpResponse = string;
+
 export const onboardingRegisterHolder = async (
   request: CreateHolderOnboardingRequest
 ): Promise<OnbooardingStepResponse<CreateHolderOnboardingResponse>> => {
@@ -47,3 +55,17 @@ export const getCurrentOnboardingStatus =
   async (): Promise<OnboardingStatusResponse> => {
     return await nextfinRequest('/onboarding/status', 'GET');
   };
+
+export const verifyEmail = async (): Promise<VerifyEmailResponse> => {
+  return await nextfinRequest('/onboarding/verify-email', 'POST');
+};
+
+export const validateEmailOtp = async (
+  request: ValidateEmailOtpRequest
+): Promise<ValidateEmailOtpResponse> => {
+  return await nextfinRequest(
+    '/onboarding/validate-email-otp',
+    'POST',
+    request
+  );
+};
